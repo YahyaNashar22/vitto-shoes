@@ -9,7 +9,13 @@ import {
 	resolveImportCategoryId,
 	type ProductImportRow
 } from '$lib/server/product-json';
-import { saveUploadedImage, saveUploadedImages, UploadError } from '$lib/server/uploads';
+import {
+	getMaxUploadBytes,
+	getMaxUploadLabel,
+	saveUploadedImage,
+	saveUploadedImages,
+	UploadError
+} from '$lib/server/uploads';
 import { slugify } from '$lib/utils';
 
 function asString(formData: FormData, key: string) {
@@ -118,14 +124,18 @@ export async function upsertImportedProduct(row: ProductImportRow) {
 
 export async function loadCatalogCategories() {
 	return {
-		categories: await getCategories()
+		categories: await getCategories(),
+		maxUploadBytes: getMaxUploadBytes(),
+		maxUploadLabel: getMaxUploadLabel()
 	};
 }
 
 export async function loadCatalogProducts() {
 	return {
 		categories: await getCategories(),
-		products: await getAdminProducts()
+		products: await getAdminProducts(),
+		maxUploadBytes: getMaxUploadBytes(),
+		maxUploadLabel: getMaxUploadLabel()
 	};
 }
 
@@ -134,7 +144,9 @@ export async function loadCatalogImports() {
 
 	return {
 		categoryCount: categories.length,
-		productCount: products.length
+		productCount: products.length,
+		maxUploadBytes: getMaxUploadBytes(),
+		maxUploadLabel: getMaxUploadLabel()
 	};
 }
 

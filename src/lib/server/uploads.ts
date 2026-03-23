@@ -14,7 +14,12 @@ const MIME_BY_EXTENSION: Record<string, string> = {
 	'.png': 'image/png',
 	'.gif': 'image/gif',
 	'.webp': 'image/webp',
-	'.svg': 'image/svg+xml'
+	'.svg': 'image/svg+xml',
+	'.avif': 'image/avif',
+	'.bmp': 'image/bmp',
+	'.tif': 'image/tiff',
+	'.tiff': 'image/tiff',
+	'.ico': 'image/x-icon'
 };
 
 export class UploadError extends Error {}

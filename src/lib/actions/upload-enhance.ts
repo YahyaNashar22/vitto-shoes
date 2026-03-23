@@ -5,6 +5,7 @@ type UploadEnhanceOptions = {
 	onProgress?: (progress: number) => void;
 	onFinish?: () => void;
 	onError?: (message: string) => void;
+	validate?: (formData: FormData) => string | null;
 };
 
 export function uploadEnhance(node: HTMLFormElement, options: UploadEnhanceOptions = {}) {
@@ -17,6 +18,12 @@ export function uploadEnhance(node: HTMLFormElement, options: UploadEnhanceOptio
 		const action = submitter?.formAction || node.action;
 		const method = (submitter?.formMethod || node.method || 'POST').toUpperCase();
 		const formData = new FormData(node, submitter ?? undefined);
+		const validationError = currentOptions.validate?.(formData);
+
+		if (validationError) {
+			currentOptions.onError?.(validationError);
+			return;
+		}
 
 		currentOptions.onStart?.();
 
@@ -35,6 +42,18 @@ export function uploadEnhance(node: HTMLFormElement, options: UploadEnhanceOptio
 		});
 
 		xhr.addEventListener('load', async () => {
+			if (xhr.status === 413) {
+				currentOptions.onError?.(
+					'Upload failed: the file is too large for the server limit. Please use a smaller image.'
+				);
+				return;
+			}
+
+			if (xhr.status >= 400) {
+				currentOptions.onError?.('Upload failed. Please check the file and try again.');
+				return;
+			}
+
 			try {
 				currentOptions.onProgress?.(100);
 				const result = deserialize(xhr.responseText);

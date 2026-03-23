@@ -4,6 +4,7 @@
 	import type { ActionData, PageData } from './$types';
 
 	let { data, form } = $props<{ data: PageData; form: ActionData }>();
+	let errorMessage = $state('');
 
 	let uploadState = $state({
 		active: false,
@@ -11,9 +12,20 @@
 		label: ''
 	});
 
+	function validateImages(formData: FormData) {
+		const image = formData.get('imageFile');
+
+		if (image instanceof File && image.size > data.maxUploadBytes) {
+			return `Image is too large. Maximum allowed size is ${data.maxUploadLabel}.`;
+		}
+
+		return null;
+	}
+
 	function createProgressOptions(label: string) {
 		return {
 			onStart: () => {
+				errorMessage = '';
 				uploadState = { active: true, progress: 0, label };
 			},
 			onProgress: (progress: number) => {
@@ -22,14 +34,20 @@
 			onFinish: () => {
 				uploadState.progress = 100;
 			},
-			onError: () => {
+			onError: (message: string) => {
+				errorMessage = message;
 				uploadState = { active: false, progress: 0, label: '' };
-			}
+			},
+			validate: validateImages
 		};
 	}
 </script>
 
 <div class="stack">
+	{#if errorMessage}
+		<p class="error-banner">{errorMessage}</p>
+	{/if}
+
 	{#if form?.catalogMessage}
 		<p class="success-banner">{form.catalogMessage}</p>
 	{/if}
@@ -84,7 +102,10 @@
 						><span>Image upload</span><input name="imageFile" type="file" accept="image/*" /></label
 					>
 				</div>
-				<p class="field-note">Maximum image size: 8 MB. Uploaded files are converted to WebP.</p>
+				<p class="field-note">
+					Maximum image size: {data.maxUploadLabel}. JPG, JPEG, PNG, WebP, GIF, SVG, AVIF, BMP, and
+					TIFF files are accepted and converted to WebP.
+				</p>
 				<label class="form-row"
 					><span>Description</span><textarea name="description"></textarea></label
 				>

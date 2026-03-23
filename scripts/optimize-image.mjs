@@ -1,12 +1,16 @@
 import process from 'node:process';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
+import path from 'node:path';
 
 const execFileAsync = promisify(execFile);
-const [inputPath, outputPath] = process.argv.slice(2);
+const [inputPath, outputPathArg] = process.argv.slice(2);
+const outputPath =
+	outputPathArg ||
+	`${path.join(path.dirname(inputPath || ''), path.parse(inputPath || '').name)}.webp`;
 
 if (!inputPath || !outputPath) {
-	console.error('Usage: node scripts/optimize-image.mjs <input-image> <output-webp>');
+	console.error('Usage: node scripts/optimize-image.mjs <input-image> [output-webp]');
 	process.exit(1);
 }
 
