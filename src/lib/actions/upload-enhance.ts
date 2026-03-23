@@ -59,6 +59,16 @@ export function uploadEnhance(node: HTMLFormElement, options: UploadEnhanceOptio
 				return;
 			}
 
+			if (
+				xhr.status >= 500 &&
+				/content-length.+exceeds limit|body_size_limit|entity too large/i.test(xhr.responseText)
+			) {
+				currentOptions.onError?.(
+					'Upload failed: the file is larger than the current server request limit. Please use a smaller image or increase BODY_SIZE_LIMIT on the server.'
+				);
+				return;
+			}
+
 			if (xhr.status >= 400) {
 				currentOptions.onError?.('Upload failed. Please check the file and try again.');
 				return;

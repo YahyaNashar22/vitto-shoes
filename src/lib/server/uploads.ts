@@ -7,6 +7,7 @@ import { env } from '$env/dynamic/private';
 
 const execFileAsync = promisify(execFile);
 const DEFAULT_MAX_UPLOAD_MB = 8;
+const DEFAULT_BODY_SIZE_LIMIT = '512K';
 
 const MIME_BY_EXTENSION: Record<string, string> = {
 	'.jpg': 'image/jpeg',
@@ -24,6 +25,29 @@ const MIME_BY_EXTENSION: Record<string, string> = {
 
 export class UploadError extends Error {}
 
+function parseByteLimit(value: string) {
+	const trimmed = value.trim().toUpperCase();
+	const match = trimmed.match(/^(\d+)([KMG])?$/);
+
+	if (!match) {
+		return null;
+	}
+
+	const amount = Number(match[1]);
+	const unit = match[2] || '';
+
+	switch (unit) {
+		case 'G':
+			return amount * 1024 * 1024 * 1024;
+		case 'M':
+			return amount * 1024 * 1024;
+		case 'K':
+			return amount * 1024;
+		default:
+			return amount;
+	}
+}
+
 function isUploadableImage(file: unknown): file is File {
 	return file instanceof File && file.size > 0 && file.type.startsWith('image/');
 }
@@ -38,12 +62,28 @@ export function getMaxUploadBytes() {
 	return mb * 1024 * 1024;
 }
 
+export function getBodySizeLimitBytes() {
+	return parseByteLimit(env.BODY_SIZE_LIMIT || DEFAULT_BODY_SIZE_LIMIT) ?? 512 * 1024;
+}
+
+export function getEffectiveUploadBytes() {
+	return Math.min(getMaxUploadBytes(), getBodySizeLimitBytes());
+}
+
+export function formatBytesLabel(bytes: number) {
+	if (bytes >= 1024 * 1024) {
+		return `${Math.round((bytes / 1024 / 1024) * 10) / 10} MB`;
+	}
+
+	return `${Math.round(bytes / 1024)} KB`;
+}
+
 export function getMaxUploadLabel() {
-	return `${Math.round(getMaxUploadBytes() / 1024 / 1024)} MB`;
+	return formatBytesLabel(getEffectiveUploadBytes());
 }
 
 function ensureWithinSizeLimit(file: File) {
-	if (file.size > getMaxUploadBytes()) {
+	if (file.size > getEffectiveUploadBytes()) {
 		throw new UploadError(`Image is too large. Maximum allowed size is ${getMaxUploadLabel()}.`);
 	}
 }

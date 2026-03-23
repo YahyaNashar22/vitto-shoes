@@ -10,7 +10,7 @@ import {
 	type ProductImportRow
 } from '$lib/server/product-json';
 import {
-	getMaxUploadBytes,
+	getEffectiveUploadBytes,
 	getMaxUploadLabel,
 	saveUploadedImage,
 	saveUploadedImages,
@@ -125,7 +125,7 @@ export async function upsertImportedProduct(row: ProductImportRow) {
 export async function loadCatalogCategories() {
 	return {
 		categories: await getCategories(),
-		maxUploadBytes: getMaxUploadBytes(),
+		maxUploadBytes: getEffectiveUploadBytes(),
 		maxUploadLabel: getMaxUploadLabel()
 	};
 }
@@ -134,7 +134,7 @@ export async function loadCatalogProducts() {
 	return {
 		categories: await getCategories(),
 		products: await getAdminProducts(),
-		maxUploadBytes: getMaxUploadBytes(),
+		maxUploadBytes: getEffectiveUploadBytes(),
 		maxUploadLabel: getMaxUploadLabel()
 	};
 }
@@ -145,7 +145,7 @@ export async function loadCatalogImports() {
 	return {
 		categoryCount: categories.length,
 		productCount: products.length,
-		maxUploadBytes: getMaxUploadBytes(),
+		maxUploadBytes: getEffectiveUploadBytes(),
 		maxUploadLabel: getMaxUploadLabel()
 	};
 }
