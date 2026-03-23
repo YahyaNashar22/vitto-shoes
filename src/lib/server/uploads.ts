@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
+import { existsSync, readFileSync } from 'node:fs';
 import { mkdir, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { env } from '$env/dynamic/private';
@@ -24,6 +25,54 @@ const MIME_BY_EXTENSION: Record<string, string> = {
 };
 
 export class UploadError extends Error {}
+
+let cachedDotenv: Record<string, string> | null = null;
+
+function readDotenvFallback() {
+	if (cachedDotenv) {
+		return cachedDotenv;
+	}
+
+	const envPath = path.resolve('.env');
+	const values: Record<string, string> = {};
+
+	if (!existsSync(envPath)) {
+		cachedDotenv = values;
+		return values;
+	}
+
+	const content = readFileSync(envPath, 'utf8');
+
+	for (const line of content.split(/\r?\n/)) {
+		const trimmed = line.trim();
+		if (!trimmed || trimmed.startsWith('#')) continue;
+
+		const separatorIndex = trimmed.indexOf('=');
+		if (separatorIndex === -1) continue;
+
+		const key = trimmed.slice(0, separatorIndex).trim();
+		const rawValue = trimmed.slice(separatorIndex + 1).trim();
+		values[key] = rawValue.replace(/^"(.*)"$/, '$1').replace(/^'(.*)'$/, '$1');
+	}
+
+	cachedDotenv = values;
+	return values;
+}
+
+function getRuntimeEnvValue(key: string) {
+	const fromDynamicEnv = env[key as keyof typeof env];
+	if (typeof fromDynamicEnv === 'string' && fromDynamicEnv.trim()) {
+		return fromDynamicEnv.trim();
+	}
+
+	const fromProcess = process.env[key];
+	if (typeof fromProcess === 'string' && fromProcess.trim()) {
+		return fromProcess.trim();
+	}
+
+	const fromDotenv = readDotenvFallback()[key];
+	return typeof fromDotenv === 'string' && fromDotenv.trim() ? fromDotenv.trim() : undefined;
+}
 
 function parseByteLimit(value: string) {
 	const trimmed = value.trim().toUpperCase();
@@ -53,17 +102,20 @@ function isUploadableImage(file: unknown): file is File {
 }
 
 export function getUploadsRoot() {
-	return env.UPLOAD_DIR?.trim() ? path.resolve(env.UPLOAD_DIR) : path.resolve('data', 'uploads');
+	const configured = getRuntimeEnvValue('UPLOAD_DIR');
+	return configured ? path.resolve(configured) : path.resolve('data', 'uploads');
 }
 
 export function getMaxUploadBytes() {
-	const configured = Number(env.UPLOAD_MAX_FILE_MB || DEFAULT_MAX_UPLOAD_MB);
+	const configured = Number(getRuntimeEnvValue('UPLOAD_MAX_FILE_MB') || DEFAULT_MAX_UPLOAD_MB);
 	const mb = Number.isFinite(configured) && configured > 0 ? configured : DEFAULT_MAX_UPLOAD_MB;
 	return mb * 1024 * 1024;
 }
 
 export function getBodySizeLimitBytes() {
-	return parseByteLimit(env.BODY_SIZE_LIMIT || DEFAULT_BODY_SIZE_LIMIT) ?? 512 * 1024;
+	return (
+		parseByteLimit(getRuntimeEnvValue('BODY_SIZE_LIMIT') || DEFAULT_BODY_SIZE_LIMIT) ?? 512 * 1024
+	);
 }
 
 export function getEffectiveUploadBytes() {
