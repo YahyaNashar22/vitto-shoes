@@ -1,13 +1,50 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
+	import { uploadEnhance } from '$lib/actions/upload-enhance';
 	import type { ActionData, PageData } from './$types';
 
 	let { data, form } = $props<{ data: PageData; form: ActionData }>();
+
+	let uploadState = $state({
+		active: false,
+		progress: 0,
+		label: ''
+	});
+
+	function createProgressOptions(label: string) {
+		return {
+			onStart: () => {
+				uploadState = { active: true, progress: 0, label };
+			},
+			onProgress: (progress: number) => {
+				uploadState.progress = progress;
+			},
+			onFinish: () => {
+				uploadState.progress = 100;
+			},
+			onError: () => {
+				uploadState = { active: false, progress: 0, label: '' };
+			}
+		};
+	}
 </script>
 
 <div class="stack">
 	{#if form?.catalogMessage}
 		<p class="success-banner">{form.catalogMessage}</p>
+	{/if}
+
+	{#if uploadState.active}
+		<div class="panel upload-progress">
+			<div class="toolbar-row">
+				<strong>{uploadState.label}</strong>
+				<span>{uploadState.progress}%</span>
+			</div>
+			<div class="progress-track">
+				<div class="progress-fill" style={`width: ${uploadState.progress}%`}></div>
+			</div>
+			<p class="table-note">Images are converted to WebP during upload.</p>
+		</div>
 	{/if}
 
 	<section class="panel stack">
@@ -30,7 +67,13 @@
 				<a class="button-secondary" href={resolve('/admin/export/categories.xlsx')}>Export Excel</a>
 			</div>
 
-			<form method="post" action="?/saveCategory" enctype="multipart/form-data" class="stack">
+			<form
+				method="post"
+				action="?/saveCategory"
+				enctype="multipart/form-data"
+				class="stack"
+				use:uploadEnhance={createProgressOptions('Uploading category image')}
+			>
 				<div class="field-grid">
 					<label class="form-row"><span>Name</span><input name="name" required /></label>
 					<label class="form-row"><span>Slug</span><input name="slug" /></label>
@@ -41,6 +84,7 @@
 						><span>Image upload</span><input name="imageFile" type="file" accept="image/*" /></label
 					>
 				</div>
+				<p class="field-note">Maximum image size: 8 MB. Uploaded files are converted to WebP.</p>
 				<label class="form-row"
 					><span>Description</span><textarea name="description"></textarea></label
 				>
@@ -57,6 +101,7 @@
 				action="?/importCategories"
 				enctype="multipart/form-data"
 				class="file-row"
+				use:uploadEnhance={createProgressOptions('Importing categories')}
 			>
 				<input name="file" type="file" accept=".xlsx,.xls" />
 				<button class="button-secondary" type="submit">Import categories Excel</button>

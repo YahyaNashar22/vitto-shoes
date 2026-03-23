@@ -9,7 +9,7 @@ import {
 	resolveImportCategoryId,
 	type ProductImportRow
 } from '$lib/server/product-json';
-import { saveUploadedImage, saveUploadedImages } from '$lib/server/uploads';
+import { saveUploadedImage, saveUploadedImages, UploadError } from '$lib/server/uploads';
 import { slugify } from '$lib/utils';
 
 function asString(formData: FormData, key: string) {
@@ -147,7 +147,22 @@ export async function saveCategoryAction(request: Request) {
 		return fail(400, { catalogMessage: 'Category name is required.' });
 	}
 
-	const uploadedImage = await saveUploadedImage(formData.get('imageFile') as File, 'categories');
+	const existing = id ? await db.select().from(category).where(eq(category.id, id)).limit(1) : [];
+
+	let uploadedImage = existing[0]?.image ?? '';
+
+	try {
+		const savedImage = await saveUploadedImage(formData.get('imageFile'), 'categories');
+		if (savedImage) {
+			uploadedImage = savedImage;
+		}
+	} catch (error) {
+		if (error instanceof UploadError) {
+			return fail(400, { catalogMessage: error.message });
+		}
+
+		throw error;
+	}
 
 	const values = {
 		name,
@@ -224,11 +239,29 @@ export async function saveProductAction(request: Request) {
 		return fail(400, { catalogMessage: 'Product name and an SKU or code are required.' });
 	}
 
-	const uploadedImage = await saveUploadedImage(formData.get('imageFile') as File, 'products');
-	const uploadedGallery = await saveUploadedImages(
-		formData.getAll('galleryFiles').filter((item): item is File => item instanceof File),
-		'products'
-	);
+	const existing = id ? await db.select().from(product).where(eq(product.id, id)).limit(1) : [];
+
+	let uploadedImage = existing[0]?.image ?? '';
+	let uploadedGallery = existing[0]?.gallery ?? [];
+
+	try {
+		const savedImage = await saveUploadedImage(formData.get('imageFile'), 'products');
+		const savedGallery = await saveUploadedImages(formData.getAll('galleryFiles'), 'products');
+
+		if (savedImage) {
+			uploadedImage = savedImage;
+		}
+
+		if (savedGallery.length) {
+			uploadedGallery = savedGallery;
+		}
+	} catch (error) {
+		if (error instanceof UploadError) {
+			return fail(400, { catalogMessage: error.message });
+		}
+
+		throw error;
+	}
 
 	const values = {
 		categoryId,

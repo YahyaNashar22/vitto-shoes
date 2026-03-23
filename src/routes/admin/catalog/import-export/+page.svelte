@@ -1,13 +1,49 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
+	import { uploadEnhance } from '$lib/actions/upload-enhance';
 	import type { ActionData, PageData } from './$types';
 
 	let { data, form } = $props<{ data: PageData; form: ActionData }>();
+
+	let uploadState = $state({
+		active: false,
+		progress: 0,
+		label: ''
+	});
+
+	function createProgressOptions(label: string) {
+		return {
+			onStart: () => {
+				uploadState = { active: true, progress: 0, label };
+			},
+			onProgress: (progress: number) => {
+				uploadState.progress = progress;
+			},
+			onFinish: () => {
+				uploadState.progress = 100;
+			},
+			onError: () => {
+				uploadState = { active: false, progress: 0, label: '' };
+			}
+		};
+	}
 </script>
 
 <div class="stack">
 	{#if form?.catalogMessage}
 		<p class="success-banner">{form.catalogMessage}</p>
+	{/if}
+
+	{#if uploadState.active}
+		<div class="panel upload-progress">
+			<div class="toolbar-row">
+				<strong>{uploadState.label}</strong>
+				<span>{uploadState.progress}%</span>
+			</div>
+			<div class="progress-track">
+				<div class="progress-fill" style={`width: ${uploadState.progress}%`}></div>
+			</div>
+		</div>
 	{/if}
 
 	<section class="panel stack">
@@ -38,6 +74,7 @@
 				action="?/importCategories"
 				enctype="multipart/form-data"
 				class="file-row"
+				use:uploadEnhance={createProgressOptions('Importing categories')}
 			>
 				<input name="file" type="file" accept=".xlsx,.xls" />
 				<button class="button-primary" type="submit">Import categories</button>
@@ -58,7 +95,13 @@
 				</div>
 			</div>
 
-			<form method="post" action="?/importProducts" enctype="multipart/form-data" class="file-row">
+			<form
+				method="post"
+				action="?/importProducts"
+				enctype="multipart/form-data"
+				class="file-row"
+				use:uploadEnhance={createProgressOptions('Importing products')}
+			>
 				<input name="file" type="file" accept=".xlsx,.xls,.json" />
 				<button class="button-primary" type="submit">Import products</button>
 			</form>

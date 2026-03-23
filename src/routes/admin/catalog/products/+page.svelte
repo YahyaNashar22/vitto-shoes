@@ -1,13 +1,50 @@
 <script lang="ts">
+	import { uploadEnhance } from '$lib/actions/upload-enhance';
 	import { formatCurrency } from '$lib/utils';
 	import type { ActionData, PageData } from './$types';
 
 	let { data, form } = $props<{ data: PageData; form: ActionData }>();
+
+	let uploadState = $state({
+		active: false,
+		progress: 0,
+		label: ''
+	});
+
+	function createProgressOptions(label: string) {
+		return {
+			onStart: () => {
+				uploadState = { active: true, progress: 0, label };
+			},
+			onProgress: (progress: number) => {
+				uploadState.progress = progress;
+			},
+			onFinish: () => {
+				uploadState.progress = 100;
+			},
+			onError: () => {
+				uploadState = { active: false, progress: 0, label: '' };
+			}
+		};
+	}
 </script>
 
 <div class="stack">
 	{#if form?.catalogMessage}
 		<p class="success-banner">{form.catalogMessage}</p>
+	{/if}
+
+	{#if uploadState.active}
+		<div class="panel upload-progress">
+			<div class="toolbar-row">
+				<strong>{uploadState.label}</strong>
+				<span>{uploadState.progress}%</span>
+			</div>
+			<div class="progress-track">
+				<div class="progress-fill" style={`width: ${uploadState.progress}%`}></div>
+			</div>
+			<p class="table-note">Images are optimized to WebP during upload.</p>
+		</div>
 	{/if}
 
 	<section class="panel stack">
@@ -29,7 +66,13 @@
 				</div>
 			</div>
 
-			<form method="post" action="?/saveProduct" enctype="multipart/form-data" class="stack">
+			<form
+				method="post"
+				action="?/saveProduct"
+				enctype="multipart/form-data"
+				class="stack"
+				use:uploadEnhance={createProgressOptions('Uploading product images')}
+			>
 				<div class="field-grid">
 					<label class="form-row">
 						<span>External ID</span>
@@ -101,6 +144,9 @@
 						/></label
 					>
 				</div>
+				<p class="field-note">
+					Maximum image size: 8 MB per file. Uploaded files are converted to WebP.
+				</p>
 				<label class="form-row"
 					><span>Short description</span><textarea name="shortDescription"></textarea></label
 				>
