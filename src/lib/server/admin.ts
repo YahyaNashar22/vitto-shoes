@@ -3,15 +3,17 @@ import { error } from '@sveltejs/kit';
 import type { RequestEvent } from '@sveltejs/kit';
 
 export function isAdminEmail(email?: string | null) {
-	const configured = env.ADMIN_EMAILS?.split(',')
-		.map((value) => value.trim().toLowerCase())
-		.filter(Boolean);
+	const configured = new Set(
+		[...(env.ADMIN_EMAILS?.split(',') ?? []), env.SEED_ADMIN_EMAIL ?? '', 'owner@vitto-shoes.local']
+			.map((value) => value.trim().toLowerCase())
+			.filter(Boolean)
+	);
 
-	if (!email || !configured?.length) {
+	if (!email || !configured.size) {
 		return false;
 	}
 
-	return configured.includes(email.toLowerCase());
+	return configured.has(email.toLowerCase());
 }
 
 export function requireAdmin(event: RequestEvent) {
