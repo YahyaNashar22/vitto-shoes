@@ -11,11 +11,21 @@ type UploadEnhanceOptions = {
 export function uploadEnhance(node: HTMLFormElement, options: UploadEnhanceOptions = {}) {
 	let currentOptions = options;
 
+	function resolveActionUrl(
+		form: HTMLFormElement,
+		submitter: HTMLButtonElement | HTMLInputElement | null
+	) {
+		const rawAction =
+			submitter?.getAttribute('formaction') || form.getAttribute('action') || window.location.href;
+
+		return new URL(rawAction, window.location.href).toString();
+	}
+
 	async function handleSubmit(event: SubmitEvent) {
 		event.preventDefault();
 
 		const submitter = event.submitter as HTMLButtonElement | HTMLInputElement | null;
-		const action = submitter?.formAction || node.action;
+		const action = resolveActionUrl(node, submitter);
 		const method = (submitter?.formMethod || node.method || 'POST').toUpperCase();
 		const formData = new FormData(node, submitter ?? undefined);
 		const validationError = currentOptions.validate?.(formData);
