@@ -9,8 +9,8 @@
 </script>
 
 <section class="hero-banner">
-	<div class="hero-grid hero-banner__grid">
-		<div class="hero-panel reveal" use:reveal>
+	<div class="hero-banner__grid reveal" use:reveal>
+		<div class="hero-banner__content">
 			<p class="eyebrow">New season selection</p>
 			<h1 class="display-title">Shoes that look sharp, wear easy, and sell with confidence.</h1>
 			<p class="hero-copy">
@@ -22,7 +22,6 @@
 				<a class="button-secondary" href={resolve('/sale')}>See sale picks</a>
 			</div>
 		</div>
-		<div class="hero-banner__image reveal" use:reveal></div>
 	</div>
 </section>
 
