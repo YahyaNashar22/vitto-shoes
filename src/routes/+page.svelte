@@ -8,20 +8,22 @@
 	let { data } = $props<{ data: PageData }>();
 </script>
 
-<section class="hero-grid">
-	<div class="hero-panel reveal" use:reveal>
-		<p class="eyebrow">Curated arrivals</p>
-		<h1 class="display-title">A warm, minimal storefront for modern footwear.</h1>
-		<p class="muted">
-			Inspired by premium retail layouts: soft neutrals, collection-led browsing, fast server-side
-			loading, and a simple checkout flow that converts into a WhatsApp order.
-		</p>
-		<div class="chip-row">
-			<a class="button-primary" href={resolve('/shop')}>Shop new arrivals</a>
-			<a class="button-secondary" href={resolve('/sale')}>Browse sale</a>
+<section class="hero-banner">
+	<div class="hero-grid hero-banner__grid">
+		<div class="hero-panel reveal" use:reveal>
+			<p class="eyebrow">New season selection</p>
+			<h1 class="display-title">Shoes that look sharp, wear easy, and sell with confidence.</h1>
+			<p class="hero-copy">
+				Discover standout pairs for everyday wear, occasion dressing, and on-sale picks, all in one
+				fast storefront designed to help shoppers find the right fit without friction.
+			</p>
+			<div class="chip-row">
+				<a class="button-primary" href={resolve('/shop')}>Shop the collection</a>
+				<a class="button-secondary" href={resolve('/sale')}>See sale picks</a>
+			</div>
 		</div>
+		<div class="hero-banner__image reveal" use:reveal></div>
 	</div>
-	<div class="hero-image reveal" use:reveal></div>
 </section>
 
 <section class="stack" style="margin-top: 2.25rem;">
@@ -78,7 +80,7 @@
 <section class="editorial-grid" style="margin-top: 3rem;">
 	<div class="panel reveal" use:reveal>
 		<p class="eyebrow">Why this build</p>
-		<h2>Fast initial load by default</h2>
+		<h2 class="title-margin">Fast initial load by default</h2>
 		<p class="muted">
 			Catalog data is rendered on the server, product images are lazy-loaded outside the hero, and
 			cart state is the only major client-side store. That keeps the first page lean while still
@@ -87,7 +89,7 @@
 	</div>
 	<div class="panel reveal" use:reveal>
 		<p class="eyebrow">Checkout flow</p>
-		<h2>WhatsApp-first cash on delivery</h2>
+		<h2 class="title-margin">WhatsApp-first cash on delivery</h2>
 		<p class="muted">
 			Each checkout saves an order record in PostgreSQL, then prepares a WhatsApp message so you can
 			handle the final confirmation manually until payment integration is needed.
@@ -114,3 +116,13 @@
 		</div>
 	{/if}
 </section>
+
+<style>
+	.eyebrow {
+		opacity: 0.6;
+		margin-bottom: 6px;
+	}
+	.title-margin {
+		margin-bottom: 12px;
+	}
+</style>

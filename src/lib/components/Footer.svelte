@@ -4,7 +4,9 @@
 
 <footer class="site-footer">
 	<div>
-		<p class="footer-brand">Vitto Shoes</p>
+		<a class="footer-brand" href={resolve('/')} aria-label="Vitto Shoes home">
+			<img class="brand-logo brand-logo--footer" src="/Viito Logo-03.png" alt="Vitto Shoes" />
+		</a>
 		<p class="footer-copy">
 			Neutral-toned footwear, fast browsing, and WhatsApp-first cash-on-delivery checkout.
 		</p>

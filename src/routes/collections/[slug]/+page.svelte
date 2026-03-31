@@ -8,18 +8,22 @@
 	let { data } = $props<{ data: PageData }>();
 </script>
 
-<section class="hero-grid">
-	<div class="hero-panel">
-		<p class="eyebrow">Collection</p>
-		<h1>{data.category.name}</h1>
-		<p class="muted">{data.category.description}</p>
-		<a class="button-primary" href={resolve('/shop')}>Shop this collection</a>
+<section class="collection-hero">
+	<div class="hero-grid collection-hero__grid">
+		<div class="collection-hero__content">
+			<p class="eyebrow">Collection</p>
+			<h1>{data.category.name}</h1>
+			<p class="muted">{data.category.description}</p>
+			<a class="button-primary" href={resolve('/shop')}>Shop this collection</a>
+		</div>
+		<div class="collection-hero__media">
+			<img
+				src={data.category.image || '/placeholder-category.svg'}
+				alt={data.category.name}
+				loading="eager"
+			/>
+		</div>
 	</div>
-	<img
-		class="surface-card"
-		src={data.category.image || '/placeholder-category.svg'}
-		alt={data.category.name}
-	/>
 </section>
 
 <section class="stack" style="margin-top: 2rem;">

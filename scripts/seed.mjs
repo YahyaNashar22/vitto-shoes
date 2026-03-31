@@ -1,4 +1,4 @@
-import fs from 'node:fs';
+﻿import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
 import postgres from 'postgres';
@@ -41,34 +41,38 @@ const adminUser = {
 
 const categories = [
 	{
-		name: 'New Arrivals',
-		slug: 'new-arrivals',
-		description: 'Fresh everyday styles with clean silhouettes and strong monochrome presentation.',
-		image: '/placeholder-category.svg',
+		name: 'City Essentials',
+		slug: 'city-essentials',
+		description:
+			'Everyday pairs built for clean styling, fast browsing, and consistent best-seller appeal.',
+		image: '/placeholder-category-2.webp',
 		featured: true,
 		sortOrder: 1
 	},
 	{
-		name: 'Loafers',
-		slug: 'loafers',
-		description: 'Smart low-profile pairs designed for polished casual outfits.',
-		image: '/placeholder-category.svg',
+		name: 'Refined Classics',
+		slug: 'refined-classics',
+		description:
+			'Sharper silhouettes for dressed-up outfits, office wear, and polished daily looks.',
+		image: '/placeholder-category-3.webp',
 		featured: true,
 		sortOrder: 2
 	},
 	{
-		name: 'Sandals',
-		slug: 'sandals',
-		description: 'Comfort-first sandals built for lightweight everyday wear.',
-		image: '/placeholder-category.svg',
+		name: 'Weekend Comfort',
+		slug: 'weekend-comfort',
+		description:
+			'Relaxed options that still look put together, ideal for casual rotation and easy movement.',
+		image: '/placeholder-category-4.webp',
 		featured: true,
 		sortOrder: 3
 	},
 	{
 		name: 'Sale',
 		slug: 'sale',
-		description: 'Discounted pieces used to demonstrate promo filters and merchandising.',
-		image: '/placeholder-category.svg',
+		description:
+			'Discounted pairs used to drive promo browsing, sale badges, and markdown sections.',
+		image: '/placeholder-category-2.webp',
 		featured: false,
 		sortOrder: 4
 	}
@@ -76,16 +80,16 @@ const categories = [
 
 const products = [
 	{
-		categorySlug: 'new-arrivals',
+		categorySlug: 'city-essentials',
 		externalId: 1001,
 		code: 'VS-1001',
 		barcode: 'VS-1001',
-		name: 'Siena Soft Step',
-		slug: 'siena-soft-step',
+		name: 'Promax Street Move',
+		slug: 'promax-street-move',
 		sku: 'VS-1001',
-		shortDescription: 'Minimal slip-on style with cushioned support.',
+		shortDescription: 'A versatile daily pair with a clean profile and all-day wearability.',
 		description:
-			'A lightweight daily pair finished in a clean black-and-white storefront presentation.',
+			'Designed for quick movement, clean styling, and dependable comfort across daily city use.',
 		color: 'Black',
 		material: 'Soft faux leather',
 		xDim: 'black',
@@ -94,8 +98,8 @@ const products = [
 		price: '79.00',
 		currency: 'USD',
 		compareAtPrice: '95.00',
-		image: '/placeholder-product.svg',
-		gallery: ['/placeholder-product.svg'],
+		image: '/placeholder-product-2.webp',
+		gallery: ['/placeholder-product-2.webp'],
 		details: [],
 		isFeatured: true,
 		onSale: true,
@@ -103,15 +107,16 @@ const products = [
 		sortOrder: 1
 	},
 	{
-		categorySlug: 'new-arrivals',
+		categorySlug: 'city-essentials',
 		externalId: 1002,
 		code: 'VS-1002',
 		barcode: 'VS-1002',
-		name: 'Verona Street Ease',
-		slug: 'verona-street-ease',
+		name: 'Nova Glide Runner',
+		slug: 'nova-glide-runner',
 		sku: 'VS-1002',
-		shortDescription: 'Rounded casual profile with everyday comfort.',
-		description: 'Designed for long wear and fast catalog scans with neutral merchandising.',
+		shortDescription: 'Soft everyday runner with a flexible sole and clean upper.',
+		description:
+			'A casual best-seller style that works well for lightweight use and fast-moving catalog pages.',
 		color: 'White',
 		material: 'Matte synthetic',
 		xDim: 'white',
@@ -120,8 +125,8 @@ const products = [
 		price: '84.00',
 		currency: 'USD',
 		compareAtPrice: null,
-		image: '/placeholder-product.svg',
-		gallery: ['/placeholder-product.svg'],
+		image: '/placeholder-product-3.webp',
+		gallery: ['/placeholder-product-3.webp'],
 		details: [],
 		isFeatured: true,
 		onSale: false,
@@ -129,15 +134,16 @@ const products = [
 		sortOrder: 2
 	},
 	{
-		categorySlug: 'loafers',
+		categorySlug: 'refined-classics',
 		externalId: 2001,
 		code: 'VS-2001',
 		barcode: 'VS-2001',
-		name: 'Milano Penny Edit',
-		slug: 'milano-penny-edit',
+		name: 'Milano Office Loafer',
+		slug: 'milano-office-loafer',
 		sku: 'VS-2001',
-		shortDescription: 'Classic loafer shape with a refined soft finish.',
-		description: 'A polished loafer with enough structure for formal wear and day-long comfort.',
+		shortDescription: 'A polished loafer with a balanced shape and comfortable structure.',
+		description:
+			'Built for dressed-up looks without feeling too rigid, ideal for formal and smart casual wear.',
 		color: 'Black',
 		material: 'Premium synthetic',
 		xDim: 'black',
@@ -146,8 +152,8 @@ const products = [
 		price: '92.00',
 		currency: 'USD',
 		compareAtPrice: '108.00',
-		image: '/placeholder-product.svg',
-		gallery: ['/placeholder-product.svg'],
+		image: '/placeholder-product-4.webp',
+		gallery: ['/placeholder-product-4.webp'],
 		details: [],
 		isFeatured: true,
 		onSale: true,
@@ -155,34 +161,35 @@ const products = [
 		sortOrder: 1
 	},
 	{
-		categorySlug: 'sandals',
+		categorySlug: 'weekend-comfort',
 		externalId: 3001,
 		code: 'VS-3001',
 		barcode: 'VS-3001',
-		name: 'Luna Cross Strap',
-		slug: 'luna-cross-strap',
+		name: 'Luna Comfort Slide',
+		slug: 'luna-comfort-slide',
 		sku: 'VS-3001',
-		shortDescription: 'Easy warm-weather pair with padded comfort.',
-		description: 'A clean demo product with variant details for import/export testing.',
-		color: 'Beige',
+		shortDescription: 'An easy comfort-first option with a clean relaxed shape.',
+		description:
+			'A practical casual pair that also carries size and color details for import and export testing.',
+		color: 'Stone',
 		material: 'Soft strap synthetic',
-		xDim: 'beige',
+		xDim: 'stone',
 		yDim: '',
 		qty: 20,
 		price: '61.00',
 		currency: 'USD',
 		compareAtPrice: '74.00',
-		image: '/placeholder-product.svg',
-		gallery: ['/placeholder-product.svg'],
+		image: '/placeholder-product-5.webp',
+		gallery: ['/placeholder-product-5.webp'],
 		details: [
 			{
 				itemid: 3001,
 				itemcode: 'VS-3001',
 				itembarcode: 'VS-3001-37',
 				itembarcodeid: null,
-				itemname: 'Luna Cross Strap',
+				itemname: 'Luna Comfort Slide',
 				itemdescription: '',
-				xdim: 'beige',
+				xdim: 'stone',
 				ydim: '37',
 				qty: 1,
 				salesprice: 61,
@@ -194,9 +201,9 @@ const products = [
 				itemcode: 'VS-3001',
 				itembarcode: 'VS-3001-38',
 				itembarcodeid: null,
-				itemname: 'Luna Cross Strap',
+				itemname: 'Luna Comfort Slide',
 				itemdescription: '',
-				xdim: 'beige',
+				xdim: 'stone',
 				ydim: '38',
 				qty: 1,
 				salesprice: 61,
@@ -214,11 +221,12 @@ const products = [
 		externalId: 4001,
 		code: 'VS-4001',
 		barcode: 'VS-4001',
-		name: 'Aster Weekend Pair',
-		slug: 'aster-weekend-pair',
+		name: 'Aster Sale Sneaker',
+		slug: 'aster-sale-sneaker',
 		sku: 'VS-4001',
-		shortDescription: 'Discounted casual pair for the dedicated sale page.',
-		description: 'Useful for testing sale labels, promo pages, and admin reporting.',
+		shortDescription: 'Markdown-ready everyday sneaker for promo-heavy catalog sections.',
+		description:
+			'Seeded specifically for sale merchandising, comparison prices, and homepage promo placement.',
 		color: 'Grey',
 		material: 'Textured synthetic',
 		xDim: 'grey',
@@ -227,13 +235,40 @@ const products = [
 		price: '49.00',
 		currency: 'USD',
 		compareAtPrice: '69.00',
-		image: '/placeholder-product.svg',
-		gallery: ['/placeholder-product.svg'],
+		image: '/placeholder-product-6.webp',
+		gallery: ['/placeholder-product-6.webp'],
 		details: [],
 		isFeatured: false,
 		onSale: true,
 		isPublished: true,
 		sortOrder: 1
+	},
+	{
+		categorySlug: 'refined-classics',
+		externalId: 2002,
+		code: 'VS-2002',
+		barcode: 'VS-2002',
+		name: 'Sarto Clean Derby',
+		slug: 'sarto-clean-derby',
+		sku: 'VS-2002',
+		shortDescription: 'Structured derby profile with a clean toe and slim proportions.',
+		description:
+			'A sharper catalog option that rounds out the formal section and uses the remaining product artwork.',
+		color: 'Black',
+		material: 'Smooth synthetic',
+		xDim: 'black',
+		yDim: '42',
+		qty: 8,
+		price: '99.00',
+		currency: 'USD',
+		compareAtPrice: null,
+		image: '/placeholder-product-2.webp',
+		gallery: ['/placeholder-product-2.webp'],
+		details: [],
+		isFeatured: false,
+		onSale: false,
+		isPublished: true,
+		sortOrder: 2
 	}
 ];
 
@@ -247,7 +282,7 @@ const sampleOrder = {
 	customerAddress: 'Hamra Street, Building 12',
 	notes: 'Please confirm on WhatsApp before delivery.',
 	whatsappMessage:
-		'New order VS-DEMO-1001\nName: Demo Customer\nPhone: +961 70 000 000\nItems:\n- Siena Soft Step x1 = $79.00\n- Luna Cross Strap x2 = $122.00\nTotal: $201.00',
+		'New order VS-DEMO-1001\nName: Demo Customer\nPhone: +961 70 000 000\nItems:\n- Promax Street Move x1 = $79.00\n- Luna Comfort Slide x2 = $122.00\nTotal: $201.00',
 	subtotal: '201.00',
 	total: '201.00'
 };
@@ -259,16 +294,15 @@ const sampleOrderItems = [
 
 try {
 	await sql.begin(async (tx) => {
+		await tx`delete from order_item`;
+		await tx`delete from "order"`;
+		await tx`delete from product`;
+		await tx`delete from category`;
+
 		for (const item of categories) {
 			await tx`
 				insert into category (name, slug, description, image, featured, sort_order)
 				values (${item.name}, ${item.slug}, ${item.description}, ${item.image}, ${item.featured}, ${item.sortOrder})
-				on conflict (slug) do update set
-					name = excluded.name,
-					description = excluded.description,
-					image = excluded.image,
-					featured = excluded.featured,
-					sort_order = excluded.sort_order
 			`;
 		}
 
@@ -295,36 +329,8 @@ try {
 					${JSON.stringify(item.details)}::jsonb, ${item.isFeatured}, ${item.onSale},
 					${item.isPublished}, ${item.qty}, ${item.sortOrder}
 				)
-				on conflict (sku) do update set
-					category_id = excluded.category_id,
-					external_id = excluded.external_id,
-					code = excluded.code,
-					barcode = excluded.barcode,
-					name = excluded.name,
-					slug = excluded.slug,
-					short_description = excluded.short_description,
-					description = excluded.description,
-					color = excluded.color,
-					material = excluded.material,
-					x_dim = excluded.x_dim,
-					y_dim = excluded.y_dim,
-					qty = excluded.qty,
-					price = excluded.price,
-					currency = excluded.currency,
-					compare_at_price = excluded.compare_at_price,
-					image = excluded.image,
-					gallery = excluded.gallery,
-					details = excluded.details,
-					is_featured = excluded.is_featured,
-					on_sale = excluded.on_sale,
-					is_published = excluded.is_published,
-					inventory = excluded.inventory,
-					sort_order = excluded.sort_order
 			`;
 		}
-
-		await tx`delete from order_item where order_id in (select id from "order" where order_number = ${sampleOrder.orderNumber})`;
-		await tx`delete from "order" where order_number = ${sampleOrder.orderNumber}`;
 
 		const [createdOrder] = await tx`
 			insert into "order" (

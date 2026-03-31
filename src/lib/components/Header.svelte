@@ -16,7 +16,9 @@
 <header class="site-header">
 	<div class="announcement">Cash on delivery available. Orders can be completed on WhatsApp.</div>
 	<div class="nav-shell">
-		<a class="brand" href={resolve('/')}>Vitto Shoes</a>
+		<a class="brand" href={resolve('/')} aria-label="Vitto Shoes home">
+			<img class="brand-logo brand-logo--header" src="/Viito Logo-01.png" alt="Vitto Shoes" />
+		</a>
 		<button
 			class="menu-toggle"
 			type="button"
