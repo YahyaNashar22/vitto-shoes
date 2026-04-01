@@ -26,7 +26,7 @@
 						</tr>
 					</thead>
 					<tbody>
-						{#each $cart as item (item.productId)}
+						{#each $cart as item (item.cartKey)}
 							<tr>
 								<td>
 									<div class="media-inline">
@@ -40,6 +40,9 @@
 												><strong>{item.name}</strong></a
 											>
 											<p class="muted">{item.categoryName}</p>
+											{#if item.variantLabel}
+												<p class="muted">{item.variantLabel}</p>
+											{/if}
 										</div>
 									</div>
 								</td>
@@ -51,14 +54,14 @@
 										value={item.quantity}
 										onchange={(event) =>
 											cart.setQuantity(
-												item.productId,
+												item.cartKey,
 												Number((event.currentTarget as HTMLInputElement).value)
 											)}
 									/>
 								</td>
 								<td>{formatCurrency(item.price * item.quantity)}</td>
 								<td>
-									<button class="button-secondary" onclick={() => cart.remove(item.productId)}
+									<button class="button-secondary" onclick={() => cart.remove(item.cartKey)}
 										>Remove</button
 									>
 								</td>

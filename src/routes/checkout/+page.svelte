@@ -21,7 +21,27 @@
 			<input
 				type="hidden"
 				name="items"
-				value={JSON.stringify($cart.map(({ productId, quantity }) => ({ productId, quantity })))}
+				value={JSON.stringify(
+					$cart.map(
+						({
+							productId,
+							quantity,
+							variantBarcode,
+							variantColor,
+							variantSize,
+							variantLabel,
+							price
+						}) => ({
+							productId,
+							quantity,
+							variantBarcode,
+							variantColor,
+							variantSize,
+							variantLabel,
+							price
+						})
+					)
+				)}
 			/>
 			<div class="field-grid">
 				<label class="form-row">
@@ -57,11 +77,14 @@
 
 		<aside class="panel stack">
 			<h2>Order summary</h2>
-			{#each $cart as item (item.productId)}
+			{#each $cart as item (item.cartKey)}
 				<div class="summary-item">
 					<div>
 						<strong>{item.name}</strong>
 						<p class="muted">Qty {item.quantity}</p>
+						{#if item.variantLabel}
+							<p class="muted">{item.variantLabel}</p>
+						{/if}
 					</div>
 					<div>{formatCurrency(item.price * item.quantity)}</div>
 				</div>

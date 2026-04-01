@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import { page } from '$app/state';
 	import type { ActionData } from './$types';
 
 	let { form } = $props<{ form: ActionData }>();
@@ -15,14 +16,31 @@
 		</p>
 	</div>
 
-	<form class="form-panel stack" method="post" action="?/signIn" use:enhance>
+	<form class="form-panel stack" method="post" action="?/signIn" use:enhance autocomplete="on">
+		<input type="hidden" name="next" value={page.url.searchParams.get('next') || '/admin'} />
 		<label class="form-row">
 			<span>Email</span>
-			<input name="email" type="email" required />
+			<input
+				id="email"
+				name="email"
+				type="email"
+				inputmode="email"
+				autocomplete="username"
+				autocapitalize="none"
+				autocorrect="off"
+				spellcheck="false"
+				required
+			/>
 		</label>
 		<label class="form-row">
 			<span>Password</span>
-			<input name="password" type="password" required />
+			<input
+				id="password"
+				name="password"
+				type="password"
+				autocomplete="current-password"
+				required
+			/>
 		</label>
 		<button class="button-primary" type="submit">Sign in</button>
 		{#if form?.message}

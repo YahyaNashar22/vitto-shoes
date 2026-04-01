@@ -59,6 +59,7 @@ export type ProductSummary = {
 };
 
 export type CartItem = {
+	cartKey: string;
 	productId: string;
 	name: string;
 	slug: string;
@@ -66,6 +67,10 @@ export type CartItem = {
 	price: number;
 	quantity: number;
 	categoryName: string;
+	variantBarcode: string;
+	variantColor: string;
+	variantSize: string;
+	variantLabel: string;
 };
 
 export type OrderStatus = (typeof ORDER_STATUSES)[number];

@@ -26,7 +26,15 @@ export const actions: Actions = {
 			return fail(400, { message: 'Name, phone, address, and cart items are required.' });
 		}
 
-		const parsedItems = JSON.parse(rawItems) as Array<{ productId: string; quantity: number }>;
+		const parsedItems = JSON.parse(rawItems) as Array<{
+			productId: string;
+			quantity: number;
+			variantBarcode?: string;
+			variantColor?: string;
+			variantSize?: string;
+			variantLabel?: string;
+			price?: number;
+		}>;
 		const productIds = parsedItems.map((item) => item.productId);
 
 		if (!productIds.length) {
@@ -45,12 +53,16 @@ export const actions: Actions = {
 		const checkoutItems = parsedItems.map((item) => {
 			const match = products.find((entry) => entry.id === item.productId)!;
 			const quantity = Math.max(1, item.quantity);
-			const unitPrice = Number(match.price);
+			const unitPrice = Number(item.price ?? match.price);
 			return {
 				productId: match.id,
 				name: match.name,
 				slug: match.slug,
 				image: match.image,
+				selectedBarcode: item.variantBarcode || '',
+				selectedXDim: item.variantColor || '',
+				selectedYDim: item.variantSize || '',
+				variantLabel: item.variantLabel || '',
 				quantity,
 				unitPrice,
 				lineTotal: unitPrice * quantity
@@ -69,7 +81,8 @@ export const actions: Actions = {
 			notes ? `Notes: ${notes}` : '',
 			'Items:',
 			...checkoutItems.map(
-				(item) => `- ${item.name} x${item.quantity} = $${item.lineTotal.toFixed(2)}`
+				(item) =>
+					`- ${item.name}${item.variantLabel ? ` (${item.variantLabel})` : ''} x${item.quantity} = $${item.lineTotal.toFixed(2)}`
 			),
 			`Total: $${subtotal.toFixed(2)}`
 		].filter(Boolean);
@@ -100,6 +113,9 @@ export const actions: Actions = {
 				productName: item.name,
 				productSlug: item.slug,
 				productImage: item.image,
+				selectedBarcode: item.selectedBarcode,
+				selectedXDim: item.selectedXDim,
+				selectedYDim: item.selectedYDim,
 				unitPrice: item.unitPrice.toFixed(2),
 				quantity: item.quantity,
 				lineTotal: item.lineTotal.toFixed(2)

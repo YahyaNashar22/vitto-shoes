@@ -24,15 +24,40 @@ function createCartStore() {
 
 	return {
 		subscribe,
-		add(product: ProductSummary, quantity = 1) {
+		add(
+			product: ProductSummary,
+			quantity = 1,
+			variant?: {
+				barcode?: string;
+				color?: string;
+				size?: string;
+				label?: string;
+				price?: number;
+				maxQuantity?: number;
+			}
+		) {
 			update((items) => {
-				const existing = items.find((item) => item.productId === product.id);
+				const variantBarcode = variant?.barcode || '';
+				const variantColor = variant?.color || product.xDim || product.color || '';
+				const variantSize = variant?.size || product.yDim || '';
+				const variantLabel =
+					variant?.label ||
+					[variantColor, variantSize].filter(Boolean).join(' / ') ||
+					'Default option';
+				const cartKey = [
+					product.id,
+					variantBarcode || variantColor || 'base',
+					variantSize || 'base'
+				].join(':');
+				const price = variant?.price ?? product.price;
+				const limit = Math.max(variant?.maxQuantity ?? product.inventory, 1);
+				const existing = items.find((item) => item.cartKey === cartKey);
 				if (existing) {
 					return items.map((item) =>
-						item.productId === product.id
+						item.cartKey === cartKey
 							? {
 									...item,
-									quantity: Math.min(item.quantity + quantity, Math.max(product.inventory, 1))
+									quantity: Math.min(item.quantity + quantity, limit)
 								}
 							: item
 					);
@@ -41,24 +66,29 @@ function createCartStore() {
 				return [
 					...items,
 					{
+						cartKey,
 						productId: product.id,
 						name: product.name,
 						slug: product.slug,
 						image: product.image,
-						price: product.price,
-						quantity,
-						categoryName: product.categoryName
+						price,
+						quantity: Math.min(quantity, limit),
+						categoryName: product.categoryName,
+						variantBarcode,
+						variantColor,
+						variantSize,
+						variantLabel
 					}
 				];
 			});
 		},
-		remove(productId: string) {
-			update((items) => items.filter((item) => item.productId !== productId));
+		remove(cartKey: string) {
+			update((items) => items.filter((item) => item.cartKey !== cartKey));
 		},
-		setQuantity(productId: string, quantity: number) {
+		setQuantity(cartKey: string, quantity: number) {
 			update((items) =>
 				items
-					.map((item) => (item.productId === productId ? { ...item, quantity } : item))
+					.map((item) => (item.cartKey === cartKey ? { ...item, quantity } : item))
 					.filter((item) => item.quantity > 0)
 			);
 		},

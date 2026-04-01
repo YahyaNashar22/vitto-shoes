@@ -127,7 +127,7 @@
 						</svg>
 					</a>
 				{/if}
-			{:else}
+			<!-- {:else}
 				<a class="icon-link" href={resolve('/account/sign-in')} aria-label="Admin sign in">
 					<svg viewBox="0 0 24 24" aria-hidden="true">
 						<circle cx="12" cy="8" r="3.2" fill="none" stroke="currentColor" stroke-width="1.8" />
@@ -139,7 +139,7 @@
 							stroke-linecap="round"
 						/>
 					</svg>
-				</a>
+				</a> -->
 			{/if}
 		</div>
 	</div>
