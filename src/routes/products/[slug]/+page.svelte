@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 	import ProductCard from '$lib/components/ProductCard.svelte';
 	import { cart } from '$lib/stores/cart';
 	import { formatCurrency } from '$lib/utils';
@@ -15,7 +17,6 @@
 	let currentIndex = $state(0);
 	let zoomOpen = $state(false);
 	let quantity = $state(1);
-	let added = $state(false);
 	let lastProductId = $state('');
 
 	const currentImage = $derived(gallery[currentIndex] || '/placeholder-product.svg');
@@ -74,7 +75,6 @@
 			currentIndex = 0;
 			zoomOpen = false;
 			quantity = 1;
-			added = false;
 			selectedColor = '';
 			selectedSize = '';
 		}
@@ -123,7 +123,7 @@
 		currentIndex = currentIndex === gallery.length - 1 ? 0 : currentIndex + 1;
 	}
 
-	function addSelectedToCart() {
+	async function addSelectedToCart() {
 		if (availableQuantity < 1) return;
 
 		cart.add(product, quantity, {
@@ -134,11 +134,7 @@
 			price: displayPrice,
 			maxQuantity: availableQuantity
 		});
-
-		added = true;
-		setTimeout(() => {
-			added = false;
-		}, 1200);
+		await goto(resolve('/cart'));
 	}
 </script>
 
@@ -312,8 +308,6 @@
 			>
 				{#if availableQuantity < 1}
 					Out of stock
-				{:else if added}
-					Added
 				{:else}
 					Add to cart
 				{/if}

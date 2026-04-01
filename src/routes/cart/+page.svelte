@@ -15,7 +15,7 @@
 {#if $cart.length}
 	<div class="catalog-layout aside-layout">
 		<div class="table-panel">
-			<div class="table-wrap">
+			<div class="table-wrap cart-table-wrap">
 				<table>
 					<thead>
 						<tr>
@@ -70,15 +70,65 @@
 					</tbody>
 				</table>
 			</div>
+
+			<div class="cart-mobile-list">
+				{#each $cart as item (item.cartKey)}
+					<article class="cart-mobile-item">
+						<div class="cart-mobile-item__media">
+							<img
+								class="media-thumb"
+								src={item.image || '/placeholder-product.svg'}
+								alt={item.name}
+							/>
+							<div class="cart-mobile-item__copy">
+								<a href={resolve('/products/[slug]', { slug: item.slug })}>
+									<strong>{item.name}</strong>
+								</a>
+								<p class="muted">{item.categoryName}</p>
+								{#if item.variantLabel}
+									<p class="muted">{item.variantLabel}</p>
+								{/if}
+							</div>
+						</div>
+
+						<div class="cart-mobile-item__meta">
+							<label class="form-row cart-mobile-item__qty">
+								<span>Quantity</span>
+								<input
+									class="qty-input"
+									type="number"
+									min="1"
+									value={item.quantity}
+									onchange={(event) =>
+										cart.setQuantity(
+											item.cartKey,
+											Number((event.currentTarget as HTMLInputElement).value)
+										)}
+								/>
+							</label>
+
+							<div class="cart-mobile-item__total">
+								<span class="muted">Total</span>
+								<strong>{formatCurrency(item.price * item.quantity)}</strong>
+							</div>
+						</div>
+
+						<button
+							class="button-secondary cart-mobile-item__remove"
+							onclick={() => cart.remove(item.cartKey)}>Remove</button
+						>
+					</article>
+				{/each}
+			</div>
 		</div>
 
-		<aside class="panel stack">
+		<aside class="panel stack cart-summary-panel">
 			<div>
 				<p class="eyebrow">Summary</p>
 				<h2>{formatCurrency($cartSubtotal)}</h2>
 			</div>
 			<p class="muted">Shipping is confirmed manually on WhatsApp after the order is saved.</p>
-			<div class="action-stack">
+			<div class="action-stack cart-summary-actions">
 				<a class="button-primary" href={resolve('/checkout')}>Proceed to checkout</a>
 				<button class="button-secondary" onclick={() => cart.clear()}>Clear cart</button>
 			</div>

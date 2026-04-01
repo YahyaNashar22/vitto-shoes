@@ -42,7 +42,7 @@
 				>
 					<img src={item.image || '/placeholder-category.svg'} alt={item.name} loading="lazy" />
 					<div>
-						<h3>{item.name}</h3>
+						<h3 style="margin-bottom: 12px;">{item.name}</h3>
 						<p class="muted">
 							{item.description || 'Designed to keep the catalog clean and easy to scan.'}
 						</p>

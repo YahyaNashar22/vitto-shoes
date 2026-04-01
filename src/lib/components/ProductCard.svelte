@@ -25,7 +25,7 @@
 			<a class="product-name" href={resolve('/products/[slug]', { slug: product.slug })}>
 				{product.name}
 			</a>
-			<p class="product-copy">{product.shortDescription}</p>
+			<!-- <p class="product-copy">{product.shortDescription}</p> -->
 		</div>
 		<div class="product-price-row">
 			<span class="product-price">{formatCurrency(product.price)}</span>

@@ -12,6 +12,11 @@
 
 	let menuOpen = $state(false);
 	let collectionsOpen = $state(false);
+
+	function closeMenus() {
+		menuOpen = false;
+		collectionsOpen = false;
+	}
 </script>
 
 <header class="site-header">
@@ -33,8 +38,12 @@
 			<span></span>
 		</button>
 		<nav class:open={menuOpen} class="main-nav" id="site-navigation">
-			<a class:active={page.url.pathname === '/'} href={resolve('/')}>Home</a>
-			<a class:active={page.url.pathname.startsWith('/shop')} href={resolve('/shop')}>Shop</a>
+			<a class:active={page.url.pathname === '/'} href={resolve('/')} onclick={closeMenus}>Home</a>
+			<a
+				class:active={page.url.pathname.startsWith('/shop')}
+				href={resolve('/shop')}
+				onclick={closeMenus}>Shop</a
+			>
 			<div
 				class="nav-dropdown"
 				class:open={collectionsOpen}
@@ -60,16 +69,26 @@
 						<a
 							class:active={page.url.pathname === `/collections/${item.slug}`}
 							href={resolve('/collections/[slug]', { slug: item.slug })}
+							onclick={closeMenus}
 						>
 							{item.name}
 						</a>
 					{/each}
-					<a class:active={page.url.pathname.startsWith('/sale')} href={resolve('/sale')}>Sale</a>
+					<a
+						class:active={page.url.pathname.startsWith('/sale')}
+						href={resolve('/sale')}
+						onclick={closeMenus}>Sale</a
+					>
 				</div>
 			</div>
 		</nav>
 		<div class:open={menuOpen} class="nav-actions">
-			<a class="icon-link" href={resolve('/cart')} aria-label={`Cart with ${$cartCount} items`}>
+			<a
+				class="icon-link"
+				href={resolve('/cart')}
+				aria-label={`Cart with ${$cartCount} items`}
+				onclick={closeMenus}
+			>
 				<svg viewBox="0 0 24 24" aria-hidden="true">
 					<path
 						d="M3 4h2l2.2 9.2a1 1 0 0 0 1 .8h8.9a1 1 0 0 0 1-.8L20 7H7"
@@ -86,7 +105,7 @@
 					<span class="icon-badge">{$cartCount}</span>
 				{/if}
 			</a>
-			<a class="icon-link" href={resolve('/checkout')} aria-label="Checkout">
+			<a class="icon-link" href={resolve('/checkout')} aria-label="Checkout" onclick={closeMenus}>
 				<svg viewBox="0 0 24 24" aria-hidden="true">
 					<path
 						d="M5 7.5h14M5 12h14M5 16.5h9"
@@ -107,7 +126,12 @@
 			</a>
 			{#if user}
 				{#if isAdmin}
-					<a class="icon-link" href={resolve('/admin')} aria-label="Admin panel">
+					<a
+						class="icon-link"
+						href={resolve('/admin')}
+						aria-label="Admin panel"
+						onclick={closeMenus}
+					>
 						<svg viewBox="0 0 24 24" aria-hidden="true">
 							<path
 								d="M12 3 4.5 7v5.7c0 4.3 2.9 8.3 7.5 9.3 4.6-1 7.5-5 7.5-9.3V7L12 3Z"
@@ -127,7 +151,7 @@
 						</svg>
 					</a>
 				{/if}
-			<!-- {:else}
+				<!-- {:else}
 				<a class="icon-link" href={resolve('/account/sign-in')} aria-label="Admin sign in">
 					<svg viewBox="0 0 24 24" aria-hidden="true">
 						<circle cx="12" cy="8" r="3.2" fill="none" stroke="currentColor" stroke-width="1.8" />
