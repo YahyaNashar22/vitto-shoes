@@ -9,6 +9,12 @@ export const auth = betterAuth({
 	baseURL: env.ORIGIN,
 	secret: env.BETTER_AUTH_SECRET,
 	database: drizzleAdapter(db, { provider: 'pg' }),
-	emailAndPassword: { enabled: true },
+	emailAndPassword: {
+		enabled: true,
+		resetPasswordTokenExpiresIn: 60 * 60,
+		sendResetPassword: async ({ user, url }) => {
+			console.log(`[auth] Password reset requested for ${user.email}: ${url}`);
+		}
+	},
 	plugins: [sveltekitCookies(getRequestEvent)] // make sure this is the last plugin in the array
 });

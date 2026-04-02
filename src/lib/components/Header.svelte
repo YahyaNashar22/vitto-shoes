@@ -1,8 +1,19 @@
 <script lang="ts">
+	import { browser } from '$app/environment';
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import { cartCount } from '$lib/stores/cart';
 	import type { CategorySummary } from '$lib/types';
+
+	type SearchItem = {
+		id: string;
+		name: string;
+		slug: string;
+		image: string;
+		categoryName: string;
+		price: number;
+		currency: string;
+	};
 
 	let { categories, isAdmin, user } = $props<{
 		categories: CategorySummary[];
@@ -10,149 +21,259 @@
 		user: { name?: string | null } | null;
 	}>();
 
-	let menuOpen = $state(false);
+	let drawerOpen = $state(false);
 	let collectionsOpen = $state(false);
+	let drawerCollectionsOpen = $state(false);
+	let accountMenuOpen = $state(false);
+	let desktopSearch = $state('');
+	let mobileSearch = $state('');
+	let searchResults = $state<SearchItem[]>([]);
+	let searchOpen = $state(false);
+	let searchLoading = $state(false);
+	let searchError = $state('');
+
+	let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+	let searchController: AbortController | null = null;
 
 	function closeMenus() {
-		menuOpen = false;
+		drawerOpen = false;
 		collectionsOpen = false;
+		drawerCollectionsOpen = false;
+		accountMenuOpen = false;
+		searchOpen = false;
+	}
+
+	function resetSearchState() {
+		searchResults = [];
+		searchLoading = false;
+		searchError = '';
+		searchOpen = false;
+		if (searchController) {
+			searchController.abort();
+			searchController = null;
+		}
+		if (debounceTimer) {
+			clearTimeout(debounceTimer);
+			debounceTimer = null;
+		}
+	}
+
+	function setSearchValue(value: string, source: 'desktop' | 'mobile') {
+		if (source === 'desktop') {
+			desktopSearch = value;
+			if (!drawerOpen) {
+				mobileSearch = value;
+			}
+		} else {
+			mobileSearch = value;
+			desktopSearch = value;
+		}
+
+		queueSearch(value);
+	}
+
+	function queueSearch(value: string) {
+		const trimmed = value.trim();
+
+		if (!trimmed) {
+			resetSearchState();
+			return;
+		}
+
+		searchLoading = true;
+		searchError = '';
+		searchOpen = true;
+
+		if (debounceTimer) {
+			clearTimeout(debounceTimer);
+		}
+
+		debounceTimer = setTimeout(() => {
+			void runSearch(trimmed);
+		}, 180);
+	}
+
+	async function runSearch(query: string) {
+		if (!browser) {
+			return;
+		}
+
+		if (searchController) {
+			searchController.abort();
+		}
+
+		searchController = new AbortController();
+
+		try {
+			const response = await fetch(`${resolve('/api/search')}?q=${encodeURIComponent(query)}`, {
+				signal: searchController.signal
+			});
+
+			if (!response.ok) {
+				throw new Error('Search failed');
+			}
+
+			const payload = (await response.json()) as { items?: SearchItem[] };
+			const activeValue = (drawerOpen ? mobileSearch : desktopSearch).trim();
+
+			if (activeValue !== query) {
+				return;
+			}
+
+			searchResults = payload.items ?? [];
+			searchOpen = true;
+		} catch (error) {
+			if (error instanceof DOMException && error.name === 'AbortError') {
+				return;
+			}
+
+			searchResults = [];
+			searchError = 'Search is temporarily unavailable.';
+			searchOpen = true;
+		} finally {
+			searchLoading = false;
+		}
+	}
+
+	function handleSearchSubmit(event: SubmitEvent) {
+		const form = event.currentTarget as HTMLFormElement;
+		const formData = new FormData(form);
+		const value = String(formData.get('q') ?? '').trim();
+
+		if (!value) {
+			event.preventDefault();
+			return;
+		}
+
+		closeMenus();
 	}
 </script>
 
 <header class="site-header">
-	<div class="announcement">Cash on delivery available. Orders can be completed on WhatsApp.</div>
-	<div class="nav-shell">
-		<a class="brand" href={resolve('/')} aria-label="Vitto Shoes home">
-			<img class="brand-logo brand-logo--header" src="/Viito Logo-01.png" alt="Vitto Shoes" />
-		</a>
-		<button
-			class="menu-toggle"
-			type="button"
-			aria-expanded={menuOpen}
-			aria-controls="site-navigation"
-			aria-label={menuOpen ? 'Close navigation menu' : 'Open navigation menu'}
-			onclick={() => (menuOpen = !menuOpen)}
-		>
-			<span></span>
-			<span></span>
-			<span></span>
-		</button>
-		<nav class:open={menuOpen} class="main-nav" id="site-navigation">
-			<a class:active={page.url.pathname === '/'} href={resolve('/')} onclick={closeMenus}>Home</a>
-			<a
-				class:active={page.url.pathname.startsWith('/shop')}
-				href={resolve('/shop')}
-				onclick={closeMenus}>Shop</a
+	<div class="nav-shell nav-shell--cavin">
+		<div class="nav-utility nav-utility--left">
+			<button
+				class="menu-toggle menu-toggle--plain"
+				type="button"
+				aria-expanded={drawerOpen}
+				aria-controls="mobile-navigation"
+				aria-label={drawerOpen ? 'Close navigation menu' : 'Open navigation menu'}
+				onclick={() => (drawerOpen = !drawerOpen)}
 			>
-			<div
-				class="nav-dropdown"
-				class:open={collectionsOpen}
-				role="group"
-				aria-label="Collections menu"
-				onmouseenter={() => (collectionsOpen = true)}
-				onmouseleave={() => (collectionsOpen = false)}
-			>
-				<button
-					class:active={page.url.pathname.startsWith('/collections') ||
-						page.url.pathname.startsWith('/sale')}
-					class="nav-dropdown__trigger"
-					type="button"
-					aria-expanded={collectionsOpen}
-					aria-haspopup="menu"
-					onclick={() => (collectionsOpen = !collectionsOpen)}
+				<span></span>
+				<span></span>
+				<span></span>
+			</button>
+
+			<div class="header-search desktop-search" class:open={searchOpen && !!desktopSearch.trim()}>
+				<form
+					class="header-search__form"
+					method="get"
+					action={resolve('/shop')}
+					role="search"
+					onsubmit={handleSearchSubmit}
 				>
-					Collections
-					<span class="nav-dropdown__chevron">+</span>
-				</button>
-				<div class="nav-dropdown__menu">
-					{#each categories.slice(0, 4) as item (item.id)}
-						<a
-							class:active={page.url.pathname === `/collections/${item.slug}`}
-							href={resolve('/collections/[slug]', { slug: item.slug })}
-							onclick={closeMenus}
-						>
-							{item.name}
-						</a>
-					{/each}
-					<a
-						class:active={page.url.pathname.startsWith('/sale')}
-						href={resolve('/sale')}
-						onclick={closeMenus}>Sale</a
-					>
-				</div>
-			</div>
-		</nav>
-		<div class:open={menuOpen} class="nav-actions">
-			<a
-				class="icon-link"
-				href={resolve('/cart')}
-				aria-label={`Cart with ${$cartCount} items`}
-				onclick={closeMenus}
-			>
-				<svg viewBox="0 0 24 24" aria-hidden="true">
-					<path
-						d="M3 4h2l2.2 9.2a1 1 0 0 0 1 .8h8.9a1 1 0 0 0 1-.8L20 7H7"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="1.8"
-						stroke-linecap="round"
-						stroke-linejoin="round"
-					/>
-					<circle cx="10" cy="19" r="1.6" fill="currentColor" />
-					<circle cx="17" cy="19" r="1.6" fill="currentColor" />
-				</svg>
-				{#if $cartCount > 0}
-					<span class="icon-badge">{$cartCount}</span>
-				{/if}
-			</a>
-			<a class="icon-link" href={resolve('/checkout')} aria-label="Checkout" onclick={closeMenus}>
-				<svg viewBox="0 0 24 24" aria-hidden="true">
-					<path
-						d="M5 7.5h14M5 12h14M5 16.5h9"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="1.8"
-						stroke-linecap="round"
-					/>
-					<path
-						d="M15.5 18.5 19 15l-3.5-3.5"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="1.8"
-						stroke-linecap="round"
-						stroke-linejoin="round"
-					/>
-				</svg>
-			</a>
-			{#if user}
-				{#if isAdmin}
-					<a
-						class="icon-link"
-						href={resolve('/admin')}
-						aria-label="Admin panel"
-						onclick={closeMenus}
-					>
-						<svg viewBox="0 0 24 24" aria-hidden="true">
-							<path
-								d="M12 3 4.5 7v5.7c0 4.3 2.9 8.3 7.5 9.3 4.6-1 7.5-5 7.5-9.3V7L12 3Z"
+					<span class="header-search__icon" aria-hidden="true">
+						<svg viewBox="0 0 24 24">
+							<circle
+								cx="11"
+								cy="11"
+								r="5.8"
 								fill="none"
 								stroke="currentColor"
 								stroke-width="1.8"
-								stroke-linejoin="round"
 							/>
 							<path
-								d="m9.4 12.2 1.7 1.7 3.7-3.9"
+								d="m15.2 15.2 4.1 4.1"
 								fill="none"
 								stroke="currentColor"
 								stroke-width="1.8"
 								stroke-linecap="round"
-								stroke-linejoin="round"
 							/>
 						</svg>
-					</a>
+					</span>
+					<input
+						class="header-search__input"
+						type="search"
+						name="q"
+						placeholder="Search the store"
+						autocomplete="off"
+						autocapitalize="none"
+						enterkeyhint="search"
+						bind:value={desktopSearch}
+						onfocus={() => {
+							if (desktopSearch.trim()) {
+								searchOpen = true;
+							}
+						}}
+						oninput={(event) =>
+							setSearchValue((event.currentTarget as HTMLInputElement).value, 'desktop')}
+					/>
+				</form>
+
+				{#if searchOpen && desktopSearch.trim()}
+					<div class="header-search__panel">
+						{#if searchLoading}
+							<p class="header-search__state">Searching…</p>
+						{:else if searchError}
+							<p class="header-search__state">{searchError}</p>
+						{:else if searchResults.length === 0}
+							<p class="header-search__state">No products matched your search.</p>
+						{:else}
+							<div class="header-search__results">
+								{#each searchResults as item (item.id)}
+									<a
+										class="header-search__item"
+										href={resolve('/products/[slug]', { slug: item.slug })}
+										onclick={closeMenus}
+									>
+										<img src={item.image} alt={item.name} />
+										<span class="header-search__copy">
+											<strong>{item.name}</strong>
+											<span>{item.categoryName}</span>
+										</span>
+										<span class="header-search__price">
+											{item.currency}
+											{item.price.toFixed(2)}
+										</span>
+									</a>
+								{/each}
+							</div>
+						{/if}
+						<form
+							class="header-search__view-all-form"
+							method="get"
+							action={resolve('/shop')}
+							onsubmit={handleSearchSubmit}
+						>
+							<input type="hidden" name="q" value={desktopSearch.trim()} />
+							<button class="header-search__view-all" type="submit">View all results</button>
+						</form>
+					</div>
 				{/if}
-				<!-- {:else}
-				<a class="icon-link" href={resolve('/account/sign-in')} aria-label="Admin sign in">
+			</div>
+		</div>
+
+		<a class="brand brand--centered" href={resolve('/')} aria-label="Vitto Shoes home">
+			<img class="brand-logo brand-logo--header" src="/Viito Logo-01.png" alt="Vitto Shoes" />
+		</a>
+
+		<div class="nav-utility nav-utility--right">
+			<div
+				class="nav-account desktop-account-link"
+				class:open={accountMenuOpen}
+				role="presentation"
+				onmouseenter={() => (accountMenuOpen = true)}
+				onmouseleave={() => (accountMenuOpen = false)}
+			>
+				<button
+					class="icon-link icon-link--plain"
+					type="button"
+					aria-expanded={accountMenuOpen}
+					aria-haspopup="menu"
+					aria-label={user ? 'Account menu' : 'Sign in'}
+					onclick={() => (accountMenuOpen = !accountMenuOpen)}
+				>
 					<svg viewBox="0 0 24 24" aria-hidden="true">
 						<circle cx="12" cy="8" r="3.2" fill="none" stroke="currentColor" stroke-width="1.8" />
 						<path
@@ -163,8 +284,282 @@
 							stroke-linecap="round"
 						/>
 					</svg>
-				</a> -->
-			{/if}
+				</button>
+
+				<div class="nav-account__menu" role="menu">
+					{#if user}
+						{#if isAdmin}
+							<a href={resolve('/admin')} onclick={closeMenus}>Admin panel</a>
+						{:else}
+							<a href={resolve('/account/profile')} onclick={closeMenus}>My profile</a>
+						{/if}
+						<form method="post" action={resolve('/account/sign-out')}>
+							<button type="submit">Logout</button>
+						</form>
+					{:else}
+						<a href={resolve('/account/sign-in')} onclick={closeMenus}>Sign in</a>
+						<a href={resolve('/account/sign-in')} onclick={closeMenus}>Create account</a>
+					{/if}
+				</div>
+			</div>
+
+			<a
+				class="icon-link icon-link--plain"
+				href={resolve('/cart')}
+				aria-label={`Cart with ${$cartCount} items`}
+			>
+				<svg viewBox="0 0 24 24" aria-hidden="true">
+					<path
+						d="M6.5 7.25h11.1l-.9 10.3a1 1 0 0 1-1 .91H8.3a1 1 0 0 1-1-.91L6.5 7.25Z"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="1.8"
+						stroke-linejoin="round"
+					/>
+					<path
+						d="M9.25 9.25V7a2.75 2.75 0 1 1 5.5 0v2.25"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="1.8"
+						stroke-linecap="round"
+					/>
+				</svg>
+				{#if $cartCount > 0}
+					<span class="icon-badge">{$cartCount}</span>
+				{/if}
+			</a>
 		</div>
 	</div>
+
+	<nav class="main-nav main-nav--desktop">
+		<a class:active={page.url.pathname.startsWith('/shop')} href={resolve('/shop')}>New Arrivals</a>
+		<a class:active={page.url.pathname === '/'} href={resolve('/')}>Vitto Lifestyle</a>
+		<a class:active={page.url.pathname.startsWith('/sale')} href={resolve('/sale')}>On Sale</a>
+		<div
+			class="nav-dropdown"
+			class:open={collectionsOpen}
+			role="group"
+			aria-label="Collections menu"
+			onmouseenter={() => (collectionsOpen = true)}
+			onmouseleave={() => (collectionsOpen = false)}
+		>
+			<button
+				class:active={page.url.pathname.startsWith('/collections')}
+				class="nav-dropdown__trigger"
+				type="button"
+				aria-expanded={collectionsOpen}
+				aria-haspopup="menu"
+				onclick={() => (collectionsOpen = !collectionsOpen)}
+			>
+				Collections
+				<span class="nav-dropdown__chevron">+</span>
+			</button>
+			<div class="nav-dropdown__menu">
+				{#each categories as item (item.id)}
+					<a
+						class:active={page.url.pathname === `/collections/${item.slug}`}
+						href={resolve('/collections/[slug]', { slug: item.slug })}
+					>
+						{item.name}
+					</a>
+				{/each}
+			</div>
+		</div>
+	</nav>
 </header>
+
+{#if drawerOpen}
+	<button
+		class="mobile-drawer-backdrop open"
+		type="button"
+		aria-label="Close navigation menu"
+		onclick={closeMenus}
+	></button>
+
+	<aside class="mobile-drawer open" id="mobile-navigation" aria-hidden={false}>
+		<div class="mobile-drawer__top">
+			<button
+				class="drawer-close"
+				type="button"
+				aria-label="Close navigation menu"
+				onclick={closeMenus}
+			>
+				<svg viewBox="0 0 24 24" aria-hidden="true">
+					<path
+						d="M6 6 18 18M18 6 6 18"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="1.8"
+						stroke-linecap="round"
+					/>
+				</svg>
+			</button>
+			<a
+				class="brand brand--drawer"
+				href={resolve('/')}
+				aria-label="Vitto Shoes home"
+				onclick={closeMenus}
+			>
+				<img class="brand-logo brand-logo--header" src="/Viito Logo-01.png" alt="Vitto Shoes" />
+			</a>
+			<div class="mobile-drawer__icons">
+				<a
+					class="icon-link icon-link--plain"
+					href={resolve('/cart')}
+					aria-label="Cart"
+					onclick={closeMenus}
+				>
+					<svg viewBox="0 0 24 24" aria-hidden="true">
+						<path
+							d="M6.5 7.25h11.1l-.9 10.3a1 1 0 0 1-1 .91H8.3a1 1 0 0 1-1-.91L6.5 7.25Z"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="1.8"
+							stroke-linejoin="round"
+						/>
+						<path
+							d="M9.25 9.25V7a2.75 2.75 0 1 1 5.5 0v2.25"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="1.8"
+							stroke-linecap="round"
+						/>
+					</svg>
+				</a>
+			</div>
+		</div>
+
+		<div class="mobile-drawer__search">
+			<div
+				class="header-search header-search--mobile"
+				class:open={searchOpen && !!mobileSearch.trim()}
+			>
+				<form
+					class="header-search__form"
+					method="get"
+					action={resolve('/shop')}
+					role="search"
+					onsubmit={handleSearchSubmit}
+				>
+					<span class="header-search__icon" aria-hidden="true">
+						<svg viewBox="0 0 24 24">
+							<circle
+								cx="11"
+								cy="11"
+								r="5.8"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="1.8"
+							/>
+							<path
+								d="m15.2 15.2 4.1 4.1"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="1.8"
+								stroke-linecap="round"
+							/>
+						</svg>
+					</span>
+					<input
+						class="header-search__input"
+						type="search"
+						name="q"
+						placeholder="Search the store"
+						autocomplete="off"
+						autocapitalize="none"
+						enterkeyhint="search"
+						bind:value={mobileSearch}
+						onfocus={() => {
+							if (mobileSearch.trim()) {
+								searchOpen = true;
+							}
+						}}
+						oninput={(event) =>
+							setSearchValue((event.currentTarget as HTMLInputElement).value, 'mobile')}
+					/>
+				</form>
+
+				{#if searchOpen && mobileSearch.trim()}
+					<div class="header-search__panel header-search__panel--mobile">
+						{#if searchLoading}
+							<p class="header-search__state">Searching…</p>
+						{:else if searchError}
+							<p class="header-search__state">{searchError}</p>
+						{:else if searchResults.length === 0}
+							<p class="header-search__state">No products matched your search.</p>
+						{:else}
+							<div class="header-search__results">
+								{#each searchResults as item (item.id)}
+									<a
+										class="header-search__item"
+										href={resolve('/products/[slug]', { slug: item.slug })}
+										onclick={closeMenus}
+									>
+										<img src={item.image} alt={item.name} />
+										<span class="header-search__copy">
+											<strong>{item.name}</strong>
+											<span>{item.categoryName}</span>
+										</span>
+										<span class="header-search__price">
+											{item.currency}
+											{item.price.toFixed(2)}
+										</span>
+									</a>
+								{/each}
+							</div>
+						{/if}
+						<form
+							class="header-search__view-all-form"
+							method="get"
+							action={resolve('/shop')}
+							onsubmit={handleSearchSubmit}
+						>
+							<input type="hidden" name="q" value={mobileSearch.trim()} />
+							<button class="header-search__view-all" type="submit">View all results</button>
+						</form>
+					</div>
+				{/if}
+			</div>
+		</div>
+
+		<div class="mobile-drawer__actions">
+			{#if user}
+				{#if isAdmin}
+					<a href={resolve('/admin')} onclick={closeMenus}>Admin Panel</a>
+				{:else}
+					<a href={resolve('/account/profile')} onclick={closeMenus}>My Account</a>
+				{/if}
+				<form method="post" action={resolve('/account/sign-out')}>
+					<button type="submit" onclick={closeMenus}>Logout</button>
+				</form>
+			{:else}
+				<a href={resolve('/account/sign-in')} onclick={closeMenus}>Sign In</a>
+				<a href={resolve('/account/sign-in')} onclick={closeMenus}>Create Account</a>
+			{/if}
+		</div>
+
+		<nav class="mobile-drawer__nav">
+			<a href={resolve('/shop')} onclick={closeMenus}>New Arrivals</a>
+			<a href={resolve('/')} onclick={closeMenus}>Vitto Lifestyle</a>
+			<a href={resolve('/sale')} onclick={closeMenus}>On Sale</a>
+			<div class="mobile-drawer__group">
+				<button
+					type="button"
+					class="mobile-drawer__toggle"
+					aria-expanded={drawerCollectionsOpen}
+					onclick={() => (drawerCollectionsOpen = !drawerCollectionsOpen)}
+				>
+					Collections
+					<span>{drawerCollectionsOpen ? '−' : '+'}</span>
+				</button>
+				<div class:open={drawerCollectionsOpen} class="mobile-drawer__submenu">
+					{#each categories as item (item.id)}
+						<a href={resolve('/collections/[slug]', { slug: item.slug })} onclick={closeMenus}>
+							{item.name}
+						</a>
+					{/each}
+				</div>
+			</div>
+		</nav>
+	</aside>
+{/if}

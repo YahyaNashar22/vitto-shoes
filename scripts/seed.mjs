@@ -380,15 +380,15 @@ try {
 
 	if (!adminUserId) {
 		const [createdUser] = await sql`
-			insert into "user" (id, name, email, email_verified, image, created_at, updated_at)
-			values (gen_random_uuid()::text, ${adminUser.name}, lower(${adminUser.email}), true, null, now(), now())
+			insert into "user" (id, name, email, email_verified, image, role, phone, city, address, created_at, updated_at)
+			values (gen_random_uuid()::text, ${adminUser.name}, lower(${adminUser.email}), true, null, 'admin', '', '', '', now(), now())
 			returning id
 		`;
 		adminUserId = createdUser.id;
 	} else {
 		await sql`
 			update "user"
-			set name = ${adminUser.name}, email = lower(${adminUser.email}), email_verified = true, updated_at = now()
+			set name = ${adminUser.name}, email = lower(${adminUser.email}), email_verified = true, role = 'admin', updated_at = now()
 			where id = ${adminUserId}
 		`;
 	}

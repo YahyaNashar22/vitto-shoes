@@ -1,6 +1,7 @@
 import { env } from '$env/dynamic/private';
 import { error } from '@sveltejs/kit';
 import type { RequestEvent } from '@sveltejs/kit';
+import { isAdminRole } from './auth-user';
 
 export function isAdminEmail(email?: string | null) {
 	const configured = new Set(
@@ -17,7 +18,7 @@ export function isAdminEmail(email?: string | null) {
 }
 
 export function requireAdmin(event: RequestEvent) {
-	const allowed = isAdminEmail(event.locals.user?.email);
+	const allowed = isAdminRole(event.locals.user) || isAdminEmail(event.locals.user?.email);
 	event.locals.isAdmin = allowed;
 
 	if (!event.locals.user || !allowed) {

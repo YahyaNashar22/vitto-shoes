@@ -8,6 +8,16 @@ import type {
 	ProductSummary
 } from '$lib/types';
 
+export type ProductSearchResult = {
+	id: string;
+	name: string;
+	slug: string;
+	image: string;
+	categoryName: string;
+	price: number;
+	currency: string;
+};
+
 export type CatalogFilters = {
 	category?: string | null;
 	onSale?: boolean;
@@ -236,6 +246,53 @@ export async function getProductBySlug(slug: string) {
 		.limit(1);
 
 	return rows[0] ? mapProduct(rows[0]) : null;
+}
+
+export async function searchProducts(query: string, limit = 6) {
+	const trimmed = query.trim();
+	if (!trimmed) {
+		return [] as ProductSearchResult[];
+	}
+
+	const search = `%${trimmed}%`;
+
+	const rows = await db
+		.select({
+			id: product.id,
+			name: product.name,
+			slug: product.slug,
+			image: product.image,
+			categoryName: category.name,
+			price: product.price,
+			currency: product.currency
+		})
+		.from(product)
+		.innerJoin(category, eq(product.categoryId, category.id))
+		.where(
+			and(
+				eq(product.isPublished, true),
+				or(
+					ilike(product.name, search),
+					ilike(product.shortDescription, search),
+					ilike(product.description, search),
+					ilike(category.name, search),
+					ilike(product.code, search),
+					ilike(product.barcode, search)
+				)!
+			)
+		)
+		.orderBy(desc(product.isFeatured), asc(product.sortOrder), asc(product.name))
+		.limit(limit);
+
+	return rows.map((row) => ({
+		id: row.id,
+		name: row.name,
+		slug: row.slug,
+		image: row.image,
+		categoryName: row.categoryName,
+		price: Number(row.price),
+		currency: row.currency
+	}));
 }
 
 export async function getAdminProducts() {
