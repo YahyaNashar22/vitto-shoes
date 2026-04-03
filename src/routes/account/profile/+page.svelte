@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
 	import { enhance } from '$app/forms';
+	import ProductCard from '$lib/components/ProductCard.svelte';
 	import type { ActionData, PageData } from './$types';
 
 	let { data, form } = $props<{ data: PageData; form: ActionData }>();
@@ -101,4 +102,28 @@
 			</form>
 		</div>
 	</div>
+
+	<section class="stack related-section">
+		<div class="section-heading related-section__heading">
+			<p class="eyebrow">Wishlist</p>
+			<h2>Saved products</h2>
+			<p class="muted">Keep track of the products you want to revisit later.</p>
+		</div>
+
+		{#if data.wishlistProducts.length}
+			<div class="product-rail related-rail">
+				{#each data.wishlistProducts as item (item.id)}
+					<div class="product-rail__item">
+						<ProductCard product={item} />
+					</div>
+				{/each}
+			</div>
+		{:else}
+			<div class="empty-state">
+				<h3>Your wishlist is empty</h3>
+				<p>Tap the heart icon on a product to save it here.</p>
+				<a class="button-primary" href={resolve('/shop')}>Browse products</a>
+			</div>
+		{/if}
+	</section>
 </section>

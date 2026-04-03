@@ -26,6 +26,27 @@
 </section>
 
 <section class="stack" style="margin-top: 2.25rem;">
+	<div class="toolbar-row">
+		<div class="section-heading" style="margin-bottom: 0;">
+			<p class="eyebrow">Latest arrivals</p>
+			<h2>Fresh pairs just added</h2>
+			<p>New styles in a fast horizontal browse, made for quick discovery.</p>
+		</div>
+		<a class="button-secondary" href={resolve('/shop')}>View full catalog</a>
+	</div>
+
+	{#if data.latestProducts.length}
+		<div class="product-rail">
+			{#each data.latestProducts as product (product.id)}
+				<div class="product-rail__item reveal" use:reveal>
+					<ProductCard {product} />
+				</div>
+			{/each}
+		</div>
+	{/if}
+</section>
+
+<section class="stack" style="margin-top: 3rem;">
 	<div class="section-heading">
 		<p class="eyebrow">Collections</p>
 		<h2>Shop by category</h2>
@@ -41,11 +62,9 @@
 					use:reveal
 				>
 					<img src={item.image || '/placeholder-category.svg'} alt={item.name} loading="lazy" />
-					<div>
-						<h3 style="margin-bottom: 12px;">{item.name}</h3>
-						<p class="muted">
-							{item.description || 'Designed to keep the catalog clean and easy to scan.'}
-						</p>
+					<div class="category-tile__overlay"></div>
+					<div class="category-tile__content">
+						<h3>{item.name}</h3>
 					</div>
 				</a>
 			{/each}
@@ -66,9 +85,9 @@
 		<h2>Best picks for the homepage</h2>
 	</div>
 	{#if data.featuredProducts.length}
-		<div class="product-grid">
+		<div class="product-rail">
 			{#each data.featuredProducts as product (product.id)}
-				<div class="reveal" use:reveal>
+				<div class="product-rail__item reveal" use:reveal>
 					<ProductCard {product} />
 				</div>
 			{/each}
@@ -76,7 +95,7 @@
 	{/if}
 </section>
 
-<section class="editorial-grid" style="margin-top: 3rem;">
+<!-- <section class="editorial-grid" style="margin-top: 3rem;">
 	<div class="panel reveal" use:reveal>
 		<p class="eyebrow">Why this build</p>
 		<h2 class="title-margin">Fast initial load by default</h2>
@@ -94,34 +113,11 @@
 			handle the final confirmation manually until payment integration is needed.
 		</p>
 	</div>
-</section>
-
-<section class="stack" style="margin-top: 3rem;">
-	<div class="toolbar-row">
-		<div class="section-heading" style="margin-bottom: 0;">
-			<p class="eyebrow">Latest arrivals</p>
-			<h2>Recently added products</h2>
-		</div>
-		<a class="button-secondary" href={resolve('/shop')}>View full catalog</a>
-	</div>
-
-	{#if data.latestProducts.length}
-		<div class="product-grid">
-			{#each data.latestProducts as product (product.id)}
-				<div class="reveal" use:reveal>
-					<ProductCard {product} />
-				</div>
-			{/each}
-		</div>
-	{/if}
-</section>
+</section> -->
 
 <style>
 	.eyebrow {
 		opacity: 0.6;
 		margin-bottom: 6px;
-	}
-	.title-margin {
-		margin-bottom: 12px;
 	}
 </style>

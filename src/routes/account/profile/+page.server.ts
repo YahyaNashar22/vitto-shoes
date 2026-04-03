@@ -7,6 +7,7 @@ import { isAdminEmail } from '$lib/server/admin';
 import { getUserRole, isAdminRole } from '$lib/server/auth-user';
 import { db } from '$lib/server/db';
 import { user } from '$lib/server/db/schema';
+import { getWishlistProducts } from '$lib/server/wishlist';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	if (!locals.user) {
@@ -15,7 +16,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 	return {
 		role: getUserRole(locals.user),
-		isAdmin: isAdminRole(locals.user) || isAdminEmail(locals.user.email)
+		isAdmin: isAdminRole(locals.user) || isAdminEmail(locals.user.email),
+		wishlistProducts: await getWishlistProducts(locals.user.id)
 	};
 };
 

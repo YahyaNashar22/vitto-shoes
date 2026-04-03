@@ -162,6 +162,25 @@ export const orderItem = pgTable(
 	]
 );
 
+export const wishlistItem = pgTable(
+	'wishlist_item',
+	{
+		id: uuid('id').defaultRandom().primaryKey(),
+		userId: text('user_id')
+			.notNull()
+			.references(() => user.id, { onDelete: 'cascade' }),
+		productId: uuid('product_id')
+			.notNull()
+			.references(() => product.id, { onDelete: 'cascade' }),
+		createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow()
+	},
+	(table) => [
+		index('wishlist_item_user_idx').on(table.userId),
+		index('wishlist_item_product_idx').on(table.productId),
+		index('wishlist_item_user_product_idx').on(table.userId, table.productId)
+	]
+);
+
 export const categoryRelations = relations(category, ({ many }) => ({
 	products: many(product)
 }));
@@ -171,7 +190,8 @@ export const productRelations = relations(product, ({ one, many }) => ({
 		fields: [product.categoryId],
 		references: [category.id]
 	}),
-	orderItems: many(orderItem)
+	orderItems: many(orderItem),
+	wishlistItems: many(wishlistItem)
 }));
 
 export const orderRelations = relations(order, ({ many }) => ({
@@ -187,4 +207,19 @@ export const orderItemRelations = relations(orderItem, ({ one }) => ({
 		fields: [orderItem.productId],
 		references: [product.id]
 	})
+}));
+
+export const wishlistItemRelations = relations(wishlistItem, ({ one }) => ({
+	user: one(user, {
+		fields: [wishlistItem.userId],
+		references: [user.id]
+	}),
+	product: one(product, {
+		fields: [wishlistItem.productId],
+		references: [product.id]
+	})
+}));
+
+export const userWishlistRelations = relations(user, ({ many }) => ({
+	wishlistItems: many(wishlistItem)
 }));

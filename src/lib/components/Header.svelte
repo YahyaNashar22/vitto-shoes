@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { resolve } from '$app/paths';
-	import { page } from '$app/state';
 	import { cartCount } from '$lib/stores/cart';
 	import type { CategorySummary } from '$lib/types';
 
@@ -22,10 +21,8 @@
 	}>();
 
 	let drawerOpen = $state(false);
-	let collectionsOpen = $state(false);
 	let drawerCollectionsOpen = $state(false);
 	let accountMenuOpen = $state(false);
-	let desktopSearch = $state('');
 	let mobileSearch = $state('');
 	let searchResults = $state<SearchItem[]>([]);
 	let searchOpen = $state(false);
@@ -37,7 +34,6 @@
 
 	function closeMenus() {
 		drawerOpen = false;
-		collectionsOpen = false;
 		drawerCollectionsOpen = false;
 		accountMenuOpen = false;
 		searchOpen = false;
@@ -58,17 +54,8 @@
 		}
 	}
 
-	function setSearchValue(value: string, source: 'desktop' | 'mobile') {
-		if (source === 'desktop') {
-			desktopSearch = value;
-			if (!drawerOpen) {
-				mobileSearch = value;
-			}
-		} else {
-			mobileSearch = value;
-			desktopSearch = value;
-		}
-
+	function setSearchValue(value: string) {
+		mobileSearch = value;
 		queueSearch(value);
 	}
 
@@ -114,9 +101,7 @@
 			}
 
 			const payload = (await response.json()) as { items?: SearchItem[] };
-			const activeValue = (drawerOpen ? mobileSearch : desktopSearch).trim();
-
-			if (activeValue !== query) {
+			if (mobileSearch.trim() !== query) {
 				return;
 			}
 
@@ -156,7 +141,7 @@
 				class="menu-toggle menu-toggle--plain"
 				type="button"
 				aria-expanded={drawerOpen}
-				aria-controls="mobile-navigation"
+				aria-controls="site-navigation-drawer"
 				aria-label={drawerOpen ? 'Close navigation menu' : 'Open navigation menu'}
 				onclick={() => (drawerOpen = !drawerOpen)}
 			>
@@ -164,94 +149,6 @@
 				<span></span>
 				<span></span>
 			</button>
-
-			<div class="header-search desktop-search" class:open={searchOpen && !!desktopSearch.trim()}>
-				<form
-					class="header-search__form"
-					method="get"
-					action={resolve('/shop')}
-					role="search"
-					onsubmit={handleSearchSubmit}
-				>
-					<span class="header-search__icon" aria-hidden="true">
-						<svg viewBox="0 0 24 24">
-							<circle
-								cx="11"
-								cy="11"
-								r="5.8"
-								fill="none"
-								stroke="currentColor"
-								stroke-width="1.8"
-							/>
-							<path
-								d="m15.2 15.2 4.1 4.1"
-								fill="none"
-								stroke="currentColor"
-								stroke-width="1.8"
-								stroke-linecap="round"
-							/>
-						</svg>
-					</span>
-					<input
-						class="header-search__input"
-						type="search"
-						name="q"
-						placeholder="Search the store"
-						autocomplete="off"
-						autocapitalize="none"
-						enterkeyhint="search"
-						bind:value={desktopSearch}
-						onfocus={() => {
-							if (desktopSearch.trim()) {
-								searchOpen = true;
-							}
-						}}
-						oninput={(event) =>
-							setSearchValue((event.currentTarget as HTMLInputElement).value, 'desktop')}
-					/>
-				</form>
-
-				{#if searchOpen && desktopSearch.trim()}
-					<div class="header-search__panel">
-						{#if searchLoading}
-							<p class="header-search__state">Searching…</p>
-						{:else if searchError}
-							<p class="header-search__state">{searchError}</p>
-						{:else if searchResults.length === 0}
-							<p class="header-search__state">No products matched your search.</p>
-						{:else}
-							<div class="header-search__results">
-								{#each searchResults as item (item.id)}
-									<a
-										class="header-search__item"
-										href={resolve('/products/[slug]', { slug: item.slug })}
-										onclick={closeMenus}
-									>
-										<img src={item.image} alt={item.name} />
-										<span class="header-search__copy">
-											<strong>{item.name}</strong>
-											<span>{item.categoryName}</span>
-										</span>
-										<span class="header-search__price">
-											{item.currency}
-											{item.price.toFixed(2)}
-										</span>
-									</a>
-								{/each}
-							</div>
-						{/if}
-						<form
-							class="header-search__view-all-form"
-							method="get"
-							action={resolve('/shop')}
-							onsubmit={handleSearchSubmit}
-						>
-							<input type="hidden" name="q" value={desktopSearch.trim()} />
-							<button class="header-search__view-all" type="submit">View all results</button>
-						</form>
-					</div>
-				{/if}
-			</div>
 		</div>
 
 		<a class="brand brand--centered" href={resolve('/')} aria-label="Vitto Shoes home">
@@ -330,42 +227,6 @@
 			</a>
 		</div>
 	</div>
-
-	<nav class="main-nav main-nav--desktop">
-		<a class:active={page.url.pathname.startsWith('/shop')} href={resolve('/shop')}>New Arrivals</a>
-		<a class:active={page.url.pathname === '/'} href={resolve('/')}>Vitto Lifestyle</a>
-		<a class:active={page.url.pathname.startsWith('/sale')} href={resolve('/sale')}>On Sale</a>
-		<div
-			class="nav-dropdown"
-			class:open={collectionsOpen}
-			role="group"
-			aria-label="Collections menu"
-			onmouseenter={() => (collectionsOpen = true)}
-			onmouseleave={() => (collectionsOpen = false)}
-		>
-			<button
-				class:active={page.url.pathname.startsWith('/collections')}
-				class="nav-dropdown__trigger"
-				type="button"
-				aria-expanded={collectionsOpen}
-				aria-haspopup="menu"
-				onclick={() => (collectionsOpen = !collectionsOpen)}
-			>
-				Collections
-				<span class="nav-dropdown__chevron">+</span>
-			</button>
-			<div class="nav-dropdown__menu">
-				{#each categories as item (item.id)}
-					<a
-						class:active={page.url.pathname === `/collections/${item.slug}`}
-						href={resolve('/collections/[slug]', { slug: item.slug })}
-					>
-						{item.name}
-					</a>
-				{/each}
-			</div>
-		</div>
-	</nav>
 </header>
 
 {#if drawerOpen}
@@ -376,7 +237,7 @@
 		onclick={closeMenus}
 	></button>
 
-	<aside class="mobile-drawer open" id="mobile-navigation" aria-hidden={false}>
+	<aside class="mobile-drawer open" id="site-navigation-drawer" aria-hidden={false}>
 		<div class="mobile-drawer__top">
 			<button
 				class="drawer-close"
@@ -429,137 +290,140 @@
 			</div>
 		</div>
 
-		<div class="mobile-drawer__search">
-			<div
-				class="header-search header-search--mobile"
-				class:open={searchOpen && !!mobileSearch.trim()}
-			>
-				<form
-					class="header-search__form"
-					method="get"
-					action={resolve('/shop')}
-					role="search"
-					onsubmit={handleSearchSubmit}
+		<div class="mobile-drawer__body">
+			<div class="mobile-drawer__search">
+				<div
+					class="header-search header-search--mobile"
+					class:open={searchOpen && !!mobileSearch.trim()}
 				>
-					<span class="header-search__icon" aria-hidden="true">
-						<svg viewBox="0 0 24 24">
-							<circle
-								cx="11"
-								cy="11"
-								r="5.8"
-								fill="none"
-								stroke="currentColor"
-								stroke-width="1.8"
-							/>
-							<path
-								d="m15.2 15.2 4.1 4.1"
-								fill="none"
-								stroke="currentColor"
-								stroke-width="1.8"
-								stroke-linecap="round"
-							/>
-						</svg>
-					</span>
-					<input
-						class="header-search__input"
-						type="search"
-						name="q"
-						placeholder="Search the store"
-						autocomplete="off"
-						autocapitalize="none"
-						enterkeyhint="search"
-						bind:value={mobileSearch}
-						onfocus={() => {
-							if (mobileSearch.trim()) {
-								searchOpen = true;
-							}
-						}}
-						oninput={(event) =>
-							setSearchValue((event.currentTarget as HTMLInputElement).value, 'mobile')}
-					/>
-				</form>
+					<form
+						class="header-search__form"
+						method="get"
+						action={resolve('/shop')}
+						role="search"
+						onsubmit={handleSearchSubmit}
+					>
+						<span class="header-search__icon" aria-hidden="true">
+							<svg viewBox="0 0 24 24">
+								<circle
+									cx="11"
+									cy="11"
+									r="5.8"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="1.8"
+								/>
+								<path
+									d="m15.2 15.2 4.1 4.1"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="1.8"
+									stroke-linecap="round"
+								/>
+							</svg>
+						</span>
+						<input
+							class="header-search__input"
+							type="search"
+							name="q"
+							placeholder="Search the store"
+							autocomplete="off"
+							autocapitalize="none"
+							enterkeyhint="search"
+							bind:value={mobileSearch}
+							onfocus={() => {
+								if (mobileSearch.trim()) {
+									searchOpen = true;
+								}
+							}}
+							oninput={(event) => setSearchValue((event.currentTarget as HTMLInputElement).value)}
+						/>
+					</form>
 
-				{#if searchOpen && mobileSearch.trim()}
-					<div class="header-search__panel header-search__panel--mobile">
-						{#if searchLoading}
-							<p class="header-search__state">Searching…</p>
-						{:else if searchError}
-							<p class="header-search__state">{searchError}</p>
-						{:else if searchResults.length === 0}
-							<p class="header-search__state">No products matched your search.</p>
-						{:else}
-							<div class="header-search__results">
-								{#each searchResults as item (item.id)}
-									<a
-										class="header-search__item"
-										href={resolve('/products/[slug]', { slug: item.slug })}
-										onclick={closeMenus}
-									>
-										<img src={item.image} alt={item.name} />
-										<span class="header-search__copy">
-											<strong>{item.name}</strong>
-											<span>{item.categoryName}</span>
-										</span>
-										<span class="header-search__price">
-											{item.currency}
-											{item.price.toFixed(2)}
-										</span>
-									</a>
-								{/each}
-							</div>
-						{/if}
-						<form
-							class="header-search__view-all-form"
-							method="get"
-							action={resolve('/shop')}
-							onsubmit={handleSearchSubmit}
-						>
-							<input type="hidden" name="q" value={mobileSearch.trim()} />
-							<button class="header-search__view-all" type="submit">View all results</button>
-						</form>
-					</div>
-				{/if}
-			</div>
-		</div>
-
-		<div class="mobile-drawer__actions">
-			{#if user}
-				{#if isAdmin}
-					<a href={resolve('/admin')} onclick={closeMenus}>Admin Panel</a>
-				{:else}
-					<a href={resolve('/account/profile')} onclick={closeMenus}>My Account</a>
-				{/if}
-				<form method="post" action={resolve('/account/sign-out')}>
-					<button type="submit" onclick={closeMenus}>Logout</button>
-				</form>
-			{:else}
-				<a href={resolve('/account/sign-in')} onclick={closeMenus}>Sign In</a>
-				<a href={resolve('/account/sign-in')} onclick={closeMenus}>Create Account</a>
-			{/if}
-		</div>
-
-		<nav class="mobile-drawer__nav">
-			<a href={resolve('/shop')} onclick={closeMenus}>New Arrivals</a>
-			<a href={resolve('/')} onclick={closeMenus}>Vitto Lifestyle</a>
-			<a href={resolve('/sale')} onclick={closeMenus}>On Sale</a>
-			<div class="mobile-drawer__group">
-				<button
-					type="button"
-					class="mobile-drawer__toggle"
-					aria-expanded={drawerCollectionsOpen}
-					onclick={() => (drawerCollectionsOpen = !drawerCollectionsOpen)}
-				>
-					Collections
-					<span>{drawerCollectionsOpen ? '−' : '+'}</span>
-				</button>
-				<div class:open={drawerCollectionsOpen} class="mobile-drawer__submenu">
-					{#each categories as item (item.id)}
-						<a href={resolve('/collections/[slug]', { slug: item.slug })} onclick={closeMenus}>
-							{item.name}
-						</a>
-					{/each}
+					{#if searchOpen && mobileSearch.trim()}
+						<div class="header-search__panel header-search__panel--mobile">
+							{#if searchLoading}
+								<p class="header-search__state">Searching...</p>
+							{:else if searchError}
+								<p class="header-search__state">{searchError}</p>
+							{:else if searchResults.length === 0}
+								<p class="header-search__state">No products matched your search.</p>
+							{:else}
+								<div class="header-search__results">
+									{#each searchResults as item (item.id)}
+										<a
+											class="header-search__item"
+											href={resolve('/products/[slug]', { slug: item.slug })}
+											onclick={closeMenus}
+										>
+											<img src={item.image} alt={item.name} />
+											<span class="header-search__copy">
+												<strong>{item.name}</strong>
+												<span>{item.categoryName}</span>
+											</span>
+											<span class="header-search__price">
+												{item.currency}
+												{item.price.toFixed(2)}
+											</span>
+										</a>
+									{/each}
+								</div>
+							{/if}
+							<form
+								class="header-search__view-all-form"
+								method="get"
+								action={resolve('/shop')}
+								onsubmit={handleSearchSubmit}
+							>
+								<input type="hidden" name="q" value={mobileSearch.trim()} />
+								<button class="header-search__view-all" type="submit">View all results</button>
+							</form>
+						</div>
+					{/if}
 				</div>
 			</div>
-		</nav>
+
+			<nav class="mobile-drawer__nav">
+				<a href={resolve('/shop')} onclick={closeMenus}>New Arrivals</a>
+				<a href={resolve('/')} onclick={closeMenus}>Vitto Lifestyle</a>
+				<a href={resolve('/sale')} onclick={closeMenus}>On Sale</a>
+				<div class="mobile-drawer__group">
+					<button
+						type="button"
+						class="mobile-drawer__toggle"
+						aria-expanded={drawerCollectionsOpen}
+						onclick={() => (drawerCollectionsOpen = !drawerCollectionsOpen)}
+					>
+						Collections
+						<span>{drawerCollectionsOpen ? '-' : '+'}</span>
+					</button>
+					<div class:open={drawerCollectionsOpen} class="mobile-drawer__submenu">
+						{#each categories as item (item.id)}
+							<a href={resolve('/collections/[slug]', { slug: item.slug })} onclick={closeMenus}>
+								{item.name}
+							</a>
+						{/each}
+					</div>
+				</div>
+			</nav>
+		</div>
+
+		<div class="mobile-drawer__footer">
+			<div class="mobile-drawer__actions">
+				{#if user}
+					{#if isAdmin}
+						<a href={resolve('/admin')} onclick={closeMenus}>Admin Panel</a>
+					{:else}
+						<a href={resolve('/account/profile')} onclick={closeMenus}>My Account</a>
+					{/if}
+					<form method="post" action={resolve('/account/sign-out')}>
+						<button type="submit" onclick={closeMenus}>Logout</button>
+					</form>
+				{:else}
+					<a href={resolve('/account/sign-in')} onclick={closeMenus}>Sign In</a>
+					<a href={resolve('/account/sign-in')} onclick={closeMenus}>Create Account</a>
+				{/if}
+			</div>
+		</div>
 	</aside>
 {/if}

@@ -1,4 +1,4 @@
-import { and, asc, count, desc, eq, ilike, or, sql } from 'drizzle-orm';
+import { and, asc, count, desc, eq, ilike, inArray, or, sql } from 'drizzle-orm';
 import { db } from '$lib/server/db';
 import { category, product } from '$lib/server/db/schema';
 import type {
@@ -246,6 +246,55 @@ export async function getProductBySlug(slug: string) {
 		.limit(1);
 
 	return rows[0] ? mapProduct(rows[0]) : null;
+}
+
+export async function getProductsByIds(productIds: string[]) {
+	if (!productIds.length) {
+		return [] as ProductSummary[];
+	}
+
+	const rows = await db
+		.select({
+			id: product.id,
+			categoryId: product.categoryId,
+			externalId: product.externalId,
+			code: product.code,
+			barcode: product.barcode,
+			name: product.name,
+			slug: product.slug,
+			sku: product.sku,
+			shortDescription: product.shortDescription,
+			description: product.description,
+			color: product.color,
+			material: product.material,
+			xDim: product.xDim,
+			yDim: product.yDim,
+			qty: product.qty,
+			price: product.price,
+			currency: product.currency,
+			compareAtPrice: product.compareAtPrice,
+			image: product.image,
+			gallery: product.gallery,
+			details: product.details,
+			isFeatured: product.isFeatured,
+			onSale: product.onSale,
+			isPublished: product.isPublished,
+			inventory: product.inventory,
+			sortOrder: product.sortOrder,
+			createdAt: product.createdAt,
+			categoryName: category.name,
+			categorySlug: category.slug
+		})
+		.from(product)
+		.innerJoin(category, eq(product.categoryId, category.id))
+		.where(and(inArray(product.id, productIds), eq(product.isPublished, true)));
+
+	const mapped = rows.map(mapProduct);
+	const byId = new Map(mapped.map((item) => [item.id, item]));
+
+	return productIds
+		.map((id) => byId.get(id))
+		.filter((item): item is ProductSummary => Boolean(item));
 }
 
 export async function searchProducts(query: string, limit = 6) {
