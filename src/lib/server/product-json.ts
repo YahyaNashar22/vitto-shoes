@@ -75,7 +75,16 @@ function normalizeDetail(value: unknown): ProductDetailSummary | null {
 		qty: asNumber(detail.qty ?? detail.Qty),
 		salesprice: asNumber(detail.salesprice ?? detail.SalesPrice),
 		currencycode: asString(detail.currencycode ?? detail.CurrencyCode) || 'USD',
-		isdim: asNumber(detail.isdim ?? detail.IsDim)
+		isdim: asNumber(detail.isdim ?? detail.IsDim),
+		image: asString(detail.image ?? detail.Image) || undefined,
+		gallery: Array.isArray(detail.gallery ?? detail.Gallery)
+			? ((detail.gallery ?? detail.Gallery) as unknown[])
+					.map((item) => asString(item))
+					.filter(Boolean)
+			: asString(detail.gallery ?? detail.Gallery)
+					.split(',')
+					.map((item) => item.trim())
+					.filter(Boolean)
 	};
 }
 

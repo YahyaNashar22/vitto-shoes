@@ -15,6 +15,7 @@ import { account, session, user, verification } from './auth.schema';
 
 export { account, session, user, verification };
 
+export const categoryParentGroupEnum = pgEnum('category_parent_group', ['men', 'women', 'kids']);
 export const orderStatusEnum = pgEnum('order_status', [
 	'pending',
 	'confirmed',
@@ -32,6 +33,7 @@ export const category = pgTable(
 		description: text('description').notNull().default(''),
 		image: text('image').notNull().default(''),
 		featured: boolean('featured').notNull().default(false),
+		parentGroup: categoryParentGroupEnum('parent_group').notNull().default('women'),
 		sortOrder: integer('sort_order').notNull().default(0),
 		createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 		updatedAt: timestamp('updated_at', { withTimezone: true })
@@ -85,6 +87,8 @@ export const product = pgTable(
 					salesprice: number;
 					currencycode: string;
 					isdim: number;
+					image?: string;
+					gallery?: string[];
 				}>
 			>()
 			.notNull()

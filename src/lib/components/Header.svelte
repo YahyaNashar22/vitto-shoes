@@ -2,7 +2,7 @@
 	import { browser } from '$app/environment';
 	import { resolve } from '$app/paths';
 	import { cartCount } from '$lib/stores/cart';
-	import type { CategorySummary } from '$lib/types';
+	import type { CategoryParentGroup, CategorySummary } from '$lib/types';
 
 	type SearchItem = {
 		id: string;
@@ -31,6 +31,18 @@
 
 	let debounceTimer: ReturnType<typeof setTimeout> | null = null;
 	let searchController: AbortController | null = null;
+	const parentGroupLabels: Record<CategoryParentGroup, string> = {
+		men: 'Men',
+		women: 'Women',
+		kids: 'Kids'
+	};
+	const groupedCategories = $derived.by(() =>
+		(['women', 'men', 'kids'] as CategoryParentGroup[]).map((group) => ({
+			group,
+			label: parentGroupLabels[group],
+			items: categories.filter((item: CategorySummary) => item.parentGroup === group)
+		}))
+	);
 
 	function closeMenus() {
 		drawerOpen = false;
@@ -130,6 +142,15 @@
 			return;
 		}
 
+		closeMenus();
+	}
+
+	async function openShopGroup(group?: CategoryParentGroup) {
+		if (group) {
+			window.location.href = `${resolve('/shop')}?group=${group}`;
+		} else {
+			window.location.href = resolve('/shop');
+		}
 		closeMenus();
 	}
 </script>
@@ -384,7 +405,7 @@
 			</div>
 
 			<nav class="mobile-drawer__nav">
-				<a href={resolve('/shop')} onclick={closeMenus}>New Arrivals</a>
+				<a href={resolve('/shop')} onclick={closeMenus}>Shop all</a>
 				<a href={resolve('/')} onclick={closeMenus}>Vitto Lifestyle</a>
 				<a href={resolve('/sale')} onclick={closeMenus}>On Sale</a>
 				<div class="mobile-drawer__group">
@@ -398,10 +419,26 @@
 						<span>{drawerCollectionsOpen ? '-' : '+'}</span>
 					</button>
 					<div class:open={drawerCollectionsOpen} class="mobile-drawer__submenu">
-						{#each categories as item (item.id)}
-							<a href={resolve('/collections/[slug]', { slug: item.slug })} onclick={closeMenus}>
-								{item.name}
-							</a>
+						{#each groupedCategories as section (section.group)}
+							<div class="mobile-drawer__submenu-group">
+								<button
+									class="mobile-drawer__submenu-parent"
+									type="button"
+									onclick={() => openShopGroup(section.group)}
+								>
+									{section.label}
+								</button>
+								<div class="mobile-drawer__submenu-links">
+									{#each section.items as item (item.id)}
+										<a
+											href={resolve('/collections/[slug]', { slug: item.slug })}
+											onclick={closeMenus}
+										>
+											{item.name}
+										</a>
+									{/each}
+								</div>
+							</div>
 						{/each}
 					</div>
 				</div>

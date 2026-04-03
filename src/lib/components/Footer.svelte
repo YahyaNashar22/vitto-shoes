@@ -43,8 +43,8 @@
 				<img class="brand-logo brand-logo--footer" src="/Viito Logo-01.png" alt="Vitto Shoes" />
 			</a>
 			<p class="footer-copy footer-brand-copy">
-				A family footwear business focused on effortless essentials, everyday wear, and a smoother
-				WhatsApp-first ordering experience across Lebanon.
+				A shoe brand born with years of experience since 1999. From women to men and kids, our
+				collections are designed for the whole family, combining elegance, comfort, and durability.
 			</p>
 		</section>
 

@@ -12,6 +12,30 @@
 		label: ''
 	});
 
+	type VariantDraft = {
+		id: string;
+		color: string;
+		size: string;
+		qty: number;
+		price: number | '';
+		barcode: string;
+		imageName: string;
+	};
+
+	function createVariantDraft(index = 0): VariantDraft {
+		return {
+			id: crypto.randomUUID(),
+			color: '',
+			size: '',
+			qty: 0,
+			price: '',
+			barcode: '',
+			imageName: index === 0 ? 'Recommended for color image' : ''
+		};
+	}
+
+	let variantRows = $state<VariantDraft[]>([createVariantDraft()]);
+
 	function validateImages(formData: FormData) {
 		for (const entry of [formData.get('imageFile'), ...formData.getAll('galleryFiles')]) {
 			if (entry instanceof File && entry.size > data.maxUploadBytes) {
@@ -40,6 +64,19 @@
 			},
 			validate: validateImages
 		};
+	}
+
+	function addVariantRow() {
+		variantRows = [...variantRows, createVariantDraft(variantRows.length)];
+	}
+
+	function removeVariantRow(id: string) {
+		if (variantRows.length === 1) {
+			variantRows = [createVariantDraft()];
+			return;
+		}
+
+		variantRows = variantRows.filter((row) => row.id !== id);
 	}
 </script>
 
@@ -172,12 +209,92 @@
 				<label class="form-row"
 					><span>Full description</span><textarea name="description"></textarea></label
 				>
-				<label class="form-row"
-					><span>Details JSON</span><textarea
-						name="details"
-						placeholder="Paste a JSON array of detail rows"
-					></textarea></label
-				>
+				<section class="variant-editor stack">
+					<div class="toolbar-row">
+						<div>
+							<h3>Variant builder</h3>
+							<p class="admin-helper">
+								Upload a dedicated image for each color so shoppers can switch visuals directly from
+								the product page.
+							</p>
+						</div>
+						<button class="button-secondary" type="button" onclick={addVariantRow}
+							>Add variant</button
+						>
+					</div>
+
+					<div class="variant-editor__list">
+						{#each variantRows as variant, index (variant.id)}
+							<div class="variant-editor__row">
+								<div class="field-grid">
+									<label class="form-row">
+										<span>Color</span>
+										<input name="variantColor" bind:value={variant.color} placeholder="Black" />
+									</label>
+									<label class="form-row">
+										<span>Size</span>
+										<input name="variantSize" bind:value={variant.size} placeholder="38" />
+									</label>
+									<label class="form-row">
+										<span>Qty</span>
+										<input name="variantQty" type="number" bind:value={variant.qty} />
+									</label>
+									<label class="form-row">
+										<span>Price</span>
+										<input
+											name="variantPrice"
+											type="number"
+											step="0.01"
+											bind:value={variant.price}
+										/>
+									</label>
+									<label class="form-row">
+										<span>Barcode</span>
+										<input
+											name="variantBarcode"
+											bind:value={variant.barcode}
+											placeholder="Unique variant barcode"
+										/>
+									</label>
+									<label class="form-row">
+										<span>Color image</span>
+										<input
+											name="variantImageFile"
+											type="file"
+											accept="image/*"
+											onchange={(event) => {
+												const input = event.currentTarget as HTMLInputElement;
+												variant.imageName = input.files?.[0]?.name || '';
+											}}
+										/>
+										<input type="hidden" name="variantImageExisting" value="" />
+										{#if variant.imageName}
+											<small class="table-note">{variant.imageName}</small>
+										{/if}
+									</label>
+								</div>
+								<div class="toolbar-row">
+									<p class="table-note">Variant {index + 1}</p>
+									<button
+										class="button-secondary"
+										type="button"
+										onclick={() => removeVariantRow(variant.id)}
+									>
+										Remove
+									</button>
+								</div>
+							</div>
+						{/each}
+					</div>
+
+					<label class="form-row">
+						<span>Advanced details JSON</span>
+						<textarea
+							name="details"
+							placeholder="Optional fallback JSON import. The structured variant rows above take priority when used."
+						></textarea>
+					</label>
+				</section>
 				<div class="chip-row">
 					<label class="checkbox-row"
 						><input type="checkbox" name="isFeatured" /> <span>Featured</span></label
@@ -210,6 +327,7 @@
 							<th>Product</th>
 							<th>Category</th>
 							<th>Price</th>
+							<th>Variants</th>
 							<th>Qty</th>
 							<th>State</th>
 							<th></th>
@@ -233,6 +351,7 @@
 								</td>
 								<td>{item.categoryName}</td>
 								<td>{formatCurrency(item.price)}</td>
+								<td>{item.details.length || 1}</td>
 								<td>{item.qty}</td>
 								<td
 									>{item.onSale ? 'Sale' : 'Regular'} / {item.isPublished

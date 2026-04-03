@@ -39,270 +39,470 @@ const adminUser = {
 	password: process.env.SEED_ADMIN_PASSWORD || 'VittoAdmin123!'
 };
 
-const categories = [
+const categorySeeds = [
 	{
-		name: 'City Essentials',
-		slug: 'city-essentials',
+		name: 'Shop',
+		slug: 'shop',
+		parentGroup: 'women',
 		description:
-			'Everyday pairs built for clean styling, fast browsing, and consistent best-seller appeal.',
+			'A broad storefront assortment covering best-sellers, easy gifting, and everyday picks.',
 		image: '/placeholder-category-2.webp',
 		featured: true,
 		sortOrder: 1
 	},
 	{
-		name: 'Refined Classics',
-		slug: 'refined-classics',
+		name: 'Slippers',
+		slug: 'slippers',
+		parentGroup: 'women',
 		description:
-			'Sharper silhouettes for dressed-up outfits, office wear, and polished daily looks.',
+			'Soft indoor and relaxed daily pairs focused on comfort, softness, and easy movement.',
 		image: '/placeholder-category-3.webp',
 		featured: true,
 		sortOrder: 2
 	},
 	{
-		name: 'Weekend Comfort',
-		slug: 'weekend-comfort',
-		description:
-			'Relaxed options that still look put together, ideal for casual rotation and easy movement.',
+		name: 'Waterproof Slides',
+		slug: 'waterproof-slides',
+		parentGroup: 'men',
+		description: 'Fast-drying slide shapes made for poolside, travel, and easy outdoor wear.',
 		image: '/placeholder-category-4.webp',
 		featured: true,
 		sortOrder: 3
 	},
 	{
-		name: 'Sale',
-		slug: 'sale',
+		name: 'Loafers & ballerinas',
+		slug: 'loafers-ballerinas',
+		parentGroup: 'women',
 		description:
-			'Discounted pairs used to drive promo browsing, sale badges, and markdown sections.',
+			'Polished flats and smart silhouettes built for workwear and refined daily outfits.',
+		image: '/placeholder-category-2.webp',
+		featured: true,
+		sortOrder: 4
+	},
+	{
+		name: 'Espedrilles',
+		slug: 'espedrilles',
+		parentGroup: 'women',
+		description: 'Warm-weather woven styles with casual elegance and lightweight comfort.',
+		image: '/placeholder-category-3.webp',
+		featured: false,
+		sortOrder: 5
+	},
+	{
+		name: 'Heeled Sandals',
+		slug: 'heeled-sandals',
+		parentGroup: 'women',
+		description: 'Dressier heeled pairs designed for events, dinners, and elevated summer looks.',
+		image: '/placeholder-category-4.webp',
+		featured: true,
+		sortOrder: 6
+	},
+	{
+		name: 'Scarp',
+		slug: 'scarp',
+		parentGroup: 'kids',
+		description: 'Assorted structured fashion styles with richer detailing and seasonal variety.',
 		image: '/placeholder-category-2.webp',
 		featured: false,
-		sortOrder: 4
+		sortOrder: 7
+	},
+	{
+		name: 'Sandals',
+		slug: 'sandals',
+		parentGroup: 'kids',
+		description:
+			'Open everyday sandals balancing simple styling, comfort, and repeated seasonal demand.',
+		image: '/placeholder-category-3.webp',
+		featured: true,
+		sortOrder: 8
+	},
+	{
+		name: 'Brazillian collection',
+		slug: 'brazillian-collection',
+		parentGroup: 'women',
+		description:
+			'Colorful vacation-ready assortment inspired by bold styling and warm-weather dressing.',
+		image: '/placeholder-category-4.webp',
+		featured: false,
+		sortOrder: 9
+	},
+	{
+		name: 'Spanish collection',
+		slug: 'spanish-collection',
+		parentGroup: 'men',
+		description:
+			'Refined continental styles with woven textures, feminine lines, and dressier finish.',
+		image: '/placeholder-category-2.webp',
+		featured: false,
+		sortOrder: 10
 	}
 ];
 
-const products = [
+const imagePool = [
+	'/placeholder-product-2.webp',
+	'/placeholder-product-3.webp',
+	'/placeholder-product-4.webp',
+	'/placeholder-product-5.webp',
+	'/placeholder-product-6.webp'
+];
+
+const productSeeds = [
 	{
-		categorySlug: 'city-essentials',
-		externalId: 1001,
-		code: 'VS-1001',
-		barcode: 'VS-1001',
-		name: 'Promax Street Move',
-		slug: 'promax-street-move',
-		sku: 'VS-1001',
-		shortDescription: 'A versatile daily pair with a clean profile and all-day wearability.',
-		description:
-			'Designed for quick movement, clean styling, and dependable comfort across daily city use.',
-		color: 'Black',
-		material: 'Soft faux leather',
-		xDim: 'black',
-		yDim: '38',
-		qty: 14,
-		price: '79.00',
-		currency: 'USD',
-		compareAtPrice: '95.00',
-		image: '/placeholder-product-2.webp',
-		gallery: ['/placeholder-product-2.webp'],
-		details: [],
-		isFeatured: true,
-		onSale: true,
-		isPublished: true,
-		sortOrder: 1
+		categorySlug: 'shop',
+		name: 'Vitto Everyday Pick',
+		colorFamily: ['black', 'beige', 'white'],
+		sizes: ['36', '37', '38', '39'],
+		price: 24,
+		compareAtPrice: 30,
+		imageIndex: 0,
+		featured: true,
+		onSale: true
 	},
 	{
-		categorySlug: 'city-essentials',
-		externalId: 1002,
-		code: 'VS-1002',
-		barcode: 'VS-1002',
-		name: 'Nova Glide Runner',
-		slug: 'nova-glide-runner',
-		sku: 'VS-1002',
-		shortDescription: 'Soft everyday runner with a flexible sole and clean upper.',
-		description:
-			'A casual best-seller style that works well for lightweight use and fast-moving catalog pages.',
-		color: 'White',
-		material: 'Matte synthetic',
-		xDim: 'white',
-		yDim: '39',
-		qty: 11,
-		price: '84.00',
-		currency: 'USD',
+		categorySlug: 'shop',
+		name: 'Daily Motion Pair',
+		colorFamily: ['tan', 'stone', 'black'],
+		sizes: ['37', '38', '39', '40'],
+		price: 26,
 		compareAtPrice: null,
-		image: '/placeholder-product-3.webp',
-		gallery: ['/placeholder-product-3.webp'],
-		details: [],
-		isFeatured: true,
-		onSale: false,
-		isPublished: true,
-		sortOrder: 2
+		imageIndex: 1,
+		featured: true,
+		onSale: false
 	},
 	{
-		categorySlug: 'refined-classics',
-		externalId: 2001,
-		code: 'VS-2001',
-		barcode: 'VS-2001',
-		name: 'Milano Office Loafer',
-		slug: 'milano-office-loafer',
-		sku: 'VS-2001',
-		shortDescription: 'A polished loafer with a balanced shape and comfortable structure.',
-		description:
-			'Built for dressed-up looks without feeling too rigid, ideal for formal and smart casual wear.',
-		color: 'Black',
-		material: 'Premium synthetic',
-		xDim: 'black',
-		yDim: '41',
-		qty: 9,
-		price: '92.00',
-		currency: 'USD',
-		compareAtPrice: '108.00',
-		image: '/placeholder-product-4.webp',
-		gallery: ['/placeholder-product-4.webp'],
-		details: [],
-		isFeatured: true,
-		onSale: true,
-		isPublished: true,
-		sortOrder: 1
+		categorySlug: 'slippers',
+		name: 'Cloud Soft Slipper',
+		colorFamily: ['cream', 'pink', 'black'],
+		sizes: ['36', '37', '38', '39'],
+		price: 18,
+		compareAtPrice: 22,
+		imageIndex: 2,
+		featured: true,
+		onSale: true
 	},
 	{
-		categorySlug: 'weekend-comfort',
-		externalId: 3001,
-		code: 'VS-3001',
-		barcode: 'VS-3001',
-		name: 'Luna Comfort Slide',
-		slug: 'luna-comfort-slide',
-		sku: 'VS-3001',
-		shortDescription: 'An easy comfort-first option with a clean relaxed shape.',
-		description:
-			'A practical casual pair that also carries size and color details for import and export testing.',
-		color: 'Stone',
-		material: 'Soft strap synthetic',
-		xDim: 'stone',
-		yDim: '',
-		qty: 20,
-		price: '61.00',
-		currency: 'USD',
-		compareAtPrice: '74.00',
-		image: '/placeholder-product-5.webp',
-		gallery: ['/placeholder-product-5.webp'],
-		details: [
-			{
-				itemid: 3001,
-				itemcode: 'VS-3001',
-				itembarcode: 'VS-3001-37',
-				itembarcodeid: null,
-				itemname: 'Luna Comfort Slide',
-				itemdescription: '',
-				xdim: 'stone',
-				ydim: '37',
-				qty: 1,
-				salesprice: 61,
-				currencycode: 'USD',
-				isdim: 1
-			},
-			{
-				itemid: 3001,
-				itemcode: 'VS-3001',
-				itembarcode: 'VS-3001-38',
-				itembarcodeid: null,
-				itemname: 'Luna Comfort Slide',
-				itemdescription: '',
-				xdim: 'stone',
-				ydim: '38',
-				qty: 1,
-				salesprice: 61,
-				currencycode: 'USD',
-				isdim: 1
-			}
-		],
-		isFeatured: true,
-		onSale: true,
-		isPublished: true,
-		sortOrder: 1
-	},
-	{
-		categorySlug: 'sale',
-		externalId: 4001,
-		code: 'VS-4001',
-		barcode: 'VS-4001',
-		name: 'Aster Sale Sneaker',
-		slug: 'aster-sale-sneaker',
-		sku: 'VS-4001',
-		shortDescription: 'Markdown-ready everyday sneaker for promo-heavy catalog sections.',
-		description:
-			'Seeded specifically for sale merchandising, comparison prices, and homepage promo placement.',
-		color: 'Grey',
-		material: 'Textured synthetic',
-		xDim: 'grey',
-		yDim: '40',
-		qty: 7,
-		price: '49.00',
-		currency: 'USD',
-		compareAtPrice: '69.00',
-		image: '/placeholder-product-6.webp',
-		gallery: ['/placeholder-product-6.webp'],
-		details: [],
-		isFeatured: false,
-		onSale: true,
-		isPublished: true,
-		sortOrder: 1
-	},
-	{
-		categorySlug: 'refined-classics',
-		externalId: 2002,
-		code: 'VS-2002',
-		barcode: 'VS-2002',
-		name: 'Sarto Clean Derby',
-		slug: 'sarto-clean-derby',
-		sku: 'VS-2002',
-		shortDescription: 'Structured derby profile with a clean toe and slim proportions.',
-		description:
-			'A sharper catalog option that rounds out the formal section and uses the remaining product artwork.',
-		color: 'Black',
-		material: 'Smooth synthetic',
-		xDim: 'black',
-		yDim: '42',
-		qty: 8,
-		price: '99.00',
-		currency: 'USD',
+		categorySlug: 'slippers',
+		name: 'Home Cozy Step',
+		colorFamily: ['taupe', 'camel', 'grey'],
+		sizes: ['37', '38', '39', '40'],
+		price: 19,
 		compareAtPrice: null,
-		image: '/placeholder-product-2.webp',
-		gallery: ['/placeholder-product-2.webp'],
-		details: [],
-		isFeatured: false,
-		onSale: false,
-		isPublished: true,
-		sortOrder: 2
+		imageIndex: 3,
+		featured: false,
+		onSale: false
+	},
+	{
+		categorySlug: 'waterproof-slides',
+		name: 'Aqua Flex Slide',
+		colorFamily: ['black', 'olive', 'cream'],
+		sizes: ['36', '37', '38', '39', '40'],
+		price: 17,
+		compareAtPrice: 21,
+		imageIndex: 4,
+		featured: true,
+		onSale: true
+	},
+	{
+		categorySlug: 'waterproof-slides',
+		name: 'Poolside Dry Slide',
+		colorFamily: ['beige', 'mint', 'black'],
+		sizes: ['37', '38', '39', '40'],
+		price: 18,
+		compareAtPrice: null,
+		imageIndex: 0,
+		featured: false,
+		onSale: false
+	},
+	{
+		categorySlug: 'loafers-ballerinas',
+		name: 'Milano Soft Loafer',
+		colorFamily: ['black', 'camel', 'nude'],
+		sizes: ['36', '37', '38', '39', '40'],
+		price: 33,
+		compareAtPrice: 41,
+		imageIndex: 1,
+		featured: true,
+		onSale: true
+	},
+	{
+		categorySlug: 'loafers-ballerinas',
+		name: 'Bella Flat Ballerina',
+		colorFamily: ['nude', 'black', 'red'],
+		sizes: ['36', '37', '38', '39'],
+		price: 31,
+		compareAtPrice: null,
+		imageIndex: 2,
+		featured: true,
+		onSale: false
+	},
+	{
+		categorySlug: 'espedrilles',
+		name: 'Costa Rope Espedrille',
+		colorFamily: ['natural', 'tan', 'black'],
+		sizes: ['36', '37', '38', '39', '40'],
+		price: 28,
+		compareAtPrice: 34,
+		imageIndex: 3,
+		featured: false,
+		onSale: true
+	},
+	{
+		categorySlug: 'espedrilles',
+		name: 'Seaside Woven Pair',
+		colorFamily: ['sand', 'white', 'camel'],
+		sizes: ['37', '38', '39', '40'],
+		price: 29,
+		compareAtPrice: null,
+		imageIndex: 4,
+		featured: false,
+		onSale: false
+	},
+	{
+		categorySlug: 'heeled-sandals',
+		name: 'Luna Heel Sandal',
+		colorFamily: ['black', 'gold', 'nude'],
+		sizes: ['36', '37', '38', '39'],
+		price: 39,
+		compareAtPrice: 47,
+		imageIndex: 0,
+		featured: true,
+		onSale: true
+	},
+	{
+		categorySlug: 'heeled-sandals',
+		name: 'Event Strap Heel',
+		colorFamily: ['silver', 'black', 'beige'],
+		sizes: ['37', '38', '39', '40'],
+		price: 41,
+		compareAtPrice: null,
+		imageIndex: 1,
+		featured: true,
+		onSale: false
+	},
+	{
+		categorySlug: 'scarp',
+		name: 'Classic Scarp Line',
+		colorFamily: ['brown', 'black', 'beige'],
+		sizes: ['36', '37', '38', '39', '40'],
+		price: 27,
+		compareAtPrice: 33,
+		imageIndex: 2,
+		featured: false,
+		onSale: true
+	},
+	{
+		categorySlug: 'scarp',
+		name: 'Modern Scarp Lift',
+		colorFamily: ['navy', 'stone', 'black'],
+		sizes: ['37', '38', '39', '40'],
+		price: 29,
+		compareAtPrice: null,
+		imageIndex: 3,
+		featured: false,
+		onSale: false
+	},
+	{
+		categorySlug: 'sandals',
+		name: 'Everyday Open Sandal',
+		colorFamily: ['tan', 'black', 'white'],
+		sizes: ['36', '37', '38', '39', '40'],
+		price: 23,
+		compareAtPrice: 29,
+		imageIndex: 4,
+		featured: true,
+		onSale: true
+	},
+	{
+		categorySlug: 'sandals',
+		name: 'Minimal Comfort Sandal',
+		colorFamily: ['stone', 'olive', 'cream'],
+		sizes: ['37', '38', '39', '40'],
+		price: 24,
+		compareAtPrice: null,
+		imageIndex: 0,
+		featured: true,
+		onSale: false
+	},
+	{
+		categorySlug: 'brazillian-collection',
+		name: 'Rio Bright Slide',
+		colorFamily: ['yellow', 'pink', 'green'],
+		sizes: ['36', '37', '38', '39'],
+		price: 25,
+		compareAtPrice: 31,
+		imageIndex: 1,
+		featured: false,
+		onSale: true
+	},
+	{
+		categorySlug: 'brazillian-collection',
+		name: 'Copacabana Summer Pair',
+		colorFamily: ['orange', 'turquoise', 'white'],
+		sizes: ['37', '38', '39', '40'],
+		price: 27,
+		compareAtPrice: null,
+		imageIndex: 2,
+		featured: false,
+		onSale: false
+	},
+	{
+		categorySlug: 'spanish-collection',
+		name: 'Valencia Woven Heel',
+		colorFamily: ['tan', 'black', 'red'],
+		sizes: ['36', '37', '38', '39'],
+		price: 36,
+		compareAtPrice: 44,
+		imageIndex: 3,
+		featured: true,
+		onSale: true
+	},
+	{
+		categorySlug: 'spanish-collection',
+		name: 'Madrid Classic Flat',
+		colorFamily: ['cream', 'black', 'gold'],
+		sizes: ['37', '38', '39', '40'],
+		price: 34,
+		compareAtPrice: null,
+		imageIndex: 4,
+		featured: false,
+		onSale: false
 	}
 ];
+
+function titleToSlug(value) {
+	return value
+		.toLowerCase()
+		.replace(/&/g, 'and')
+		.replace(/[^a-z0-9]+/g, '-')
+		.replace(/^-|-$/g, '');
+}
+
+function titleToCode(value) {
+	return value
+		.toUpperCase()
+		.replace(/[^A-Z0-9]+/g, '-')
+		.replace(/^-|-$/g, '');
+}
+
+function buildDetails(seed, externalId, itemCode) {
+	const details = [];
+	let barcodeSequence = 1;
+
+	for (const [colorIndex, color] of seed.colorFamily.entries()) {
+		const variantImage = imagePool[(seed.imageIndex + colorIndex) % imagePool.length];
+		for (const size of seed.sizes) {
+			const qty = 1 + ((externalId + barcodeSequence) % 4);
+			details.push({
+				itemid: externalId,
+				itemcode: itemCode,
+				itembarcode: `${itemCode}-${String(barcodeSequence).padStart(3, '0')}`,
+				itembarcodeid: null,
+				itemname: seed.name,
+				itemdescription: `${seed.name} ${color} ${size}`,
+				xdim: color,
+				ydim: size,
+				qty,
+				salesprice: seed.price,
+				currencycode: 'USD',
+				isdim: 1,
+				image: variantImage
+			});
+			barcodeSequence += 1;
+		}
+	}
+
+	return details;
+}
+
+const products = productSeeds.map((seed, index) => {
+	const externalId = 5000 + index + 1;
+	const slug = titleToSlug(seed.name);
+	const itemCode = `VT-${String(externalId).slice(-4)}-${titleToCode(seed.categorySlug).slice(0, 4)}`;
+	const details = buildDetails(seed, externalId, itemCode);
+	const totalQty = details.reduce((sum, item) => sum + item.qty, 0);
+	const primaryDetail = details[0];
+	const primaryImage = imagePool[seed.imageIndex % imagePool.length];
+	const secondaryImage = imagePool[(seed.imageIndex + 1) % imagePool.length];
+
+	return {
+		categorySlug: seed.categorySlug,
+		externalId,
+		code: itemCode,
+		barcode: itemCode,
+		name: seed.name,
+		slug,
+		sku: itemCode,
+		shortDescription: `${seed.name} in multiple colors and sizes for a richer storefront demo.`,
+		description: `${seed.name} is seeded with a full variation set so the client can test filtering, wishlist, cart variants, and admin product handling with realistic demo inventory.`,
+		color: primaryDetail.xdim,
+		material: 'Synthetic leather',
+		xDim: primaryDetail.xdim,
+		yDim: primaryDetail.ydim,
+		qty: totalQty,
+		price: seed.price.toFixed(2),
+		currency: 'USD',
+		compareAtPrice: seed.compareAtPrice ? seed.compareAtPrice.toFixed(2) : null,
+		image: primaryImage,
+		gallery: [primaryImage, secondaryImage],
+		details,
+		isFeatured: seed.featured,
+		onSale: seed.onSale,
+		isPublished: true,
+		sortOrder: index + 1
+	};
+});
 
 const sampleOrder = {
-	orderNumber: 'VS-DEMO-1001',
+	orderNumber: 'VS-DEMO-2001',
 	status: 'pending',
 	customerName: 'Demo Customer',
 	customerPhone: '+961 70 000 000',
 	customerEmail: 'demo@example.com',
 	customerCity: 'Beirut',
 	customerAddress: 'Hamra Street, Building 12',
-	notes: 'Please confirm on WhatsApp before delivery.',
-	whatsappMessage:
-		'New order VS-DEMO-1001\nName: Demo Customer\nPhone: +961 70 000 000\nItems:\n- Promax Street Move x1 = $79.00\n- Luna Comfort Slide x2 = $122.00\nTotal: $201.00',
-	subtotal: '201.00',
-	total: '201.00'
+	notes: 'Please confirm color availability on WhatsApp before delivery.',
+	subtotal: '73.00',
+	total: '73.00'
 };
 
 const sampleOrderItems = [
-	{ sku: 'VS-1001', quantity: 1, unitPrice: '79.00', lineTotal: '79.00' },
-	{ sku: 'VS-3001', quantity: 2, unitPrice: '61.00', lineTotal: '122.00' }
+	{ sku: products[0].sku, quantity: 1, unitPrice: products[0].price, lineTotal: products[0].price },
+	{
+		sku: products[10].sku,
+		quantity: 1,
+		unitPrice: products[10].price,
+		lineTotal: products[10].price
+	}
 ];
+
+sampleOrder.whatsappMessage = [
+	`New order ${sampleOrder.orderNumber}`,
+	`Name: ${sampleOrder.customerName}`,
+	`Phone: ${sampleOrder.customerPhone}`,
+	'Items:',
+	`- ${products[0].name} x1 = $${products[0].price}`,
+	`- ${products[10].name} x1 = $${products[10].price}`,
+	`Total: $${sampleOrder.total}`
+].join('\n');
 
 try {
 	await sql.begin(async (tx) => {
+		try {
+			await tx`delete from wishlist_item`;
+		} catch (error) {
+			if (!String(error).includes('wishlist_item')) {
+				throw error;
+			}
+		}
 		await tx`delete from order_item`;
 		await tx`delete from "order"`;
 		await tx`delete from product`;
 		await tx`delete from category`;
 
-		for (const item of categories) {
+		for (const item of categorySeeds) {
 			await tx`
-				insert into category (name, slug, description, image, featured, sort_order)
-				values (${item.name}, ${item.slug}, ${item.description}, ${item.image}, ${item.featured}, ${item.sortOrder})
+				insert into category (name, slug, description, image, featured, parent_group, sort_order)
+				values (${item.name}, ${item.slug}, ${item.description}, ${item.image}, ${item.featured}, ${item.parentGroup}, ${item.sortOrder})
 			`;
 		}
 
@@ -404,6 +604,8 @@ try {
 	`;
 
 	console.log('Seed completed successfully.');
+	console.log(`Categories: ${categorySeeds.length}`);
+	console.log(`Products: ${products.length}`);
 	console.log(`Admin email: ${adminUser.email}`);
 	console.log(`Admin password: ${adminUser.password}`);
 } catch (error) {

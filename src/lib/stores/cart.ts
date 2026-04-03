@@ -34,6 +34,7 @@ function createCartStore() {
 				label?: string;
 				price?: number;
 				maxQuantity?: number;
+				image?: string;
 			}
 		) {
 			update((items) => {
@@ -70,7 +71,7 @@ function createCartStore() {
 						productId: product.id,
 						name: product.name,
 						slug: product.slug,
-						image: product.image,
+						image: variant?.image || product.image,
 						price,
 						quantity: Math.min(quantity, limit),
 						categoryName: product.categoryName,

@@ -17,6 +17,9 @@ import {
 	UploadError
 } from '$lib/server/uploads';
 import { slugify } from '$lib/utils';
+import type { ProductDetailSummary } from '$lib/types';
+
+const CATEGORY_PARENT_GROUPS = ['men', 'women', 'kids'] as const;
 
 function asString(formData: FormData, key: string) {
 	return formData.get(key)?.toString().trim() ?? '';
@@ -30,6 +33,13 @@ function asBool(formData: FormData, key: string) {
 	return formData.get(key) === 'on' || formData.get(key) === 'true' || formData.get(key) === '1';
 }
 
+function asCategoryParentGroup(formData: FormData, key: string) {
+	const value = asString(formData, key).toLowerCase();
+	return CATEGORY_PARENT_GROUPS.includes(value as (typeof CATEGORY_PARENT_GROUPS)[number])
+		? (value as (typeof CATEGORY_PARENT_GROUPS)[number])
+		: 'women';
+}
+
 function parseDetails(raw: string) {
 	if (!raw.trim()) return [];
 
@@ -39,6 +49,99 @@ function parseDetails(raw: string) {
 	} catch {
 		return [];
 	}
+}
+
+function sanitizeDetail(detail: Record<string, unknown>): ProductDetailSummary {
+	return {
+		itemid: typeof detail.itemid === 'number' ? detail.itemid : Number(detail.itemid ?? 0) || null,
+		itemcode: String(detail.itemcode ?? ''),
+		itembarcode: String(detail.itembarcode ?? ''),
+		itembarcodeid: detail.itembarcodeid ? String(detail.itembarcodeid) : null,
+		itemname: String(detail.itemname ?? ''),
+		itemdescription: String(detail.itemdescription ?? ''),
+		xdim: String(detail.xdim ?? ''),
+		ydim: String(detail.ydim ?? ''),
+		qty: Number(detail.qty ?? 0),
+		salesprice: Number(detail.salesprice ?? 0),
+		currencycode: String(detail.currencycode ?? 'USD'),
+		isdim: Number(detail.isdim ?? 1) || 1,
+		image: detail.image ? String(detail.image) : undefined,
+		gallery: Array.isArray(detail.gallery)
+			? detail.gallery.map((item) => String(item)).filter(Boolean)
+			: undefined
+	};
+}
+
+async function buildProductDetailsFromFormData(
+	formData: FormData,
+	existingDetails: ProductDetailSummary[] = []
+) {
+	const variantColors = formData.getAll('variantColor').map((value) => value.toString().trim());
+	const variantSizes = formData.getAll('variantSize').map((value) => value.toString().trim());
+	const variantQtys = formData.getAll('variantQty').map((value) => Number(value.toString() || 0));
+	const variantPrices = formData
+		.getAll('variantPrice')
+		.map((value) => Number(value.toString() || 0));
+	const variantBarcodes = formData.getAll('variantBarcode').map((value) => value.toString().trim());
+	const variantImageFiles = formData.getAll('variantImageFile');
+	const variantImageExisting = formData
+		.getAll('variantImageExisting')
+		.map((value) => value.toString().trim());
+
+	const rowCount = Math.max(
+		variantColors.length,
+		variantSizes.length,
+		variantQtys.length,
+		variantPrices.length,
+		variantBarcodes.length,
+		variantImageExisting.length
+	);
+
+	if (!rowCount) {
+		return parseDetails(asString(formData, 'details'))
+			.map((item) => sanitizeDetail(item as Record<string, unknown>))
+			.filter((item) => item.itembarcode || item.xdim || item.ydim);
+	}
+
+	const rows: ProductDetailSummary[] = [];
+
+	for (let index = 0; index < rowCount; index += 1) {
+		const color = variantColors[index] ?? '';
+		const size = variantSizes[index] ?? '';
+		const qty = Number.isFinite(variantQtys[index]) ? variantQtys[index] : 0;
+		const price = Number.isFinite(variantPrices[index]) ? variantPrices[index] : 0;
+		const barcode = variantBarcodes[index] ?? '';
+
+		const hasRow = color || size || barcode || qty > 0 || price > 0;
+		if (!hasRow) continue;
+
+		const existingRow = existingDetails[index];
+		const imageFromUpload = await saveUploadedImage(variantImageFiles[index], 'products');
+
+		rows.push({
+			itemid:
+				typeof existingRow?.itemid === 'number'
+					? existingRow.itemid
+					: asString(formData, 'externalId')
+						? asNumber(formData, 'externalId')
+						: null,
+			itemcode: barcode || existingRow?.itemcode || asString(formData, 'code'),
+			itembarcode: barcode,
+			itembarcodeid: existingRow?.itembarcodeid ?? null,
+			itemname: asString(formData, 'name'),
+			itemdescription: asString(formData, 'shortDescription') || asString(formData, 'description'),
+			xdim: color,
+			ydim: size,
+			qty,
+			salesprice: price || asNumber(formData, 'price'),
+			currencycode: asString(formData, 'currency') || 'USD',
+			isdim: 1,
+			image: imageFromUpload || variantImageExisting[index] || existingRow?.image || undefined,
+			gallery: existingRow?.gallery
+		});
+	}
+
+	return rows;
 }
 
 export async function ensureFallbackCategoryId() {
@@ -182,6 +285,7 @@ export async function saveCategoryAction(request: Request) {
 		description: asString(formData, 'description'),
 		image: uploadedImage,
 		featured: asBool(formData, 'featured'),
+		parentGroup: asCategoryParentGroup(formData, 'parentGroup'),
 		sortOrder: asNumber(formData, 'sortOrder')
 	};
 
@@ -226,6 +330,17 @@ export async function importCategoriesAction(request: Request) {
 			description: String(row.description || row.Description || ''),
 			image: String(row.image || row.Image || ''),
 			featured: String(row.featured || row.Featured || '').toLowerCase() === 'true',
+			parentGroup: CATEGORY_PARENT_GROUPS.includes(
+				String(row.parentGroup || row.ParentGroup || 'women').toLowerCase() as
+					| 'men'
+					| 'women'
+					| 'kids'
+			)
+				? (String(row.parentGroup || row.ParentGroup || 'women').toLowerCase() as
+						| 'men'
+						| 'women'
+						| 'kids')
+				: 'women',
 			sortOrder: Number(row.sortOrder || row.SortOrder || 0)
 		};
 
@@ -275,6 +390,30 @@ export async function saveProductAction(request: Request) {
 		throw error;
 	}
 
+	const details = await buildProductDetailsFromFormData(formData, existing[0]?.details ?? []);
+	const derivedQty = details.length
+		? details.reduce((sum, item) => sum + Math.max(item.qty, 0), 0)
+		: asNumber(formData, 'qty');
+	const derivedColor = details[0]?.xdim || asString(formData, 'color');
+	const derivedXDim = details[0]?.xdim || asString(formData, 'xDim');
+	const derivedYDim = details[0]?.ydim || asString(formData, 'yDim');
+	const firstVariantImage = details.find((item) => item.image)?.image || '';
+	const variantGallery = Array.from(
+		new Set(
+			details
+				.flatMap((item) => [item.image, ...(item.gallery ?? [])])
+				.filter((item): item is string => Boolean(item))
+		)
+	);
+
+	if (!uploadedImage && firstVariantImage) {
+		uploadedImage = firstVariantImage;
+	}
+
+	if (!uploadedGallery.length && variantGallery.length) {
+		uploadedGallery = variantGallery;
+	}
+
 	const values = {
 		categoryId,
 		externalId: asString(formData, 'externalId') ? asNumber(formData, 'externalId') : null,
@@ -285,11 +424,11 @@ export async function saveProductAction(request: Request) {
 		sku,
 		shortDescription: asString(formData, 'shortDescription'),
 		description: asString(formData, 'description'),
-		color: asString(formData, 'color'),
+		color: derivedColor,
 		material: asString(formData, 'material'),
-		xDim: asString(formData, 'xDim'),
-		yDim: asString(formData, 'yDim'),
-		qty: asNumber(formData, 'qty'),
+		xDim: derivedXDim,
+		yDim: derivedYDim,
+		qty: derivedQty,
 		price: asNumber(formData, 'price').toFixed(2),
 		currency: asString(formData, 'currency') || 'USD',
 		compareAtPrice: asString(formData, 'compareAtPrice')
@@ -297,11 +436,11 @@ export async function saveProductAction(request: Request) {
 			: null,
 		image: uploadedImage,
 		gallery: uploadedGallery,
-		details: parseDetails(asString(formData, 'details')),
+		details,
 		isFeatured: asBool(formData, 'isFeatured'),
 		onSale: asBool(formData, 'onSale'),
 		isPublished: asBool(formData, 'isPublished'),
-		inventory: asNumber(formData, 'qty'),
+		inventory: derivedQty,
 		sortOrder: asNumber(formData, 'sortOrder')
 	};
 

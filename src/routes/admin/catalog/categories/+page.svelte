@@ -95,6 +95,14 @@
 				<div class="field-grid">
 					<label class="form-row"><span>Name</span><input name="name" required /></label>
 					<label class="form-row"><span>Slug</span><input name="slug" /></label>
+					<label class="form-row">
+						<span>Parent group</span>
+						<select name="parentGroup" required>
+							<option value="women">Women</option>
+							<option value="men">Men</option>
+							<option value="kids">Kids</option>
+						</select>
+					</label>
 					<label class="form-row"
 						><span>Sort order</span><input name="sortOrder" type="number" value="0" /></label
 					>
@@ -142,6 +150,7 @@
 					<thead>
 						<tr>
 							<th>Category</th>
+							<th>Group</th>
 							<th>Slug</th>
 							<th>Products</th>
 							<th></th>
@@ -163,6 +172,7 @@
 										</div>
 									</div>
 								</td>
+								<td>{item.parentGroup}</td>
 								<td>{item.slug}</td>
 								<td>{item.productCount ?? 0}</td>
 								<td>

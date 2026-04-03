@@ -19,10 +19,10 @@
 	let { data } = $props<{ data: PageData }>();
 	const product = $derived(data.product);
 
-	const gallery = $derived.by(() =>
+	const detailOptions = $derived.by<ProductDetailSummary[]>(() => product.details ?? []);
+	const baseGallery = $derived.by(() =>
 		Array.from(new Set([product.image, ...product.gallery].filter(Boolean)))
 	);
-	const detailOptions = $derived.by<ProductDetailSummary[]>(() => product.details ?? []);
 	let currentIndex = $state(0);
 	let zoomOpen = $state(false);
 	let quantity = $state(1);
@@ -36,8 +36,6 @@
 	let detailTab = $state<'description' | 'shipping'>('description');
 	let isWishlisted = $state(false);
 	let wishlistPending = $state(false);
-
-	const currentImage = $derived(gallery[currentIndex] || '/placeholder-product.svg');
 	const savingsPercent = $derived(
 		product.compareAtPrice && product.compareAtPrice > product.price
 			? Math.round(((product.compareAtPrice - product.price) / product.compareAtPrice) * 100)
@@ -49,6 +47,24 @@
 		)
 	);
 	const fallbackColor = $derived(product.xDim || product.color || '');
+	const colorMedia = $derived.by(() => {
+		const media: Record<string, string[]> = {};
+
+		for (const item of detailOptions) {
+			const color = item.xdim?.trim();
+			if (!color) continue;
+
+			const entries = Array.from(new Set([item.image, ...(item.gallery ?? [])].filter(Boolean)));
+			if (!entries.length) continue;
+
+			const existing = media[color] ?? [];
+			media[color] = Array.from(new Set([...existing, ...entries])).filter(
+				(entry): entry is string => Boolean(entry)
+			);
+		}
+
+		return media;
+	});
 	let selectedColor = $state('');
 	const sizeOptions = $derived.by(() =>
 		Array.from(
@@ -79,6 +95,18 @@
 		);
 		return byColor ?? detailOptions[0] ?? null;
 	});
+	const gallery = $derived.by(() => {
+		if (selectedColor && colorMedia[selectedColor]?.length) {
+			return colorMedia[selectedColor];
+		}
+
+		const selectedVariantMedia = Array.from(
+			new Set([selectedVariant?.image, ...(selectedVariant?.gallery ?? [])].filter(Boolean))
+		);
+
+		return selectedVariantMedia.length ? selectedVariantMedia : baseGallery;
+	});
+	const currentImage = $derived(gallery[currentIndex] || '/placeholder-product.svg');
 	const displayPrice = $derived(selectedVariant?.salesprice ?? product.price);
 	const availableQuantity = $derived(selectedVariant?.qty ?? product.inventory);
 	const variantLabel = $derived(
@@ -153,6 +181,12 @@
 		}
 	});
 
+	$effect(() => {
+		if (currentIndex > gallery.length - 1) {
+			currentIndex = 0;
+		}
+	});
+
 	onMount(() => {
 		if (!browser) {
 			return;
@@ -211,7 +245,8 @@
 			size: selectedVariant?.ydim || selectedSize || product.yDim,
 			label: variantLabel,
 			price: displayPrice,
-			maxQuantity: availableQuantity
+			maxQuantity: availableQuantity,
+			image: currentImage
 		});
 		await goto(resolve('/cart'));
 	}
@@ -393,11 +428,17 @@
 					{#each colorOptions as color (color)}
 						<button
 							class:active={selectedColor === color}
-							class="product-option-button"
+							class="product-option-button product-option-button--media"
 							type="button"
-							onclick={() => (selectedColor = color)}
+							onclick={() => {
+								selectedColor = color;
+								currentIndex = 0;
+							}}
 						>
-							{color}
+							{#if colorMedia[color]?.[0]}
+								<img src={colorMedia[color][0]} alt={color} loading="lazy" />
+							{/if}
+							<span>{color}</span>
 						</button>
 					{/each}
 				</div>

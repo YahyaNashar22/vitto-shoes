@@ -1,5 +1,7 @@
 import type { ORDER_STATUSES } from './constants';
 
+export type CategoryParentGroup = 'men' | 'women' | 'kids';
+
 export type CategorySummary = {
 	id: string;
 	name: string;
@@ -8,6 +10,7 @@ export type CategorySummary = {
 	image: string;
 	featured: boolean;
 	sortOrder: number;
+	parentGroup: CategoryParentGroup;
 	productCount?: number;
 };
 
@@ -24,6 +27,8 @@ export type ProductDetailSummary = {
 	salesprice: number;
 	currencycode: string;
 	isdim: number;
+	image?: string;
+	gallery?: string[];
 };
 
 export type ProductSummary = {

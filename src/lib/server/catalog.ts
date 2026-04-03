@@ -20,6 +20,7 @@ export type ProductSearchResult = {
 
 export type CatalogFilters = {
 	category?: string | null;
+	parentGroup?: string | null;
 	onSale?: boolean;
 	query?: string | null;
 	sort?: string | null;
@@ -107,6 +108,7 @@ export async function getCategories() {
 			description: category.description,
 			image: category.image,
 			featured: category.featured,
+			parentGroup: category.parentGroup,
 			sortOrder: category.sortOrder,
 			productCount: count(product.id)
 		})
@@ -119,6 +121,7 @@ export async function getCategories() {
 			category.description,
 			category.image,
 			category.featured,
+			category.parentGroup,
 			category.sortOrder
 		)
 		.orderBy(asc(category.sortOrder), asc(category.name));
@@ -146,6 +149,10 @@ export async function getProducts(filters: CatalogFilters = {}) {
 
 	if (filters.category) {
 		conditions.push(eq(category.slug, filters.category));
+	}
+
+	if (filters.parentGroup) {
+		conditions.push(eq(category.parentGroup, filters.parentGroup as 'men' | 'women' | 'kids'));
 	}
 
 	if (filters.onSale) {

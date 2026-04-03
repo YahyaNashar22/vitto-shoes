@@ -6,6 +6,7 @@ export async function GET(event) {
 	requireAdmin(event);
 	const rows = (await getCategories()).map((item) => ({
 		name: item.name,
+		parentGroup: item.parentGroup,
 		slug: item.slug,
 		description: item.description,
 		image: item.image,
