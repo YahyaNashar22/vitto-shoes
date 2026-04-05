@@ -247,23 +247,6 @@
 			<button
 				class="icon-link icon-link--plain"
 				type="button"
-				aria-label="Wishlist"
-				onclick={openWishlist}
-			>
-				<svg viewBox="0 0 24 24" aria-hidden="true">
-					<path
-						d="M12 20.3 4.7 13.5a4.7 4.7 0 0 1 6.6-6.7l.7.8.7-.8a4.7 4.7 0 0 1 6.6 6.7L12 20.3Z"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="1.8"
-						stroke-linejoin="round"
-					/>
-				</svg>
-			</button>
-
-			<button
-				class="icon-link icon-link--plain"
-				type="button"
 				aria-label="Search the store"
 				aria-controls="site-navigation-drawer"
 				onclick={openSearchDrawer}
@@ -276,6 +259,23 @@
 						stroke="currentColor"
 						stroke-width="1.8"
 						stroke-linecap="round"
+					/>
+				</svg>
+			</button>
+
+			<button
+				class="icon-link icon-link--plain"
+				type="button"
+				aria-label="Wishlist"
+				onclick={openWishlist}
+			>
+				<svg viewBox="0 0 24 24" aria-hidden="true">
+					<path
+						d="M12 20.3 4.7 13.5a4.7 4.7 0 0 1 6.6-6.7l.7.8.7-.8a4.7 4.7 0 0 1 6.6 6.7L12 20.3Z"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="1.8"
+						stroke-linejoin="round"
 					/>
 				</svg>
 			</button>
