@@ -2117,8 +2117,8 @@ h3 {
 	position: relative;
 	display: grid;
 	place-items: center;
-	min-height: min(78vh, 52rem);
-	padding: 2rem;
+	min-height: min(70vh, 46rem);
+	padding: 1.5rem;
 	/* background:
 		radial-gradient(circle at 22% 24%, rgba(154, 58, 58, 0.08), transparent 26%),
 		radial-gradient(circle at 78% 78%, rgba(181, 72, 72, 0.06), transparent 24%),
@@ -2127,8 +2127,10 @@ h3 {
 
 .product-viewer__stage .product-gallery-image {
 	min-height: 0;
-	max-height: min(68vh, 44rem);
+	max-height: min(60vh, 38rem);
 	object-fit: contain;
+	transform: scale(1.08);
+	transform-origin: center;
 }
 
 .product-wishlist-button {
@@ -2412,7 +2414,7 @@ h3 {
 }
 
 .product-viewer__stage--cavin {
-	min-height: min(72vh, 48rem);
+	min-height: min(64vh, 42rem);
 	padding: 1rem;
 	background: #ffffff;
 }
@@ -3333,12 +3335,12 @@ h3 {
 	}
 
 	.product-viewer__stage {
-		min-height: 22rem;
-		padding: 1rem 0.75rem 0.75rem;
+		min-height: 20rem;
+		padding: 0.85rem 0.75rem 0.65rem;
 	}
 
 	.product-viewer__stage .product-gallery-image {
-		max-height: 48vh;
+		max-height: 42vh;
 	}
 
 	.product-viewer__zoom {

@@ -2,6 +2,7 @@
 	import { browser } from '$app/environment';
 	import { afterNavigate } from '$app/navigation';
 	import { resolve } from '$app/paths';
+	import { tick } from 'svelte';
 	import { cartCount } from '$lib/stores/cart';
 	import type { CategoryParentGroup, CategorySummary } from '$lib/types';
 
@@ -29,6 +30,7 @@
 	let searchOpen = $state(false);
 	let searchLoading = $state(false);
 	let searchError = $state('');
+	let searchInput = $state<HTMLInputElement | null>(null);
 
 	let debounceTimer: ReturnType<typeof setTimeout> | null = null;
 	let searchController: AbortController | null = null;
@@ -44,6 +46,7 @@
 			items: categories.filter((item: CategorySummary) => item.parentGroup === group)
 		}))
 	);
+	const signInNextHref = `${resolve('/account/sign-in')}?next=/account/profile`;
 
 	function closeMenus() {
 		drawerOpen = false;
@@ -55,6 +58,21 @@
 	afterNavigate(() => {
 		closeMenus();
 	});
+
+	async function openSearchDrawer() {
+		drawerOpen = true;
+		accountMenuOpen = false;
+		await tick();
+		searchInput?.focus();
+		searchInput?.select();
+		if (mobileSearch.trim()) {
+			searchOpen = true;
+		}
+	}
+
+	function openWishlist() {
+		window.location.href = user ? `${resolve('/account/profile')}#saved-products` : signInNextHref;
+	}
 
 	function resetSearchState() {
 		searchResults = [];
@@ -226,6 +244,42 @@
 				</div>
 			</div>
 
+			<button
+				class="icon-link icon-link--plain"
+				type="button"
+				aria-label="Wishlist"
+				onclick={openWishlist}
+			>
+				<svg viewBox="0 0 24 24" aria-hidden="true">
+					<path
+						d="M12 20.3 4.7 13.5a4.7 4.7 0 0 1 6.6-6.7l.7.8.7-.8a4.7 4.7 0 0 1 6.6 6.7L12 20.3Z"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="1.8"
+						stroke-linejoin="round"
+					/>
+				</svg>
+			</button>
+
+			<button
+				class="icon-link icon-link--plain"
+				type="button"
+				aria-label="Search the store"
+				aria-controls="site-navigation-drawer"
+				onclick={openSearchDrawer}
+			>
+				<svg viewBox="0 0 24 24" aria-hidden="true">
+					<circle cx="11" cy="11" r="5.8" fill="none" stroke="currentColor" stroke-width="1.8" />
+					<path
+						d="m15.2 15.2 4.1 4.1"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="1.8"
+						stroke-linecap="round"
+					/>
+				</svg>
+			</button>
+
 			<a
 				class="icon-link icon-link--plain"
 				href={resolve('/cart')}
@@ -356,6 +410,7 @@
 							autocomplete="off"
 							autocapitalize="none"
 							enterkeyhint="search"
+							bind:this={searchInput}
 							bind:value={mobileSearch}
 							onfocus={() => {
 								if (mobileSearch.trim()) {

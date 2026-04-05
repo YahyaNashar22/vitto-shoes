@@ -103,7 +103,7 @@
 		</div>
 	</div>
 
-	<section class="stack related-section">
+	<section class="stack related-section" id="saved-products">
 		<div class="section-heading related-section__heading">
 			<p class="eyebrow">Wishlist</p>
 			<h2>Saved products</h2>
