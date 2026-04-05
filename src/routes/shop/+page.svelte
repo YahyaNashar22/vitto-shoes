@@ -15,6 +15,13 @@
 			window.location.href = resolve('/shop');
 		}
 	}
+
+	const visibleCategories = $derived.by(() =>
+		data.categories.filter(
+			(item: CategorySummary) =>
+				!data.filters.parentGroup || item.parentGroup === data.filters.parentGroup
+		)
+	);
 </script>
 
 <div class="section-heading">
@@ -61,54 +68,85 @@
 	</button>
 </div>
 
-<div class="catalog-layout">
-	<form class="filter-panel stack" method="get">
-		<input type="hidden" name="group" value={data.filters.parentGroup ?? ''} />
-		<div class="form-row">
-			<label for="q">Search</label>
-			<input id="q" name="q" value={data.filters.query ?? ''} placeholder="Search shoes" />
-		</div>
-		<div class="form-row">
-			<label for="group">Group</label>
-			<select id="group" name="group">
-				<option value="">All groups</option>
-				<option value="women" selected={data.filters.parentGroup === 'women'}>Women</option>
-				<option value="men" selected={data.filters.parentGroup === 'men'}>Men</option>
-				<option value="kids" selected={data.filters.parentGroup === 'kids'}>Kids</option>
-			</select>
-		</div>
-		<div class="form-row">
-			<label for="category">Category</label>
-			<select id="category" name="category">
-				<option value="">All categories</option>
-				{#each data.categories.filter((item: CategorySummary) => !data.filters.parentGroup || item.parentGroup === data.filters.parentGroup) as item (item.id)}
-					<option value={item.slug} selected={data.filters.category === item.slug}
-						>{item.name}</option
-					>
-				{/each}
-			</select>
-		</div>
-		<div class="form-row">
-			<label for="sort">Sort</label>
-			<select id="sort" name="sort">
+<div class="stack shop-layout">
+	<details class="shop-filters surface-card" open>
+		<summary class="shop-filters__summary">
+			<span>Filter catalog</span>
+			<span class="shop-filters__summary-icon" aria-hidden="true"></span>
+		</summary>
+
+		<form class="shop-filters__form" method="get">
+			<input type="hidden" name="group" value={data.filters.parentGroup ?? ''} />
+
+			<div class="shop-filters__row">
+				<span class="shop-filters__label">Categories</span>
+				<div class="shop-filters__options">
+					<label class="shop-filter-option">
+						<input type="radio" name="category" value="" checked={!data.filters.category} />
+						<span>All</span>
+					</label>
+					{#each visibleCategories as item (item.id)}
+						<label class="shop-filter-option">
+							<input
+								type="radio"
+								name="category"
+								value={item.slug}
+								checked={data.filters.category === item.slug}
+							/>
+							<span>{item.name}</span>
+						</label>
+					{/each}
+				</div>
+			</div>
+
+			<div class="shop-filters__row">
+				<span class="shop-filters__label">Search</span>
+				<div class="shop-filters__search">
+					<input
+						id="q"
+						name="q"
+						value={data.filters.query ?? ''}
+						placeholder="Search shoes"
+						autocomplete="off"
+					/>
+				</div>
+			</div>
+
+			<div class="shop-filters__row">
+				<span class="shop-filters__label">State</span>
+				<div class="shop-filters__options">
+					<label class="shop-filter-option shop-filter-option--checkbox">
+						<input type="checkbox" name="sale" value="1" checked={data.filters.sale} />
+						<span>On sale</span>
+					</label>
+				</div>
+			</div>
+
+			<div class="shop-filters__actions">
+				<button class="shop-filter-submit" type="submit">Filter</button>
+				<a class="shop-filter-reset" href={resolve('/shop')}>Reset</a>
+			</div>
+		</form>
+	</details>
+
+	<div class="stack">
+		<form class="shop-sort-bar" method="get">
+			<input type="hidden" name="group" value={data.filters.parentGroup ?? ''} />
+			<input type="hidden" name="category" value={data.filters.category ?? ''} />
+			<input type="hidden" name="q" value={data.filters.query ?? ''} />
+			{#if data.filters.sale}
+				<input type="hidden" name="sale" value="1" />
+			{/if}
+			<label class="shop-sort-bar__label" for="sort">Sort</label>
+			<select id="sort" name="sort" onchange={(event) => event.currentTarget.form?.requestSubmit()}>
 				{#each SORT_OPTIONS as option (option.value)}
 					<option value={option.value} selected={data.filters.sort === option.value}
 						>{option.label}</option
 					>
 				{/each}
 			</select>
-		</div>
-		<label class="chip">
-			<input type="checkbox" name="sale" value="1" checked={data.filters.sale} />
-			On sale only
-		</label>
-		<div class="chip-row">
-			<button class="button-primary" type="submit">Apply filters</button>
-			<a class="button-secondary" href={resolve('/shop')}>Reset</a>
-		</div>
-	</form>
+		</form>
 
-	<div class="stack">
 		<p class="muted">{data.products.length} products found</p>
 		{#if data.products.length}
 			<div class="product-grid">
@@ -128,3 +166,11 @@
 		{/if}
 	</div>
 </div>
+
+
+<style>
+	.chip {
+		border-radius: 0px;
+		margin-bottom: 12px;
+	}
+</style>

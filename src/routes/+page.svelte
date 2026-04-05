@@ -11,13 +11,15 @@
 <section class="hero-banner">
 	<div class="hero-banner__grid reveal" use:reveal>
 		<div class="hero-banner__content">
-			<p class="eyebrow">New season selection</p>
-			<h1 class="display-title">Shoes that look sharp, wear easy, and sell with confidence.</h1>
-			<p class="hero-copy">
-				Discover standout pairs for everyday wear, occasion dressing, and on-sale picks, all in one
-				fast storefront designed to help shoppers find the right fit without friction.
-			</p>
-			<div class="chip-row">
+			<div class="hero-banner__top">
+				<p class="eyebrow">New season selection</p>
+				<h1 class="display-title">Sharp pairs for every step.</h1>
+				<p class="hero-copy">
+					Discover standout pairs for everyday wear, occasion dressing, and on-sale picks, all in
+					one fast storefront designed to help shoppers find the right fit without friction.
+				</p>
+			</div>
+			<div class="chip-row hero-banner__actions">
 				<a class="button-primary" href={resolve('/shop')}>Shop the collection</a>
 				<a class="button-secondary" href={resolve('/sale')}>See sale picks</a>
 			</div>
@@ -26,13 +28,10 @@
 </section>
 
 <section class="stack" style="margin-top: 2.25rem;">
-	<div class="toolbar-row">
-		<div class="section-heading" style="margin-bottom: 0;">
-			<p class="eyebrow">Latest arrivals</p>
-			<h2>Fresh pairs just added</h2>
-			<p>New styles in a fast horizontal browse, made for quick discovery.</p>
-		</div>
-		<a class="button-secondary" href={resolve('/shop')}>View full catalog</a>
+	<div class="section-heading" style="margin: 0 auto;">
+		<p class="eyebrow">Latest arrivals</p>
+		<!-- <h2>Fresh pairs just added</h2>
+		<p>New styles in a fast horizontal browse, made for quick discovery.</p> -->
 	</div>
 
 	{#if data.latestProducts.length}
@@ -44,13 +43,15 @@
 			{/each}
 		</div>
 	{/if}
+
+	<a class="button-primary latest-arrivals__cta" href={resolve('/shop')}>View full catalog</a>
 </section>
 
 <section class="stack" style="margin-top: 3rem;">
 	<div class="section-heading">
 		<p class="eyebrow">Collections</p>
-		<h2>Shop by category</h2>
-		<p>Featured groups mirror the editorial navigation style from the reference site.</p>
+		<!-- <h2>Shop by category</h2>
+		<p>Featured groups mirror the editorial navigation style from the reference site.</p> -->
 	</div>
 
 	{#if data.categories.length}
@@ -81,8 +82,8 @@
 
 <section class="stack" style="margin-top: 3rem;">
 	<div class="section-heading">
-		<p class="eyebrow">Featured</p>
-		<h2>Best picks for the homepage</h2>
+		<p class="eyebrow">Top selling</p>
+		<!-- <h2>Best sellers right now</h2> -->
 	</div>
 	{#if data.featuredProducts.length}
 		<div class="product-rail">
@@ -95,29 +96,15 @@
 	{/if}
 </section>
 
-<!-- <section class="editorial-grid" style="margin-top: 3rem;">
-	<div class="panel reveal" use:reveal>
-		<p class="eyebrow">Why this build</p>
-		<h2 class="title-margin">Fast initial load by default</h2>
-		<p class="muted">
-			Catalog data is rendered on the server, product images are lazy-loaded outside the hero, and
-			cart state is the only major client-side store. That keeps the first page lean while still
-			supporting a smooth shopping flow.
-		</p>
-	</div>
-	<div class="panel reveal" use:reveal>
-		<p class="eyebrow">Checkout flow</p>
-		<h2 class="title-margin">WhatsApp-first cash on delivery</h2>
-		<p class="muted">
-			Each checkout saves an order record in PostgreSQL, then prepares a WhatsApp message so you can
-			handle the final confirmation manually until payment integration is needed.
-		</p>
-	</div>
-</section> -->
-
 <style>
+	.section-heading {
+		align-self: center;
+	}
+
 	.eyebrow {
 		opacity: 0.6;
 		margin-bottom: 6px;
+		text-align: center;
+		font-size: 1.1rem;
 	}
 </style>

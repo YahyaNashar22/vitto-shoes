@@ -13,9 +13,9 @@
 		<section class="footer-newsletter">
 			<div class="stack" style="gap: 0.55rem;">
 				<p class="footer-title">Let's get in touch</p>
-				<p class="footer-copy">
+				<!-- <p class="footer-copy">
 					Join our community and be the first to discover our latest stories, trends, and releases.
-				</p>
+				</p> -->
 			</div>
 
 			<form class="footer-subscribe" action="#" method="post">
@@ -51,7 +51,7 @@
 		<div class="footer-columns">
 			<details class="footer-accordioj" open>
 				<summary class="footer-accordion__summary">
-					<span style="font-size: 0.82rem;">Branches</span>
+					<span style="font-size: 1rem; text-transform: uppercase;">Branches</span>
 					<span class="footer-accordion__chevron">&#9652;</span>
 				</summary>
 				<div class="footer-accordion__content">
@@ -68,7 +68,7 @@
 
 			<details class="footer-accordion" open>
 				<summary class="footer-accordion__summary">
-					<span style="font-size: 0.82rem;">Contact Us</span>
+					<span style="font-size: 1rem; text-transform: uppercase;">Contact Us</span>
 					<span class="footer-accordion__chevron">&#9652;</span>
 				</summary>
 				<div class="footer-accordion__content">
@@ -93,7 +93,9 @@
 		<div class="footer-bottom">
 			<p class="footer-copy footer-copyright">
 				Copyright &copy; 2026 Vitto Shoes.
-				<a href="https://iworks.example" target="_blank" rel="noreferrer">By iworks.</a>
+				<a href="https://www.linkedin.com/company/pixelerion" target="_blank" rel="noreferrer"
+					>By Pixelerion.</a
+				>
 			</p>
 
 			<div class="footer-socials" aria-label="Social media">

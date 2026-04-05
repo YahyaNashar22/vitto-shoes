@@ -74,19 +74,41 @@
 		<a class:active={page.url.pathname.startsWith('/shop')} href={resolve('/shop')}>
 			<span class="mobile-bottom-nav__icon" aria-hidden="true">
 				<svg viewBox="0 0 24 24">
-					<path
-						d="M5.5 7.25h13l-1.05 10.3a1 1 0 0 1-1 .9H7.55a1 1 0 0 1-1-.9L5.5 7.25Z"
+					<rect
+						x="4.75"
+						y="5.25"
+						width="6.5"
+						height="6.5"
 						fill="none"
 						stroke="currentColor"
 						stroke-width="1.8"
-						stroke-linejoin="round"
 					/>
-					<path
-						d="M8.5 9.25V7a3.5 3.5 0 1 1 7 0v2.25"
+					<rect
+						x="12.75"
+						y="5.25"
+						width="6.5"
+						height="6.5"
 						fill="none"
 						stroke="currentColor"
 						stroke-width="1.8"
-						stroke-linecap="round"
+					/>
+					<rect
+						x="4.75"
+						y="13.25"
+						width="6.5"
+						height="6.5"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="1.8"
+					/>
+					<rect
+						x="12.75"
+						y="13.25"
+						width="6.5"
+						height="6.5"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="1.8"
 					/>
 				</svg>
 			</span>

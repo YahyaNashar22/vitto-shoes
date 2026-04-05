@@ -297,7 +297,7 @@
 				</section>
 				<div class="chip-row">
 					<label class="checkbox-row"
-						><input type="checkbox" name="isFeatured" /> <span>Featured</span></label
+						><input type="checkbox" name="isFeatured" /> <span>Top selling</span></label
 					>
 					<label class="checkbox-row"
 						><input type="checkbox" name="onSale" /> <span>On sale</span></label

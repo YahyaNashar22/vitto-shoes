@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
+	import { afterNavigate } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import { cartCount } from '$lib/stores/cart';
 	import type { CategoryParentGroup, CategorySummary } from '$lib/types';
@@ -50,6 +51,10 @@
 		accountMenuOpen = false;
 		searchOpen = false;
 	}
+
+	afterNavigate(() => {
+		closeMenus();
+	});
 
 	function resetSearchState() {
 		searchResults = [];
@@ -207,16 +212,16 @@
 				<div class="nav-account__menu" role="menu">
 					{#if user}
 						{#if isAdmin}
-							<a href={resolve('/admin')} onclick={closeMenus}>Admin panel</a>
+							<a href={resolve('/admin')}>Admin panel</a>
 						{:else}
-							<a href={resolve('/account/profile')} onclick={closeMenus}>My profile</a>
+							<a href={resolve('/account/profile')}>My profile</a>
 						{/if}
 						<form method="post" action={resolve('/account/sign-out')}>
 							<button type="submit">Logout</button>
 						</form>
 					{:else}
-						<a href={resolve('/account/sign-in')} onclick={closeMenus}>Sign in</a>
-						<a href={resolve('/account/sign-in')} onclick={closeMenus}>Create account</a>
+						<a href={resolve('/account/sign-in')}>Sign in</a>
+						<a href={resolve('/account/sign-in')}>Create account</a>
 					{/if}
 				</div>
 			</div>
@@ -449,16 +454,16 @@
 			<div class="mobile-drawer__actions">
 				{#if user}
 					{#if isAdmin}
-						<a href={resolve('/admin')} onclick={closeMenus}>Admin Panel</a>
+						<a href={resolve('/admin')}>Admin Panel</a>
 					{:else}
-						<a href={resolve('/account/profile')} onclick={closeMenus}>My Account</a>
+						<a href={resolve('/account/profile')}>My Account</a>
 					{/if}
 					<form method="post" action={resolve('/account/sign-out')}>
-						<button type="submit" onclick={closeMenus}>Logout</button>
+						<button type="submit">Logout</button>
 					</form>
 				{:else}
-					<a href={resolve('/account/sign-in')} onclick={closeMenus}>Sign In</a>
-					<a href={resolve('/account/sign-in')} onclick={closeMenus}>Create Account</a>
+					<a href={resolve('/account/sign-in')}>Sign In</a>
+					<a href={resolve('/account/sign-in')}>Create Account</a>
 				{/if}
 			</div>
 		</div>
