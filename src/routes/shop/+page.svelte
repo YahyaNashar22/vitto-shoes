@@ -167,7 +167,6 @@
 	</div>
 </div>
 
-
 <style>
 	.chip {
 		border-radius: 0px;
