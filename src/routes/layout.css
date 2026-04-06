@@ -945,12 +945,83 @@ textarea {
 	width: fit-content;
 }
 
+.shop-toolbar {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.8rem 1rem;
+}
+
 .shop-sort-bar__label {
 	font-size: 0.78rem;
 	font-weight: 700;
 	letter-spacing: 0.12em;
 	text-transform: uppercase;
 	color: #505050;
+}
+
+.shop-view-toggle {
+	display: inline-flex;
+	align-items: center;
+	margin-left: auto;
+	border: 1px solid #e5e5e5;
+	background: #ffffff;
+}
+
+.shop-view-toggle button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 2.7rem;
+	height: 2.6rem;
+	padding: 0;
+	border: none;
+	background: transparent;
+	color: #6a6a6a;
+	cursor: pointer;
+}
+
+.shop-view-toggle button svg {
+	width: 1rem;
+	height: 1rem;
+}
+
+.shop-view-toggle button + button {
+	border-left: 1px solid #e5e5e5;
+}
+
+.shop-view-toggle button.active {
+	background: #111111;
+	color: #ffffff;
+}
+
+.product-grid.product-grid--list {
+	grid-template-columns: 1fr;
+	gap: 1rem;
+}
+
+.product-grid.product-grid--list > .reveal {
+	display: block;
+}
+
+.product-grid.product-grid--list .product-card {
+	grid-template-columns: minmax(180px, 220px) minmax(0, 1fr);
+	align-items: center;
+	gap: 1.15rem;
+}
+
+.product-grid.product-grid--list .product-media {
+	aspect-ratio: 4 / 4.65;
+}
+
+.product-grid.product-grid--list .product-body {
+	align-content: center;
+	gap: 0.8rem;
+}
+
+.product-grid.product-grid--list .product-name {
+	font-size: 1.25rem;
 }
 
 .site-footer {
@@ -2975,6 +3046,10 @@ h3 {
 		padding-left: 0;
 	}
 
+	.product-grid.product-grid--list .product-card {
+		grid-template-columns: minmax(150px, 190px) minmax(0, 1fr);
+	}
+
 	.product-purchase-row {
 		grid-template-columns: 1fr;
 	}
@@ -3311,8 +3386,30 @@ h3 {
 		gap: 0.45rem;
 	}
 
+	.shop-toolbar {
+		align-items: stretch;
+	}
+
 	.shop-sort-bar select {
 		width: min(100%, 15rem);
+	}
+
+	.shop-view-toggle {
+		width: fit-content;
+	}
+
+	.product-grid.product-grid--list {
+		grid-template-columns: 1fr;
+	}
+
+	.product-grid.product-grid--list .product-card {
+		grid-template-columns: minmax(110px, 132px) minmax(0, 1fr);
+		gap: 0.85rem;
+		align-items: start;
+	}
+
+	.product-grid.product-grid--list .product-name {
+		font-size: 1rem;
 	}
 
 	.hero-banner__grid {

@@ -8,6 +8,8 @@
 	import type { PageData } from './$types';
 
 	let { data } = $props<{ data: PageData }>();
+	let viewMode = $state<'grid' | 'list'>('grid');
+
 	async function openShopGroup(group?: 'women' | 'men' | 'kids') {
 		if (group) {
 			window.location.href = `${resolve('/shop')}?group=${group}`;
@@ -130,26 +132,99 @@
 	</details>
 
 	<div class="stack">
-		<form class="shop-sort-bar" method="get">
-			<input type="hidden" name="group" value={data.filters.parentGroup ?? ''} />
-			<input type="hidden" name="category" value={data.filters.category ?? ''} />
-			<input type="hidden" name="q" value={data.filters.query ?? ''} />
-			{#if data.filters.sale}
-				<input type="hidden" name="sale" value="1" />
-			{/if}
-			<label class="shop-sort-bar__label" for="sort">Sort</label>
-			<select id="sort" name="sort" onchange={(event) => event.currentTarget.form?.requestSubmit()}>
-				{#each SORT_OPTIONS as option (option.value)}
-					<option value={option.value} selected={data.filters.sort === option.value}
-						>{option.label}</option
-					>
-				{/each}
-			</select>
-		</form>
+		<div class="shop-toolbar">
+			<form class="shop-sort-bar" method="get">
+				<input type="hidden" name="group" value={data.filters.parentGroup ?? ''} />
+				<input type="hidden" name="category" value={data.filters.category ?? ''} />
+				<input type="hidden" name="q" value={data.filters.query ?? ''} />
+				{#if data.filters.sale}
+					<input type="hidden" name="sale" value="1" />
+				{/if}
+				<label class="shop-sort-bar__label" for="sort">Sort</label>
+				<select
+					id="sort"
+					name="sort"
+					onchange={(event) => event.currentTarget.form?.requestSubmit()}
+				>
+					{#each SORT_OPTIONS as option (option.value)}
+						<option value={option.value} selected={data.filters.sort === option.value}
+							>{option.label}</option
+						>
+					{/each}
+				</select>
+			</form>
+
+			<div class="shop-view-toggle" role="group" aria-label="Change product view">
+				<button
+					type="button"
+					class:active={viewMode === 'grid'}
+					aria-label="Grid view"
+					onclick={() => (viewMode = 'grid')}
+				>
+					<svg viewBox="0 0 24 24" aria-hidden="true">
+						<rect
+							x="4"
+							y="4"
+							width="6.5"
+							height="6.5"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="1.8"
+						/>
+						<rect
+							x="13.5"
+							y="4"
+							width="6.5"
+							height="6.5"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="1.8"
+						/>
+						<rect
+							x="4"
+							y="13.5"
+							width="6.5"
+							height="6.5"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="1.8"
+						/>
+						<rect
+							x="13.5"
+							y="13.5"
+							width="6.5"
+							height="6.5"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="1.8"
+						/>
+					</svg>
+				</button>
+				<button
+					type="button"
+					class:active={viewMode === 'list'}
+					aria-label="List view"
+					onclick={() => (viewMode = 'list')}
+				>
+					<svg viewBox="0 0 24 24" aria-hidden="true">
+						<path
+							d="M5 7h14M5 12h14M5 17h14"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="1.8"
+							stroke-linecap="round"
+						/>
+						<circle cx="3.5" cy="7" r="1" fill="currentColor" />
+						<circle cx="3.5" cy="12" r="1" fill="currentColor" />
+						<circle cx="3.5" cy="17" r="1" fill="currentColor" />
+					</svg>
+				</button>
+			</div>
+		</div>
 
 		<p class="muted">{data.products.length} products found</p>
 		{#if data.products.length}
-			<div class="product-grid">
+			<div class:product-grid--list={viewMode === 'list'} class="product-grid">
 				{#each data.products as product (product.id)}
 					<div class="reveal" use:reveal>
 						<ProductCard {product} />
