@@ -184,6 +184,8 @@
 			</button>
 		</div>
 	{/if}
+
+	<a class="button-primary latest-arrivals__cta" href={resolve('/shop')}>Shop more</a>
 </section>
 
 <section class="service-highlights" aria-label="Store benefits">
