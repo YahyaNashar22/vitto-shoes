@@ -43,7 +43,10 @@
 		(['women', 'men', 'kids'] as CategoryParentGroup[]).map((group) => ({
 			group,
 			label: parentGroupLabels[group],
-			items: categories.filter((item: CategorySummary) => item.parentGroup === group)
+			items:
+				group === 'women'
+					? categories.filter((item: CategorySummary) => item.parentGroup === group)
+					: []
 		}))
 	);
 	const signInNextHref = `${resolve('/account/sign-in')}?next=/account/profile`;
@@ -169,7 +172,7 @@
 	}
 
 	async function openShopGroup(group?: CategoryParentGroup) {
-		if (group) {
+		if (group === 'women') {
 			window.location.href = `${resolve('/shop')}?group=${group}`;
 		} else {
 			window.location.href = resolve('/shop');
@@ -489,14 +492,18 @@
 									{section.label}
 								</button>
 								<div class="mobile-drawer__submenu-links">
-									{#each section.items as item (item.id)}
-										<a
-											href={resolve('/collections/[slug]', { slug: item.slug })}
-											onclick={closeMenus}
-										>
-											{item.name}
-										</a>
-									{/each}
+									{#if section.items.length}
+										{#each section.items as item (item.id)}
+											<a
+												href={resolve('/collections/[slug]', { slug: item.slug })}
+												onclick={closeMenus}
+											>
+												{item.name}
+											</a>
+										{/each}
+									{:else}
+										<a href={resolve('/shop')} onclick={closeMenus}>Shop all</a>
+									{/if}
 								</div>
 							</div>
 						{/each}

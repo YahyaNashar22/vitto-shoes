@@ -420,16 +420,13 @@
 
 		{#if colorOptions.length}
 			<div class="product-option-group">
-				<p class="product-meta-line product-meta-line--label">
-					<strong>color:</strong>
-					{selectedColor}
-				</p>
 				<div class="product-option-list product-option-list--swatches">
 					{#each colorOptions as color (color)}
 						<button
 							class:active={selectedColor === color}
 							class="product-option-button product-option-button--media"
 							type="button"
+							aria-label={`Choose ${color} color`}
 							onclick={() => {
 								selectedColor = color;
 								currentIndex = 0;
@@ -438,7 +435,6 @@
 							{#if colorMedia[color]?.[0]}
 								<img src={colorMedia[color][0]} alt={color} loading="lazy" />
 							{/if}
-							<span>{color}</span>
 						</button>
 					{/each}
 				</div>
@@ -867,3 +863,11 @@
 		{/each}
 	</div>
 </section>
+
+<style>
+	.product-option-button {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+</style>

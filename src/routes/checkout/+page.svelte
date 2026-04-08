@@ -43,7 +43,55 @@
 			)}
 		/>
 
-		<div class="checkout-grid aside-layout">
+		<div class="checkout-grid checkout-grid--stacked">
+			<aside
+				class="panel stack cart-summary-panel cart-summary-panel--cavin cart-summary-panel--checkout"
+			>
+				<div>
+					<p class="eyebrow">Summary</p>
+					<h2>{formatCurrency($cartSubtotal)}</h2>
+				</div>
+				<p class="muted">Shipping is confirmed manually on WhatsApp after the order is saved.</p>
+
+				<div class="checkout-summary checkout-summary--embedded">
+					<div class="toolbar-row">
+						<h3>Order summary</h3>
+						<strong>{formatCurrency($cartSubtotal)}</strong>
+					</div>
+					{#each $cart as item (item.cartKey)}
+						<div class="checkout-summary__item">
+							<div class="checkout-summary__media">
+								<img
+									class="media-thumb"
+									src={item.image || '/placeholder-product.svg'}
+									alt={item.name}
+								/>
+								<div>
+									<strong>{item.name}</strong>
+									{#if item.variantLabel}
+										<p class="muted">{item.variantLabel}</p>
+									{/if}
+								</div>
+							</div>
+							<div>{formatCurrency(item.price * item.quantity)}</div>
+						</div>
+					{/each}
+					<hr class="summary-divider" />
+					<div class="toolbar-row">
+						<span>Subtotal</span>
+						<span>{formatCurrency($cartSubtotal)}</span>
+					</div>
+					<div class="toolbar-row">
+						<span>Shipping</span>
+						<span>Calculated on WhatsApp</span>
+					</div>
+					<div class="toolbar-row">
+						<strong>Total</strong>
+						<strong>{formatCurrency($cartSubtotal)}</strong>
+					</div>
+				</div>
+			</aside>
+
 			<div class="form-panel stack">
 				<div class="section-heading">
 					<p class="eyebrow">Delivery</p>
@@ -97,54 +145,6 @@
 					<a class="button-secondary" href={resolve('/cart')}>Back to cart</a>
 				</div>
 			</div>
-
-			<aside
-				class="panel stack cart-summary-panel cart-summary-panel--cavin cart-summary-panel--checkout"
-			>
-				<div>
-					<p class="eyebrow">Summary</p>
-					<h2>{formatCurrency($cartSubtotal)}</h2>
-				</div>
-				<p class="muted">Shipping is confirmed manually on WhatsApp after the order is saved.</p>
-
-				<div class="checkout-summary checkout-summary--embedded">
-					<div class="toolbar-row">
-						<h3>Order summary</h3>
-						<strong>{formatCurrency($cartSubtotal)}</strong>
-					</div>
-					{#each $cart as item (item.cartKey)}
-						<div class="checkout-summary__item">
-							<div class="checkout-summary__media">
-								<img
-									class="media-thumb"
-									src={item.image || '/placeholder-product.svg'}
-									alt={item.name}
-								/>
-								<div>
-									<strong>{item.name}</strong>
-									{#if item.variantLabel}
-										<p class="muted">{item.variantLabel}</p>
-									{/if}
-								</div>
-							</div>
-							<div>{formatCurrency(item.price * item.quantity)}</div>
-						</div>
-					{/each}
-					<hr class="summary-divider" />
-					<div class="toolbar-row">
-						<span>Subtotal</span>
-						<span>{formatCurrency($cartSubtotal)}</span>
-					</div>
-					<div class="toolbar-row">
-						<span>Shipping</span>
-						<span>Calculated on WhatsApp</span>
-					</div>
-					<div class="toolbar-row">
-						<strong>Total</strong>
-						<strong>{formatCurrency($cartSubtotal)}</strong>
-					</div>
-				</div>
-			</aside>
 		</div>
 	</form>
 {:else}

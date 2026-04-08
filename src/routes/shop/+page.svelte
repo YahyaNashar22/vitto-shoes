@@ -71,7 +71,7 @@
 </div>
 
 <div class="stack shop-layout">
-	<details class="shop-filters surface-card" open>
+	<details class="shop-filters surface-card">
 		<summary class="shop-filters__summary">
 			<span>Filter catalog</span>
 			<span class="shop-filters__summary-icon" aria-hidden="true"></span>

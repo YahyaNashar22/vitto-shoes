@@ -49,10 +49,10 @@
 		</section>
 
 		<div class="footer-columns">
-			<details class="footer-accordioj" open>
+			<details class="footer-accordion" open>
 				<summary class="footer-accordion__summary">
-					<span style="font-size: 1rem; text-transform: uppercase;">Branches</span>
-					<span class="footer-accordion__chevron">&#9652;</span>
+					<span class="footer-column-heading">Branches</span>
+					<span class="footer-accordion__chevron">&#9662;</span>
 				</summary>
 				<div class="footer-accordion__content">
 					<ul class="footer-list footer-branches">
@@ -68,8 +68,8 @@
 
 			<details class="footer-accordion" open>
 				<summary class="footer-accordion__summary">
-					<span style="font-size: 1rem; text-transform: uppercase;">Contact Us</span>
-					<span class="footer-accordion__chevron">&#9652;</span>
+					<span class="footer-column-heading">Contact Us</span>
+					<span class="footer-accordion__chevron">&#9662;</span>
 				</summary>
 				<div class="footer-accordion__content">
 					<div class="footer-list">
@@ -81,7 +81,7 @@
 			</details>
 
 			<div class="footer-links">
-				<p class="footer-title">Browse</p>
+				<p class="footer-column-heading">Browse</p>
 				<div class="footer-list">
 					<a href={resolve('/shop')}>Shop all</a>
 					<a href={resolve('/sale')}>On sale</a>
