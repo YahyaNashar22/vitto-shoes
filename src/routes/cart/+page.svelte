@@ -33,7 +33,7 @@
 									<div class="media-inline">
 										<img
 											class="media-thumb"
-											src={item.image || '/placeholder-product.svg'}
+											src={item.image || '/placeholder-product.webp'}
 											alt={item.name}
 										/>
 										<div>
@@ -80,7 +80,7 @@
 						<div class="cart-mobile-item__media">
 							<img
 								class="media-thumb"
-								src={item.image || '/placeholder-product.svg'}
+								src={item.image || '/placeholder-product.webp'}
 								alt={item.name}
 							/>
 							<div class="cart-mobile-item__copy">

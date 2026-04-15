@@ -106,7 +106,7 @@
 
 		return selectedVariantMedia.length ? selectedVariantMedia : baseGallery;
 	});
-	const currentImage = $derived(gallery[currentIndex] || '/placeholder-product.svg');
+	const currentImage = $derived(gallery[currentIndex] || '/placeholder-product.webp');
 	const displayPrice = $derived(selectedVariant?.salesprice ?? product.price);
 	const availableQuantity = $derived(selectedVariant?.qty ?? product.inventory);
 	const variantLabel = $derived(
@@ -387,7 +387,7 @@
 						onclick={() => (currentIndex = index)}
 					>
 						<img
-							src={image || '/placeholder-product.svg'}
+							src={image || '/placeholder-product.webp'}
 							alt={`${data.product.name} preview ${index + 1}`}
 							loading="lazy"
 						/>

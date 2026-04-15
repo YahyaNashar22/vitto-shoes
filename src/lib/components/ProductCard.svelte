@@ -9,7 +9,7 @@
 <article class="product-card">
 	<a href={resolve('/products/[slug]', { slug: product.slug })} class="product-media">
 		<img
-			src={product.image || '/placeholder-product.svg'}
+			src={product.image || '/placeholder-product.webp'}
 			alt={product.name}
 			loading="lazy"
 			width="500"

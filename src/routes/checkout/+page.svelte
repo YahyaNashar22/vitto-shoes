@@ -63,7 +63,7 @@
 							<div class="checkout-summary__media">
 								<img
 									class="media-thumb"
-									src={item.image || '/placeholder-product.svg'}
+									src={item.image || '/placeholder-product.webp'}
 									alt={item.name}
 								/>
 								<div>
