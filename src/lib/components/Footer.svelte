@@ -40,7 +40,12 @@
 
 		<section class="footer-brand-block">
 			<a class="footer-brand" href={resolve('/')} aria-label="Vitto Shoes home">
-				<img class="brand-logo brand-logo--footer" src="/Viito Logo-01.png" alt="Vitto Shoes" />
+				<img
+					class="brand-logo brand-logo--footer"
+					src="/Viito Logo-01.png"
+					alt="Vitto Shoes"
+					style="margin-left: -11px;"
+				/>
 			</a>
 			<p class="footer-copy footer-brand-copy">
 				A shoe brand born with years of experience since 1999. From women to men and kids, our
@@ -49,7 +54,7 @@
 		</section>
 
 		<div class="footer-columns">
-			<details class="footer-accordion" open>
+			<details class="footer-accordion">
 				<summary class="footer-accordion__summary">
 					<span class="footer-column-heading">Branches</span>
 					<span class="footer-accordion__chevron">&#9662;</span>
@@ -66,7 +71,7 @@
 				</div>
 			</details>
 
-			<details class="footer-accordion" open>
+			<details class="footer-accordion">
 				<summary class="footer-accordion__summary">
 					<span class="footer-column-heading">Contact Us</span>
 					<span class="footer-accordion__chevron">&#9662;</span>
@@ -80,14 +85,19 @@
 				</div>
 			</details>
 
-			<div class="footer-links">
-				<p class="footer-column-heading">Browse</p>
-				<div class="footer-list">
-					<a href={resolve('/shop')}>Shop all</a>
-					<a href={resolve('/sale')}>On sale</a>
-					<a href={resolve('/cart')}>Cart</a>
+			<details class="footer-accordion">
+				<summary class="footer-accordion__summary">
+					<span class="footer-column-heading">Browse</span>
+					<span class="footer-accordion__chevron">&#9662;</span>
+				</summary>
+				<div class="footer-accordion__content">
+					<div class="footer-list">
+						<a href={resolve('/shop')}>Shop all</a>
+						<a href={resolve('/sale')}>On sale</a>
+						<a href={resolve('/cart')}>Cart</a>
+					</div>
 				</div>
-			</div>
+			</details>
 		</div>
 
 		<div class="footer-bottom">

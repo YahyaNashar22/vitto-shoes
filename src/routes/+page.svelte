@@ -348,23 +348,23 @@
 	.service-highlights__grid {
 		display: grid;
 		grid-template-columns: repeat(3, minmax(0, 1fr));
-		gap: 0.7rem;
+		gap: 0.95rem;
 	}
 
 	.service-highlight {
 		display: grid;
 		grid-template-columns: auto minmax(0, 1fr);
 		align-items: center;
-		gap: 0.55rem;
-		padding: 0.58rem 0;
+		gap: 0.72rem;
+		padding: 0.72rem 0;
 	}
 
 	.service-highlight__icon {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		width: 2.15rem;
-		height: 2.15rem;
+		width: 2.6rem;
+		height: 2.6rem;
 		border: 1px solid rgba(15, 15, 15, 0.1);
 		border-radius: 999px;
 		color: #111111;
@@ -373,26 +373,26 @@
 	}
 
 	.service-highlight__icon svg {
-		width: 0.92rem;
-		height: 0.92rem;
+		width: 1.14rem;
+		height: 1.14rem;
 	}
 
 	.service-highlight__copy {
 		display: grid;
-		gap: 0.3rem;
+		gap: 0.24rem;
 	}
 
 	.service-highlight__copy h3 {
 		margin: 0;
-		font-size: 0.76rem;
-		line-height: 1.05;
+		font-size: 0.96rem;
+		line-height: 1.08;
 	}
 
 	.service-highlight__copy p {
 		margin: 0;
 		color: var(--muted);
-		font-size: 0.64rem;
-		line-height: 1.18;
+		font-size: 0.84rem;
+		line-height: 1.28;
 	}
 
 	@media (max-width: 700px) {
@@ -446,31 +446,31 @@
 
 		.service-highlights__grid {
 			grid-template-columns: 1fr;
-			gap: 0.55rem;
+			gap: 0.8rem;
 		}
 
 		.service-highlight {
-			gap: 0.5rem;
-			padding: 0.52rem 0;
+			gap: 0.68rem;
+			padding: 0.68rem 0;
 		}
 
 		.service-highlight__icon {
-			width: 2rem;
-			height: 2rem;
+			width: 2.45rem;
+			height: 2.45rem;
 		}
 
 		.service-highlight__icon svg {
-			width: 0.82rem;
-			height: 0.82rem;
+			width: 1.5rem;
+			height: 1.5rem;
 		}
 
 		.service-highlight__copy h3 {
-			font-size: 0.72rem;
+			font-size: 0.9rem;
 		}
 
 		.service-highlight__copy p {
-			font-size: 0.62rem;
-			line-height: 1.16;
+			font-size: 0.8rem;
+			line-height: 1.24;
 		}
 	}
 </style>

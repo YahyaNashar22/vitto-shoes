@@ -21,7 +21,7 @@
 	</a>
 	<div class="product-body">
 		<div>
-			<p class="product-category">{product.categoryName}</p>
+			<!-- <p class="product-category">{product.categoryName}</p> -->
 			<a class="product-name" href={resolve('/products/[slug]', { slug: product.slug })}>
 				{product.name}
 			</a>

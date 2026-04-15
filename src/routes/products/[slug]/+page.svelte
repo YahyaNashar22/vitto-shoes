@@ -916,4 +916,8 @@
 		align-items: center;
 		justify-content: center;
 	}
+
+	.muted {
+		font-size: 0.74rem;
+	}
 </style>

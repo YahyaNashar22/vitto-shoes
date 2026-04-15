@@ -222,7 +222,7 @@ textarea {
 .nav-utility {
 	display: flex;
 	align-items: center;
-	gap: 0.85rem;
+	gap: 0.55rem;
 	min-width: 0;
 }
 
@@ -380,13 +380,13 @@ textarea {
 }
 
 .icon-link svg {
-	width: 1.2rem;
-	height: 1.2rem;
+	width: 1.5rem;
+	height: 1.5rem;
 }
 
 .icon-link--plain {
-	width: 2.4rem;
-	height: 2.4rem;
+	width: 2.7rem;
+	height: 2.7rem;
 }
 
 .desktop-search-link,
@@ -1367,10 +1367,9 @@ textarea {
 }
 
 .footer-branches li {
-	display: grid;
-	grid-template-columns: auto 1fr;
+	display: flex;
 	gap: 0.65rem;
-	align-items: start;
+	align-items: flex-start;
 	color: var(--muted);
 	font-size: 0.84rem;
 	line-height: 1.28;
@@ -1387,11 +1386,13 @@ textarea {
 }
 
 .footer-pin {
+	flex: 0 0 auto;
 	width: 0.7rem;
 	height: 0.7rem;
-	margin-top: 0.28rem;
+	margin-top: 0.14rem;
 	border-radius: 999px 999px 999px 0;
 	transform: rotate(-45deg);
+	transform-origin: center;
 	background: #111111;
 	position: relative;
 }
@@ -1642,7 +1643,7 @@ h3 {
 
 .product-body {
 	display: grid;
-	gap: 1rem;
+	gap: 0.3rem;
 }
 
 .product-category {
@@ -1829,7 +1830,6 @@ h3 {
 	position: relative;
 	z-index: 1;
 	display: grid;
-	gap: clamp(1.5rem, 3vw, 2.5rem);
 	align-content: end;
 	width: min(1180px, calc(100vw - 2rem));
 	margin: 0 auto;
@@ -1839,7 +1839,6 @@ h3 {
 
 .hero-banner__top {
 	display: grid;
-	gap: 0.85rem;
 	align-content: start;
 }
 
@@ -3328,11 +3327,12 @@ h3 {
 @media (max-width: 700px) {
 	:root {
 		--hero-offset: 7rem;
+		--mobile-page-inset: 1.25rem;
 	}
 
 	.page-main,
 	.site-footer__inner {
-		width: calc(100vw - 1rem);
+		width: calc(100vw - (var(--mobile-page-inset) * 2));
 	}
 
 	.site-footer__inner {
@@ -3408,7 +3408,7 @@ h3 {
 	}
 
 	.nav-shell--cavin {
-		width: calc(100vw - 1rem);
+		width: calc(100vw - (var(--mobile-page-inset) * 2));
 	}
 
 	.brand-logo--header {
@@ -3452,8 +3452,8 @@ h3 {
 
 	.icon-link--plain,
 	.menu-toggle {
-		width: 2.3rem;
-		height: 2.3rem;
+		width: 2.7rem;
+		height: 2.7rem;
 	}
 
 	.mobile-drawer {
@@ -3692,6 +3692,7 @@ h3 {
 		width: calc(100vw - 1.5rem);
 		min-height: auto;
 		padding: 1rem 1rem 1.25rem;
+		gap: 12px;
 	}
 
 	.hero-banner .display-title {
