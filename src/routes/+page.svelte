@@ -12,6 +12,9 @@
 	const womenCategories = $derived(
 		data.categories.filter((item: CategorySummary) => item.parentGroup === 'women')
 	);
+	const secondaryCategories = $derived(
+		womenCategories.slice(6, 10).length ? womenCategories.slice(6, 10) : womenCategories.slice(0, 4)
+	);
 
 	function scrollRail(rail: HTMLDivElement | null, direction: 'left' | 'right') {
 		if (!rail) {
@@ -187,6 +190,26 @@
 
 	<a class="button-primary latest-arrivals__cta" href={resolve('/shop')}>Shop more</a>
 </section>
+
+{#if secondaryCategories.length}
+	<section class="stack" style="margin-top: 3rem;">
+		<div class="category-grid">
+			{#each secondaryCategories as item (item.id)}
+				<a
+					class="surface-card category-tile reveal"
+					href={resolve('/collections/[slug]', { slug: item.slug })}
+					use:reveal
+				>
+					<img src={item.image || '/placeholder-category.svg'} alt={item.name} loading="lazy" />
+					<div class="category-tile__overlay"></div>
+					<div class="category-tile__content">
+						<h3>{item.name}</h3>
+					</div>
+				</a>
+			{/each}
+		</div>
+	</section>
+{/if}
 
 <section class="service-highlights" aria-label="Store benefits">
 	<div class="service-highlights__grid">
