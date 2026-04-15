@@ -121,6 +121,46 @@
 	const recentlyViewedFallback = $derived(data.recentProducts.slice(0, 4));
 	const productPath = $derived(resolve('/products/[slug]', { slug: product.slug }));
 	const productUrl = $derived(browser ? window.location.href : productPath);
+
+	function getColorSwatch(color: string) {
+		const normalized = color.trim().toLowerCase();
+		const swatches: Record<string, string> = {
+			black: '#050505',
+			white: '#f7f7f2',
+			'off white': '#f4f1e6',
+			ivory: '#f3ecd7',
+			cream: '#f3e2af',
+			beige: '#e8d6ac',
+			nude: '#dcb89a',
+			tan: '#c69c74',
+			stone: '#d7cfbf',
+			camel: '#a66a3f',
+			brown: '#8b5a34',
+			red: '#a70000',
+			burgundy: '#6d0f19',
+			maroon: '#61121b',
+			pink: '#d8a7ab',
+			blue: '#3f5f9f',
+			navy: '#1d2740',
+			green: '#506648',
+			olive: '#6c6b3b',
+			yellow: '#d8b33b',
+			gold: '#c6a24a',
+			silver: '#c1c6cf',
+			grey: '#9e9e9e',
+			gray: '#9e9e9e',
+			purple: '#6e4f8e',
+			orange: '#c9752b'
+		};
+
+		if (swatches[normalized]) {
+			return swatches[normalized];
+		}
+
+		const partialMatch = Object.entries(swatches).find(([token]) => normalized.includes(token));
+		return partialMatch?.[1] ?? '#d9d2c5';
+	}
+
 	const estimatedDelivery = $derived.by(() => {
 		const formatter = new Intl.DateTimeFormat('en-US', {
 			month: 'short',
@@ -420,11 +460,15 @@
 
 		{#if colorOptions.length}
 			<div class="product-option-group">
+				<p class="product-meta-line product-meta-line--label">
+					<strong>Color:</strong>
+					{selectedColor || fallbackColor || 'Default'}
+				</p>
 				<div class="product-option-list product-option-list--swatches">
 					{#each colorOptions as color (color)}
 						<button
 							class:active={selectedColor === color}
-							class="product-option-button product-option-button--media"
+							class="product-option-button product-option-button--swatch"
 							type="button"
 							aria-label={`Choose ${color} color`}
 							onclick={() => {
@@ -432,9 +476,11 @@
 								currentIndex = 0;
 							}}
 						>
-							{#if colorMedia[color]?.[0]}
-								<img src={colorMedia[color][0]} alt={color} loading="lazy" />
-							{/if}
+							<span
+								class="product-color-swatch"
+								style={`--swatch-color: ${getColorSwatch(color)}`}
+								aria-hidden="true"
+							></span>
 						</button>
 					{/each}
 				</div>
