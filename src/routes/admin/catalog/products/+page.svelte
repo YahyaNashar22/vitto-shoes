@@ -12,6 +12,7 @@
 		progress: 0,
 		label: ''
 	});
+	let productSearch = $state('');
 
 	type VariantSizeDraft = {
 		id: string;
@@ -158,6 +159,24 @@
 
 	let productForm = $state<ProductFormDraft>(createProductDraft());
 	let variantGroups = $state<VariantGroupDraft[]>([createVariantGroupDraft()]);
+	const visibleProducts = $derived.by(() => {
+		const query = productSearch.trim().toLowerCase();
+		if (!query) {
+			return data.products;
+		}
+
+		return data.products.filter((item: ProductSummary) =>
+			[
+				item.name,
+				item.code,
+				item.sku,
+				item.barcode,
+				item.categoryName,
+				item.slug,
+				item.shortDescription
+			].some((value) => value.toLowerCase().includes(query))
+		);
+	});
 
 	function startEditProduct(item: ProductSummary) {
 		productForm = {
@@ -580,6 +599,15 @@
 				</div>
 			</div>
 
+			<label class="form-row">
+				<span>Search products</span>
+				<input
+					bind:value={productSearch}
+					type="search"
+					placeholder="Search by name, code, SKU, barcode, or category"
+				/>
+			</label>
+
 			<div class="table-wrap">
 				<table>
 					<thead>
@@ -594,7 +622,7 @@
 						</tr>
 					</thead>
 					<tbody>
-						{#each data.products as item (item.id)}
+						{#each visibleProducts as item (item.id)}
 							<tr>
 								<td>
 									<div class="media-inline">
@@ -632,6 +660,12 @@
 											<button class="button-secondary" type="submit">Delete</button>
 										</form>
 									</div>
+								</td>
+							</tr>
+						{:else}
+							<tr>
+								<td colspan="7">
+									<p class="table-note">No products match this search.</p>
 								</td>
 							</tr>
 						{/each}

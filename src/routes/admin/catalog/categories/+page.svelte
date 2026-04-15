@@ -12,6 +12,7 @@
 		progress: 0,
 		label: ''
 	});
+	let categorySearch = $state('');
 
 	type CategoryFormDraft = {
 		id: string;
@@ -38,6 +39,18 @@
 	}
 
 	let categoryForm = $state<CategoryFormDraft>(createCategoryDraft());
+	const visibleCategories = $derived.by(() => {
+		const query = categorySearch.trim().toLowerCase();
+		if (!query) {
+			return data.categories;
+		}
+
+		return data.categories.filter((item: CategorySummary) =>
+			[item.name, item.slug, item.parentGroup, item.description].some((value) =>
+				value.toLowerCase().includes(query)
+			)
+		);
+	});
 
 	function startEditCategory(item: CategorySummary) {
 		categoryForm = {
@@ -225,6 +238,15 @@
 				</div>
 			</div>
 
+			<label class="form-row">
+				<span>Search categories</span>
+				<input
+					bind:value={categorySearch}
+					type="search"
+					placeholder="Search by name, slug, group, or description"
+				/>
+			</label>
+
 			<div class="table-wrap">
 				<table>
 					<thead>
@@ -237,7 +259,7 @@
 						</tr>
 					</thead>
 					<tbody>
-						{#each data.categories as item (item.id)}
+						{#each visibleCategories as item (item.id)}
 							<tr>
 								<td>
 									<div class="media-inline">
@@ -269,6 +291,12 @@
 											<button class="button-secondary" type="submit">Delete</button>
 										</form>
 									</div>
+								</td>
+							</tr>
+						{:else}
+							<tr>
+								<td colspan="5">
+									<p class="table-note">No categories match this search.</p>
 								</td>
 							</tr>
 						{/each}
