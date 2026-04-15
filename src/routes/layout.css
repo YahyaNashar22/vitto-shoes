@@ -1203,7 +1203,7 @@ textarea {
 	margin-left: calc(50% - 50vw);
 	margin-right: calc(50% - 50vw);
 	margin-top: 100px;
-	padding: 2.5rem 0;
+	padding: 2.2rem 0;
 	border-top: 1px solid var(--line);
 	background: #f5f5f5;
 }
@@ -1226,7 +1226,7 @@ textarea {
 .site-footer a,
 .footer-copy {
 	color: var(--muted);
-	font-size: 0.75rem;
+	font-size: 0.71rem;
 }
 
 .site-footer__inner > div {
@@ -1237,7 +1237,7 @@ textarea {
 
 .footer-title {
 	margin: 0;
-	font-size: 0.75rem;
+	font-size: 0.71rem;
 	font-weight: 700;
 	letter-spacing: 0.12em;
 	text-transform: uppercase;
@@ -1248,7 +1248,7 @@ textarea {
 .footer-columns,
 .footer-bottom {
 	display: grid;
-	gap: 1rem;
+	gap: 0.85rem;
 }
 
 .footer-newsletter {
@@ -1267,7 +1267,7 @@ textarea {
 	align-items: center;
 	gap: 0.8rem;
 	min-width: 0;
-	padding: 0.95rem 1rem;
+	padding: 0.82rem 0.9rem;
 	border: 1px solid var(--line);
 	border-radius: 0;
 	background: #ffffff;
@@ -1276,8 +1276,8 @@ textarea {
 .footer-subscribe__field svg,
 .footer-subscribe__button svg,
 .footer-socials svg {
-	width: 1.1rem;
-	height: 1.1rem;
+	width: 1rem;
+	height: 1rem;
 	fill: currentColor;
 }
 
@@ -1294,8 +1294,8 @@ textarea {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	width: 3rem;
-	height: 3rem;
+	width: 2.7rem;
+	height: 2.7rem;
 	border: 1px solid var(--line);
 	border-radius: 0;
 	background: #ffffff;
@@ -1309,15 +1309,15 @@ textarea {
 
 .footer-brand-copy {
 	max-width: 32rem;
-	font-size: 0.98rem;
-	line-height: 1.45;
+	font-size: 0.9rem;
+	line-height: 1.38;
 }
 
 .footer-columns {
 	grid-column: 1 / -1;
 	grid-template-columns: repeat(3, minmax(0, 1fr));
 	gap: 2rem;
-	padding-top: 0.5rem;
+	padding-top: 0.35rem;
 	align-items: start;
 }
 
@@ -1345,19 +1345,19 @@ textarea {
 }
 
 .footer-accordion__chevron {
-	font-size: 22px;
+	font-size: 19px;
 	line-height: 1;
 	transition: transform 180ms ease;
 }
 
 .footer-accordion__content {
-	padding-top: 1rem;
-	padding-bottom: 1rem;
+	padding-top: 0.85rem;
+	padding-bottom: 0.85rem;
 }
 
 .footer-list {
 	display: grid;
-	gap: 0.55rem;
+	gap: 0.48rem;
 }
 
 .footer-branches {
@@ -1372,14 +1372,14 @@ textarea {
 	gap: 0.65rem;
 	align-items: start;
 	color: var(--muted);
-	font-size: 0.9rem;
-	line-height: 1.35;
+	font-size: 0.84rem;
+	line-height: 1.28;
 }
 
 .footer-column-heading {
 	margin: 0;
 	font-family: var(--font-display);
-	font-size: 1rem;
+	font-size: 0.92rem;
 	font-weight: 700;
 	letter-spacing: 0.08em;
 	text-transform: uppercase;
@@ -1407,7 +1407,7 @@ textarea {
 .footer-links {
 	display: grid;
 	align-content: start;
-	gap: 1rem;
+	gap: 0.85rem;
 }
 
 .footer-bottom {
@@ -1420,7 +1420,7 @@ textarea {
 
 .footer-copyright {
 	margin: 0;
-	font-size: 0.9rem;
+	font-size: 0.84rem;
 }
 
 .footer-copyright a {
@@ -1440,8 +1440,8 @@ textarea {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	width: 2.35rem;
-	height: 2.35rem;
+	width: 2.2rem;
+	height: 2.2rem;
 	border: 1px solid var(--line);
 	border-radius: 999px;
 	color: var(--text);
@@ -3325,7 +3325,7 @@ h3 {
 
 	.footer-brand-copy,
 	.footer-copyright {
-		font-size: 0.84rem;
+		font-size: 0.78rem;
 	}
 
 	.footer-columns {
@@ -3341,19 +3341,19 @@ h3 {
 	}
 
 	.footer-accordion__summary {
-		font-size: 1.2rem;
+		font-size: 1.08rem;
 	}
 
 	.footer-title {
 		text-transform: uppercase;
-		font-size: 1rem;
+		font-size: 0.92rem;
 	}
 
 	.footer-layout .footer-copy,
 	.footer-layout .footer-list a,
 	.footer-layout .footer-branches li {
-		font-size: 0.8rem;
-		line-height: 1.28;
+		font-size: 0.76rem;
+		line-height: 1.24;
 	}
 
 	.nav-shell {
@@ -3646,7 +3646,6 @@ h3 {
 		width: calc(100vw - 1.5rem);
 		min-height: auto;
 		padding: 1rem 1rem 1.25rem;
-		gap: 3.25rem;
 	}
 
 	.hero-banner .display-title {

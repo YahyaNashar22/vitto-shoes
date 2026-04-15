@@ -12,13 +12,13 @@
 	let sortSheetOpen = $state(false);
 	let filterDrawerOpen = $state(false);
 
-	async function openShopGroup(group?: 'women' | 'men' | 'kids') {
-		if (group) {
-			window.location.href = `${resolve('/shop')}?group=${group}`;
-		} else {
-			window.location.href = resolve('/shop');
-		}
-	}
+	// async function openShopGroup(group?: 'women' | 'men' | 'kids') {
+	// 	if (group) {
+	// 		window.location.href = `${resolve('/shop')}?group=${group}`;
+	// 	} else {
+	// 		window.location.href = resolve('/shop');
+	// 	}
+	// }
 
 	const visibleCategories = $derived.by(() =>
 		data.categories.filter(
@@ -50,16 +50,16 @@
 	}
 </script>
 
-<div class="section-heading">
+<!-- <div class="section-heading">
 	<p class="eyebrow">Shop all</p>
 	<h1>Browse the full catalog</h1>
 	<p class="catalog-toolbar">
 		Filter by category, sale state, or a text search without sacrificing the initial server-rendered
 		load.
 	</p>
-</div>
+</div> -->
 
-<div class="chip-row shop-parent-groups">
+<!-- <div class="chip-row shop-parent-groups">
 	<button
 		class:data-active={!data.filters.parentGroup}
 		class="chip"
@@ -92,9 +92,9 @@
 	>
 		Kids
 	</button>
-</div>
+</div> -->
 
-<div class="stack shop-layout">
+<div class="stack shop-layout" style="padding-top: 24px;">
 	<div class="stack">
 		<div class="shop-toolbar">
 			<button class="shop-filter-trigger" type="button" onclick={() => (filterDrawerOpen = true)}>

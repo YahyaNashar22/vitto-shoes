@@ -348,23 +348,23 @@
 	.service-highlights__grid {
 		display: grid;
 		grid-template-columns: repeat(3, minmax(0, 1fr));
-		gap: 1.25rem;
+		gap: 0.7rem;
 	}
 
 	.service-highlight {
 		display: grid;
 		grid-template-columns: auto minmax(0, 1fr);
 		align-items: center;
-		gap: 1rem;
-		padding: 1.15rem 0;
+		gap: 0.55rem;
+		padding: 0.58rem 0;
 	}
 
 	.service-highlight__icon {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		width: 3.6rem;
-		height: 3.6rem;
+		width: 2.15rem;
+		height: 2.15rem;
 		border: 1px solid rgba(15, 15, 15, 0.1);
 		border-radius: 999px;
 		color: #111111;
@@ -373,26 +373,26 @@
 	}
 
 	.service-highlight__icon svg {
-		width: 1.5rem;
-		height: 1.5rem;
+		width: 0.92rem;
+		height: 0.92rem;
 	}
 
 	.service-highlight__copy {
 		display: grid;
-		gap: 0.35rem;
+		gap: 0.3rem;
 	}
 
 	.service-highlight__copy h3 {
 		margin: 0;
-		font-size: 1.05rem;
+		font-size: 0.76rem;
 		line-height: 1.05;
 	}
 
 	.service-highlight__copy p {
 		margin: 0;
 		color: var(--muted);
-		font-size: 0.94rem;
-		line-height: 1.28;
+		font-size: 0.64rem;
+		line-height: 1.18;
 	}
 
 	@media (max-width: 700px) {
@@ -437,7 +437,7 @@
 		}
 
 		.home-rail .product-rail__item {
-			flex-basis: min(168px, calc(50vw - 1.5rem));
+			flex-basis: min(158px, calc(50vw - 1.5rem));
 		}
 
 		.service-highlights {
@@ -446,30 +446,31 @@
 
 		.service-highlights__grid {
 			grid-template-columns: 1fr;
-			gap: 1rem;
+			gap: 0.55rem;
 		}
 
 		.service-highlight {
-			gap: 0.85rem;
-			padding: 0.95rem 0;
+			gap: 0.5rem;
+			padding: 0.52rem 0;
 		}
 
 		.service-highlight__icon {
-			width: 3.15rem;
-			height: 3.15rem;
+			width: 2rem;
+			height: 2rem;
 		}
 
 		.service-highlight__icon svg {
-			width: 1.3rem;
-			height: 1.3rem;
+			width: 0.82rem;
+			height: 0.82rem;
 		}
 
 		.service-highlight__copy h3 {
-			font-size: 1rem;
+			font-size: 0.72rem;
 		}
 
 		.service-highlight__copy p {
-			font-size: 0.88rem;
+			font-size: 0.62rem;
+			line-height: 1.16;
 		}
 	}
 </style>

@@ -28,15 +28,15 @@
 	}
 </script>
 
-<div class="section-heading">
+<!-- <div class="section-heading">
 	<p class="eyebrow">Sale edit</p>
 	<h1>Discounted styles</h1>
 	<p class="catalog-toolbar">
 		A dedicated sale page keeps the promo catalog easy to reach from the main nav.
 	</p>
-</div>
+</div> -->
 
-<div class="stack shop-layout">
+<div class="stack shop-layout" style="padding-top:24px;">
 	<div class="stack">
 		<div class="shop-toolbar">
 			<button class="shop-filter-trigger" type="button" onclick={() => (filterDrawerOpen = true)}>
