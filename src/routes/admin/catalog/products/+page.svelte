@@ -56,9 +56,18 @@
 		details: string;
 	};
 
+	function createClientId() {
+		const maybeCrypto = globalThis.crypto as { randomUUID?: () => string } | undefined;
+		if (typeof maybeCrypto?.randomUUID === 'function') {
+			return maybeCrypto.randomUUID();
+		}
+
+		return `id-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+	}
+
 	function createVariantSizeDraft(): VariantSizeDraft {
 		return {
-			id: crypto.randomUUID(),
+			id: createClientId(),
 			size: '',
 			qty: 0,
 			price: '',
@@ -68,7 +77,7 @@
 
 	function createVariantGroupDraft(index = 0): VariantGroupDraft {
 		return {
-			id: crypto.randomUUID(),
+			id: createClientId(),
 			color: '',
 			imageName: index === 0 ? 'Recommended for color image' : '',
 			existingImage: '',
@@ -133,7 +142,7 @@
 			let group = groups.find((entry) => (entry.color || '__default__') === colorKey);
 			if (!group) {
 				group = {
-					id: crypto.randomUUID(),
+					id: createClientId(),
 					color: detail.xdim || '',
 					imageName: detail.image || '',
 					existingImage: detail.image || '',
@@ -143,7 +152,7 @@
 			}
 
 			group.sizes.push({
-				id: crypto.randomUUID(),
+				id: createClientId(),
 				size: detail.ydim || '',
 				qty: detail.qty,
 				price: detail.salesprice || '',
