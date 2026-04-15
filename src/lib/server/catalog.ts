@@ -392,10 +392,40 @@ export async function getAdminProducts() {
 }
 
 export async function getAdminOrders() {
+	return getAdminOrdersByTime('all');
+}
+
+export type AdminOrderTimeFilter = 'all' | 'today' | '7d' | '30d' | 'year';
+
+export async function getAdminOrdersByTime(timeFilter: AdminOrderTimeFilter = 'all') {
+	const now = new Date();
+	let fromDate: Date | null = null;
+
+	switch (timeFilter) {
+		case 'today':
+			fromDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+			break;
+		case '7d':
+			fromDate = new Date(now);
+			fromDate.setDate(now.getDate() - 7);
+			break;
+		case '30d':
+			fromDate = new Date(now);
+			fromDate.setDate(now.getDate() - 30);
+			break;
+		case 'year':
+			fromDate = new Date(now);
+			fromDate.setFullYear(now.getFullYear() - 1);
+			break;
+		default:
+			fromDate = null;
+	}
+
 	const rows = await db.query.order.findMany({
 		with: {
 			items: true
 		},
+		where: fromDate ? (orders, { gte }) => gte(orders.createdAt, fromDate as Date) : undefined,
 		orderBy: (orders, { desc }) => [desc(orders.createdAt)]
 	});
 

@@ -2,14 +2,28 @@ import { eq } from 'drizzle-orm';
 import { fail } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { ORDER_STATUSES } from '$lib/constants';
-import { getAdminOrders } from '$lib/server/catalog';
+import { getAdminOrdersByTime, type AdminOrderTimeFilter } from '$lib/server/catalog';
 import { db } from '$lib/server/db';
 import { order } from '$lib/server/db/schema';
 
-export const load: PageServerLoad = async () => ({
-	orders: await getAdminOrders(),
-	statuses: ORDER_STATUSES
-});
+const ORDER_TIME_FILTERS = ['all', 'today', '7d', '30d', 'year'] as const;
+
+function asTimeFilter(value: string | null): AdminOrderTimeFilter {
+	return ORDER_TIME_FILTERS.includes(value as AdminOrderTimeFilter)
+		? (value as AdminOrderTimeFilter)
+		: 'all';
+}
+
+export const load: PageServerLoad = async ({ url }) => {
+	const timeFilter = asTimeFilter(url.searchParams.get('time'));
+
+	return {
+		orders: await getAdminOrdersByTime(timeFilter),
+		statuses: ORDER_STATUSES,
+		timeFilter,
+		timeFilterOptions: ORDER_TIME_FILTERS
+	};
+};
 
 export const actions: Actions = {
 	updateStatus: async ({ request }) => {

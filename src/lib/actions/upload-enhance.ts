@@ -1,4 +1,5 @@
 import { applyAction, deserialize } from '$app/forms';
+import { invalidateAll } from '$app/navigation';
 
 type UploadEnhanceOptions = {
 	onStart?: () => void;
@@ -69,15 +70,23 @@ export function uploadEnhance(node: HTMLFormElement, options: UploadEnhanceOptio
 				return;
 			}
 
-			if (xhr.status >= 400) {
-				currentOptions.onError?.('Upload failed. Please check the file and try again.');
-				return;
-			}
-
 			try {
-				currentOptions.onProgress?.(100);
 				const result = deserialize(xhr.responseText);
+				if (xhr.status >= 400) {
+					const actionMessage =
+						(result as { data?: { catalogMessage?: string } })?.data?.catalogMessage ||
+						(result as { error?: { message?: string } })?.error?.message;
+
+					currentOptions.onError?.(
+						actionMessage || 'Upload failed. Please check the file and try again.'
+					);
+					await applyAction(result);
+					return;
+				}
+
+				currentOptions.onProgress?.(100);
 				await applyAction(result);
+				await invalidateAll();
 				currentOptions.onFinish?.();
 			} catch {
 				currentOptions.onError?.('Upload failed. Please try again.');

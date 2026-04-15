@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
 	import { uploadEnhance } from '$lib/actions/upload-enhance';
+	import type { CategorySummary } from '$lib/types';
 	import type { ActionData, PageData } from './$types';
 
 	let { data, form } = $props<{ data: PageData; form: ActionData }>();
@@ -10,6 +11,57 @@
 		active: false,
 		progress: 0,
 		label: ''
+	});
+
+	type CategoryFormDraft = {
+		id: string;
+		name: string;
+		slug: string;
+		parentGroup: 'women' | 'men' | 'kids';
+		sortOrder: number;
+		description: string;
+		featured: boolean;
+		image: string;
+	};
+
+	function createCategoryDraft(): CategoryFormDraft {
+		return {
+			id: '',
+			name: '',
+			slug: '',
+			parentGroup: 'women',
+			sortOrder: 0,
+			description: '',
+			featured: false,
+			image: ''
+		};
+	}
+
+	let categoryForm = $state<CategoryFormDraft>(createCategoryDraft());
+
+	function startEditCategory(item: CategorySummary) {
+		categoryForm = {
+			id: item.id,
+			name: item.name,
+			slug: item.slug,
+			parentGroup: item.parentGroup,
+			sortOrder: item.sortOrder,
+			description: item.description,
+			featured: item.featured,
+			image: item.image
+		};
+		errorMessage = '';
+	}
+
+	function resetCategoryForm() {
+		categoryForm = createCategoryDraft();
+		errorMessage = '';
+	}
+
+	$effect(() => {
+		if (form?.catalogMessage === 'Category saved.') {
+			resetCategoryForm();
+		}
 	});
 
 	function validateImages(formData: FormData) {
@@ -79,7 +131,7 @@
 		<div class="table-panel stack">
 			<div class="toolbar-row">
 				<div>
-					<h2>Create category</h2>
+					<h2>{categoryForm.id ? 'Edit category' : 'Create category'}</h2>
 					<p class="admin-helper">Upload a cover image and set the navigation label and slug.</p>
 				</div>
 				<a class="button-secondary" href={resolve('/admin/export/categories.xlsx')}>Export Excel</a>
@@ -92,36 +144,64 @@
 				class="stack"
 				use:uploadEnhance={createProgressOptions('Uploading category image')}
 			>
+				<input type="hidden" name="id" bind:value={categoryForm.id} />
 				<div class="field-grid">
-					<label class="form-row"><span>Name</span><input name="name" required /></label>
-					<label class="form-row"><span>Slug</span><input name="slug" /></label>
+					<label class="form-row">
+						<span>Name</span>
+						<input name="name" bind:value={categoryForm.name} required />
+					</label>
+					<label class="form-row">
+						<span>Slug</span>
+						<input name="slug" bind:value={categoryForm.slug} />
+					</label>
 					<label class="form-row">
 						<span>Parent group</span>
-						<select name="parentGroup" required>
+						<select name="parentGroup" bind:value={categoryForm.parentGroup} required>
 							<option value="women">Women</option>
 							<option value="men">Men</option>
 							<option value="kids">Kids</option>
 						</select>
 					</label>
-					<label class="form-row"
-						><span>Sort order</span><input name="sortOrder" type="number" value="0" /></label
-					>
-					<label class="form-row"
-						><span>Image upload</span><input name="imageFile" type="file" accept="image/*" /></label
-					>
+					<label class="form-row">
+						<span>Sort order</span>
+						<input name="sortOrder" type="number" bind:value={categoryForm.sortOrder} />
+					</label>
+					<label class="form-row">
+						<span>Image upload</span>
+						<input name="imageFile" type="file" accept="image/*" />
+					</label>
 				</div>
+				{#if categoryForm.image}
+					<div class="media-inline">
+						<img
+							class="media-thumb"
+							src={categoryForm.image}
+							alt={categoryForm.name || 'Category image'}
+						/>
+						<p class="table-note">Current image will be kept unless you upload a new one.</p>
+					</div>
+				{/if}
 				<p class="field-note">
 					Maximum image size: {data.maxUploadLabel}. JPG, JPEG, PNG, WebP, GIF, SVG, AVIF, BMP, and
 					TIFF files are accepted and converted to WebP.
 				</p>
-				<label class="form-row"
-					><span>Description</span><textarea name="description"></textarea></label
-				>
-				<label class="checkbox-row"
-					><input type="checkbox" name="featured" /> <span>Featured category</span></label
-				>
+				<label class="form-row">
+					<span>Description</span>
+					<textarea name="description" bind:value={categoryForm.description}></textarea>
+				</label>
+				<label class="checkbox-row">
+					<input type="checkbox" name="featured" bind:checked={categoryForm.featured} />
+					<span>Featured category</span>
+				</label>
 				<div class="action-stack">
-					<button class="button-primary" type="submit">Save category</button>
+					<button class="button-primary" type="submit">
+						{categoryForm.id ? 'Update category' : 'Save category'}
+					</button>
+					{#if categoryForm.id}
+						<button class="button-secondary" type="button" onclick={resetCategoryForm}>
+							Cancel edit
+						</button>
+					{/if}
 				</div>
 			</form>
 
@@ -176,10 +256,19 @@
 								<td>{item.slug}</td>
 								<td>{item.productCount ?? 0}</td>
 								<td>
-									<form method="post" action="?/deleteCategory">
-										<input type="hidden" name="id" value={item.id} />
-										<button class="button-secondary" type="submit">Delete</button>
-									</form>
+									<div class="chip-row">
+										<button
+											class="button-secondary"
+											type="button"
+											onclick={() => startEditCategory(item)}
+										>
+											Edit
+										</button>
+										<form method="post" action="?/deleteCategory">
+											<input type="hidden" name="id" value={item.id} />
+											<button class="button-secondary" type="submit">Delete</button>
+										</form>
+									</div>
 								</td>
 							</tr>
 						{/each}

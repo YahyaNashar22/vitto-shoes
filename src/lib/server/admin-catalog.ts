@@ -40,6 +40,25 @@ function asCategoryParentGroup(formData: FormData, key: string) {
 		: 'women';
 }
 
+function getDbErrorMessage(error: unknown, entityLabel: string) {
+	const code =
+		typeof error === 'object' && error !== null && 'code' in error ? String(error.code) : '';
+	const detail =
+		typeof error === 'object' && error !== null && 'detail' in error
+			? String(error.detail || '')
+			: '';
+
+	if (code === '23505') {
+		return `${entityLabel} already exists. Please use a different name or slug.`;
+	}
+
+	if (code === '22P02' && /category_parent_group/i.test(detail)) {
+		return 'Parent group is invalid. Please choose Women, Men, or Kids.';
+	}
+
+	return `Could not save ${entityLabel.toLowerCase()}. Please try again.`;
+}
+
 function parseDetails(raw: string) {
 	if (!raw.trim()) return [];
 
@@ -76,6 +95,101 @@ async function buildProductDetailsFromFormData(
 	formData: FormData,
 	existingDetails: ProductDetailSummary[] = []
 ) {
+	const groupColors = formData.getAll('variantGroupColor').map((value) => value.toString().trim());
+	const groupImageFiles = formData.getAll('variantGroupImageFile');
+	const groupImageExisting = formData
+		.getAll('variantGroupImageExisting')
+		.map((value) => value.toString().trim());
+	const groupRowIndexes = formData
+		.getAll('variantGroupIndex')
+		.map((value) => Number(value.toString() || -1));
+	const groupSizes = formData.getAll('variantGroupSize').map((value) => value.toString().trim());
+	const groupQtys = formData
+		.getAll('variantGroupQty')
+		.map((value) => Number(value.toString() || 0));
+	const groupPrices = formData
+		.getAll('variantGroupPrice')
+		.map((value) => Number(value.toString() || 0));
+	const groupBarcodes = formData
+		.getAll('variantGroupBarcode')
+		.map((value) => value.toString().trim());
+
+	if (groupColors.length) {
+		const rows: ProductDetailSummary[] = [];
+		const baseExternalId = asString(formData, 'externalId')
+			? asNumber(formData, 'externalId')
+			: null;
+		const baseCode = asString(formData, 'code');
+		const baseName = asString(formData, 'name');
+		const baseDescription =
+			asString(formData, 'shortDescription') || asString(formData, 'description');
+		const basePrice = asNumber(formData, 'price');
+		const baseCurrency = asString(formData, 'currency') || 'USD';
+
+		for (let groupIndex = 0; groupIndex < groupColors.length; groupIndex += 1) {
+			const color = groupColors[groupIndex] ?? '';
+			const imageFromUpload = await saveUploadedImage(groupImageFiles[groupIndex], 'products');
+			const colorImage =
+				imageFromUpload ||
+				groupImageExisting[groupIndex] ||
+				existingDetails[groupIndex]?.image ||
+				'';
+
+			let hasSizeRow = false;
+
+			for (let rowIndex = 0; rowIndex < groupRowIndexes.length; rowIndex += 1) {
+				if (groupRowIndexes[rowIndex] !== groupIndex) continue;
+
+				const size = groupSizes[rowIndex] ?? '';
+				const qty = Number.isFinite(groupQtys[rowIndex]) ? groupQtys[rowIndex] : 0;
+				const price = Number.isFinite(groupPrices[rowIndex]) ? groupPrices[rowIndex] : 0;
+				const barcode = groupBarcodes[rowIndex] ?? '';
+				const hasRow = size || barcode || qty > 0 || price > 0;
+
+				if (!hasRow) continue;
+				hasSizeRow = true;
+
+				rows.push({
+					itemid: baseExternalId,
+					itemcode: barcode || baseCode,
+					itembarcode: barcode,
+					itembarcodeid: null,
+					itemname: baseName,
+					itemdescription: baseDescription,
+					xdim: color,
+					ydim: size,
+					qty,
+					salesprice: price || basePrice,
+					currencycode: baseCurrency,
+					isdim: 1,
+					image: colorImage || undefined,
+					gallery: colorImage ? [colorImage] : undefined
+				});
+			}
+
+			if (!hasSizeRow && color) {
+				rows.push({
+					itemid: baseExternalId,
+					itemcode: baseCode,
+					itembarcode: '',
+					itembarcodeid: null,
+					itemname: baseName,
+					itemdescription: baseDescription,
+					xdim: color,
+					ydim: '',
+					qty: 0,
+					salesprice: basePrice,
+					currencycode: baseCurrency,
+					isdim: 1,
+					image: colorImage || undefined,
+					gallery: colorImage ? [colorImage] : undefined
+				});
+			}
+		}
+
+		return rows.filter((item) => item.itembarcode || item.xdim || item.ydim);
+	}
+
 	const variantColors = formData.getAll('variantColor').map((value) => value.toString().trim());
 	const variantSizes = formData.getAll('variantSize').map((value) => value.toString().trim());
 	const variantQtys = formData.getAll('variantQty').map((value) => Number(value.toString() || 0));
@@ -289,10 +403,16 @@ export async function saveCategoryAction(request: Request) {
 		sortOrder: asNumber(formData, 'sortOrder')
 	};
 
-	if (id) {
-		await db.update(category).set(values).where(eq(category.id, id));
-	} else {
-		await db.insert(category).values(values);
+	try {
+		if (id) {
+			await db.update(category).set(values).where(eq(category.id, id));
+		} else {
+			await db.insert(category).values(values);
+		}
+	} catch (error) {
+		return fail(400, {
+			catalogMessage: getDbErrorMessage(error, 'Category')
+		});
 	}
 
 	return { catalogMessage: 'Category saved.' };

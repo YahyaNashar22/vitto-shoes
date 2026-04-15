@@ -26,7 +26,26 @@
 				<h2>Requested orders</h2>
 				<p class="muted">Track WhatsApp cash-on-delivery requests and update their progress.</p>
 			</div>
-			<a class="button-secondary" href={resolve('/admin/export/orders.xlsx')}>Export Excel</a>
+			<div class="chip-row">
+				<form method="get" action={resolve('/admin/orders')} class="chip-row">
+					<select name="time" onchange={(event) => event.currentTarget.form?.requestSubmit()}>
+						{#each data.timeFilterOptions as option (option)}
+							<option value={option} selected={data.timeFilter === option}>
+								{option === 'all'
+									? 'All time'
+									: option === 'today'
+										? 'Today'
+										: option === '7d'
+											? 'Last 7 days'
+											: option === '30d'
+												? 'Last 30 days'
+												: 'Last year'}
+							</option>
+						{/each}
+					</select>
+				</form>
+				<a class="button-secondary" href={resolve('/admin/export/orders.xlsx')}>Export Excel</a>
+			</div>
 		</div>
 
 		<div class="stats-grid">
@@ -91,6 +110,7 @@
 							<td>
 								<form method="post" action="?/updateStatus" class="action-stack">
 									<input type="hidden" name="id" value={item.id} />
+									<input type="hidden" name="time" value={data.timeFilter} />
 									<select name="status">
 										{#each data.statuses as status (status)}
 											<option value={status} selected={item.status === status}
