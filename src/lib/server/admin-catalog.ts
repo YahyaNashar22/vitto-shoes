@@ -96,10 +96,6 @@ async function buildProductDetailsFromFormData(
 	existingDetails: ProductDetailSummary[] = []
 ) {
 	const groupColors = formData.getAll('variantGroupColor').map((value) => value.toString().trim());
-	const groupImageFiles = formData.getAll('variantGroupImageFile');
-	const groupImageExisting = formData
-		.getAll('variantGroupImageExisting')
-		.map((value) => value.toString().trim());
 	const groupRowIndexes = formData
 		.getAll('variantGroupIndex')
 		.map((value) => Number(value.toString() || -1));
@@ -128,11 +124,33 @@ async function buildProductDetailsFromFormData(
 
 		for (let groupIndex = 0; groupIndex < groupColors.length; groupIndex += 1) {
 			const color = groupColors[groupIndex] ?? '';
-			const imageFromUpload = await saveUploadedImage(groupImageFiles[groupIndex], 'products');
+			const imageFromUpload = await saveUploadedImage(
+				formData.get(`variantGroupImageFile_${groupIndex}`),
+				'products'
+			);
+			const galleryFromUpload = await saveUploadedImages(
+				formData.getAll(`variantGroupGalleryFile_${groupIndex}`),
+				'products'
+			);
+			const existingGalleryRaw = asString(formData, `variantGroupGalleryExisting_${groupIndex}`);
+			const existingGallery = existingGalleryRaw
+				? (() => {
+						try {
+							const parsed = JSON.parse(existingGalleryRaw);
+							return Array.isArray(parsed)
+								? parsed.map((item) => String(item)).filter(Boolean)
+								: [];
+						} catch {
+							return [];
+						}
+					})()
+				: [];
+			const colorGallery = galleryFromUpload.length ? galleryFromUpload : existingGallery;
 			const colorImage =
 				imageFromUpload ||
-				groupImageExisting[groupIndex] ||
+				asString(formData, `variantGroupImageExisting_${groupIndex}`) ||
 				existingDetails[groupIndex]?.image ||
+				colorGallery[0] ||
 				'';
 
 			let hasSizeRow = false;
@@ -163,7 +181,7 @@ async function buildProductDetailsFromFormData(
 					currencycode: baseCurrency,
 					isdim: 1,
 					image: colorImage || undefined,
-					gallery: colorImage ? [colorImage] : undefined
+					gallery: colorGallery.length ? colorGallery : colorImage ? [colorImage] : undefined
 				});
 			}
 
@@ -182,7 +200,7 @@ async function buildProductDetailsFromFormData(
 					currencycode: baseCurrency,
 					isdim: 1,
 					image: colorImage || undefined,
-					gallery: colorImage ? [colorImage] : undefined
+					gallery: colorGallery.length ? colorGallery : colorImage ? [colorImage] : undefined
 				});
 			}
 		}
@@ -564,10 +582,16 @@ export async function saveProductAction(request: Request) {
 		sortOrder: asNumber(formData, 'sortOrder')
 	};
 
-	if (id) {
-		await db.update(product).set(values).where(eq(product.id, id));
-	} else {
-		await db.insert(product).values(values);
+	try {
+		if (id) {
+			await db.update(product).set(values).where(eq(product.id, id));
+		} else {
+			await db.insert(product).values(values);
+		}
+	} catch (error) {
+		return fail(400, {
+			catalogMessage: getDbErrorMessage(error, 'Product')
+		});
 	}
 
 	return { catalogMessage: 'Product saved.' };

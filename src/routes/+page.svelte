@@ -193,7 +193,7 @@
 
 {#if secondaryCategories.length}
 	<section class="stack" style="margin-top: 3rem;">
-		<div class="category-grid">
+		<div class="category-grid category-grid--secondary">
 			{#each secondaryCategories as item (item.id)}
 				<a
 					class="surface-card category-tile reveal"

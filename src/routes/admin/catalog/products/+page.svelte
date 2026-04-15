@@ -27,6 +27,9 @@
 		color: string;
 		imageName: string;
 		existingImage: string;
+		galleryNames: string[];
+		existingGallery: string[];
+		galleryInputIds: string[];
 		sizes: VariantSizeDraft[];
 	};
 
@@ -81,6 +84,9 @@
 			color: '',
 			imageName: index === 0 ? 'Recommended for color image' : '',
 			existingImage: '',
+			galleryNames: [],
+			existingGallery: [],
+			galleryInputIds: [createClientId()],
 			sizes: [createVariantSizeDraft()]
 		};
 	}
@@ -146,10 +152,17 @@
 					color: detail.xdim || '',
 					imageName: detail.image || '',
 					existingImage: detail.image || '',
+					galleryNames: [],
+					existingGallery: [],
+					galleryInputIds: [createClientId()],
 					sizes: []
 				};
 				groups.push(group);
 			}
+
+			group.existingGallery = Array.from(
+				new Set([...(group.existingGallery ?? []), ...(detail.gallery ?? [])].filter(Boolean))
+			);
 
 			group.sizes.push({
 				id: createClientId(),
@@ -162,12 +175,15 @@
 
 		return groups.map((group) => ({
 			...group,
+			galleryNames: group.existingGallery,
+			galleryInputIds: [createClientId()],
 			sizes: group.sizes.length ? group.sizes : [createVariantSizeDraft()]
 		}));
 	}
 
 	let productForm = $state<ProductFormDraft>(createProductDraft());
 	let variantGroups = $state<VariantGroupDraft[]>([createVariantGroupDraft()]);
+	let productGalleryInputIds = $state<string[]>([createClientId()]);
 	const visibleProducts = $derived.by(() => {
 		const query = productSearch.trim().toLowerCase();
 		if (!query) {
@@ -214,12 +230,14 @@
 			details: JSON.stringify(item.details, null, 2)
 		};
 		variantGroups = buildVariantGroupsFromDetails(item);
+		productGalleryInputIds = [createClientId()];
 		errorMessage = '';
 	}
 
 	function resetProductForm() {
 		productForm = createProductDraft();
 		variantGroups = [createVariantGroupDraft()];
+		productGalleryInputIds = [createClientId()];
 		errorMessage = '';
 	}
 
@@ -230,11 +248,7 @@
 	});
 
 	function validateImages(formData: FormData) {
-		for (const entry of [
-			formData.get('imageFile'),
-			...formData.getAll('galleryFiles'),
-			...formData.getAll('variantGroupImageFile')
-		]) {
+		for (const entry of formData.values()) {
 			if (entry instanceof File && entry.size > data.maxUploadBytes) {
 				return `One of the selected images is too large. Maximum allowed size is ${data.maxUploadLabel}.`;
 			}
@@ -267,6 +281,19 @@
 		variantGroups = [...variantGroups, createVariantGroupDraft(variantGroups.length)];
 	}
 
+	function addProductGalleryInput() {
+		productGalleryInputIds = [...productGalleryInputIds, createClientId()];
+	}
+
+	function removeProductGalleryInput(id: string) {
+		if (productGalleryInputIds.length === 1) {
+			productGalleryInputIds = [createClientId()];
+			return;
+		}
+
+		productGalleryInputIds = productGalleryInputIds.filter((entry) => entry !== id);
+	}
+
 	function removeVariantGroup(id: string) {
 		if (variantGroups.length === 1) {
 			variantGroups = [createVariantGroupDraft()];
@@ -280,6 +307,28 @@
 		variantGroups = variantGroups.map((group) =>
 			group.id === groupId ? { ...group, sizes: [...group.sizes, createVariantSizeDraft()] } : group
 		);
+	}
+
+	function addVariantGalleryInput(groupId: string) {
+		variantGroups = variantGroups.map((group) =>
+			group.id === groupId
+				? { ...group, galleryInputIds: [...group.galleryInputIds, createClientId()] }
+				: group
+		);
+	}
+
+	function removeVariantGalleryInput(groupId: string, inputId: string) {
+		variantGroups = variantGroups.map((group) => {
+			if (group.id !== groupId) return group;
+			if (group.galleryInputIds.length === 1) {
+				return { ...group, galleryInputIds: [createClientId()] };
+			}
+
+			return {
+				...group,
+				galleryInputIds: group.galleryInputIds.filter((entry) => entry !== inputId)
+			};
+		});
 	}
 
 	function removeVariantSize(groupId: string, sizeId: string) {
@@ -422,10 +471,28 @@
 						<span>Main image upload</span>
 						<input name="imageFile" type="file" accept="image/*" />
 					</label>
-					<label class="form-row">
+					<div class="form-row">
 						<span>Gallery uploads</span>
-						<input name="galleryFiles" type="file" accept="image/*" multiple />
-					</label>
+						<div class="stack" style="gap: 0.55rem;">
+							{#each productGalleryInputIds as inputId (inputId)}
+								<div class="toolbar-row">
+									<input name="galleryFiles" type="file" accept="image/*" multiple />
+									<button
+										class="button-secondary"
+										type="button"
+										onclick={() => removeProductGalleryInput(inputId)}
+									>
+										Remove
+									</button>
+								</div>
+							{/each}
+							<div>
+								<button class="button-secondary" type="button" onclick={addProductGalleryInput}>
+									Add gallery upload
+								</button>
+							</div>
+						</div>
+					</div>
 				</div>
 				{#if productForm.id}
 					<p class="table-note">
@@ -450,7 +517,7 @@
 							<h3>Variant builder</h3>
 							<p class="admin-helper">
 								Create one color block, then add multiple sizes under it. Each color can keep its
-								own image for the product viewer.
+								own main image and gallery for the product viewer.
 							</p>
 						</div>
 						<button class="button-secondary" type="button" onclick={addVariantGroup}
@@ -480,7 +547,7 @@
 									<label class="form-row">
 										<span>Color image</span>
 										<input
-											name="variantGroupImageFile"
+											name={`variantGroupImageFile_${groupIndex}`}
 											type="file"
 											accept="image/*"
 											onchange={(event) => {
@@ -490,7 +557,7 @@
 										/>
 										<input
 											type="hidden"
-											name="variantGroupImageExisting"
+											name={`variantGroupImageExisting_${groupIndex}`}
 											value={group.existingImage}
 										/>
 										{#if group.imageName}
@@ -499,6 +566,58 @@
 											<small class="table-note">Current image will be kept</small>
 										{/if}
 									</label>
+									<div class="form-row">
+										<span>Color gallery</span>
+										<div class="stack" style="gap: 0.55rem;">
+											{#each group.galleryInputIds as inputId (inputId)}
+												<div class="toolbar-row">
+													<input
+														name={`variantGroupGalleryFile_${groupIndex}`}
+														type="file"
+														accept="image/*"
+														multiple
+														onchange={(event) => {
+															const input = event.currentTarget as HTMLInputElement;
+															const fileNames = input.files
+																? Array.from(input.files).map((file) => file.name)
+																: [];
+															group.galleryNames = Array.from(
+																new Set([...group.galleryNames, ...fileNames])
+															);
+														}}
+													/>
+													<button
+														class="button-secondary"
+														type="button"
+														onclick={() => removeVariantGalleryInput(group.id, inputId)}
+													>
+														Remove
+													</button>
+												</div>
+											{/each}
+											<input
+												type="hidden"
+												name={`variantGroupGalleryExisting_${groupIndex}`}
+												value={JSON.stringify(group.existingGallery)}
+											/>
+											{#if group.galleryNames.length}
+												<small class="table-note">{group.galleryNames.join(', ')}</small>
+											{:else if group.existingGallery.length}
+												<small class="table-note"
+													>{group.existingGallery.length} gallery image(s) will be kept</small
+												>
+											{/if}
+											<div>
+												<button
+													class="button-secondary"
+													type="button"
+													onclick={() => addVariantGalleryInput(group.id)}
+												>
+													Add color gallery upload
+												</button>
+											</div>
+										</div>
+									</div>
 								</div>
 
 								<div class="stack" style="gap: 0.85rem;">

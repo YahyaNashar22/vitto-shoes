@@ -28,7 +28,7 @@
 	let quantity = $state(1);
 	let lastProductId = $state('');
 	let purchaseAnchor: HTMLElement | null = null;
-	let addToCartAnchor: HTMLButtonElement | null = null;
+	let buyNowAnchor: HTMLButtonElement | null = null;
 	let showStickyBar = $state(false);
 	let recentlyViewed = $state<ProductSummary[]>([]);
 	let askModalOpen = $state(false);
@@ -117,7 +117,10 @@
 	const stickyVariantLabel = $derived(
 		selectedVariant?.xdim || selectedColor || fallbackColor || product.color || 'Default'
 	);
-	const stickySummaryLabel = $derived(`${stickyVariantLabel} - ${formatCurrency(displayPrice)}`);
+	const stickySizeLabel = $derived(selectedVariant?.ydim || selectedSize || product.yDim || '');
+	const stickySummaryLabel = $derived(
+		[stickyVariantLabel, stickySizeLabel, formatCurrency(displayPrice)].filter(Boolean).join(' - ')
+	);
 	const recentlyViewedFallback = $derived(data.recentProducts.slice(0, 4));
 	const productPath = $derived(resolve('/products/[slug]', { slug: product.slug }));
 	const productUrl = $derived(browser ? window.location.href : productPath);
@@ -249,13 +252,13 @@
 		}
 
 		const updateStickyBar = () => {
-			if (!addToCartAnchor || window.innerWidth > 700) {
+			if (!buyNowAnchor || window.innerWidth > 700) {
 				showStickyBar = false;
 				return;
 			}
 
-			const rect = addToCartAnchor.getBoundingClientRect();
-			showStickyBar = rect.bottom < 0;
+			const rect = buyNowAnchor.getBoundingClientRect();
+			showStickyBar = rect.bottom < 0 || rect.top > window.innerHeight;
 		};
 
 		updateStickyBar();
@@ -267,14 +270,6 @@
 			window.removeEventListener('resize', updateStickyBar);
 		};
 	});
-
-	function showPrevious() {
-		currentIndex = currentIndex === 0 ? gallery.length - 1 : currentIndex - 1;
-	}
-
-	function showNext() {
-		currentIndex = currentIndex === gallery.length - 1 ? 0 : currentIndex + 1;
-	}
 
 	async function addSelectedToCart() {
 		if (availableQuantity < 1) return;
@@ -409,15 +404,6 @@
 
 		{#if gallery.length > 1}
 			<div class="product-viewer__thumbs product-viewer__thumbs--cavin">
-				<button
-					class="product-viewer__arrow product-viewer__arrow--inline"
-					type="button"
-					onclick={showPrevious}
-					aria-label="Previous image"
-					disabled={gallery.length <= 1}
-				>
-					&#8249;
-				</button>
 				{#each gallery as image, index (`${image}-${index}`)}
 					<button
 						class:active={currentIndex === index}
@@ -433,15 +419,6 @@
 						/>
 					</button>
 				{/each}
-				<button
-					class="product-viewer__arrow product-viewer__arrow--inline"
-					type="button"
-					onclick={showNext}
-					aria-label="Next image"
-					disabled={gallery.length <= 1}
-				>
-					&#8250;
-				</button>
 			</div>
 		{/if}
 	</div>
@@ -495,7 +472,7 @@
 		{#if sizeOptions.length}
 			<div class="product-option-group">
 				<p class="product-meta-line product-meta-line--label">
-					<strong>size:</strong>
+					<strong>Size:</strong>
 					{selectedSize}
 				</p>
 				<div class="product-option-list">
@@ -548,7 +525,6 @@
 			<div class="product-purchase-actions">
 				<button
 					class="button-secondary product-purchase-button"
-					bind:this={addToCartAnchor}
 					onclick={addSelectedToCart}
 					disabled={availableQuantity < 1}
 				>
@@ -560,6 +536,7 @@
 				</button>
 				<button
 					class="button-primary product-purchase-button"
+					bind:this={buyNowAnchor}
 					onclick={addSelectedToCart}
 					disabled={availableQuantity < 1}
 				>
@@ -618,12 +595,56 @@
 
 			<div class="product-policy-list">
 				<p class="product-policy-item">
-					<span aria-hidden="true">&#128666;</span>
+					<span class="product-policy-icon" aria-hidden="true">
+						<svg viewBox="0 0 24 24">
+							<path
+								d="M3.5 7.5h10v8h-10zM13.5 10h2.6l2.4 2.6v2.9h-5z"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="1.7"
+								stroke-linejoin="round"
+							/>
+							<circle
+								cx="7.2"
+								cy="17.4"
+								r="1.6"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="1.7"
+							/>
+							<circle
+								cx="16.8"
+								cy="17.4"
+								r="1.6"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="1.7"
+							/>
+						</svg>
+					</span>
 					<strong>Estimated Delivery:</strong>
 					{estimatedDelivery}
 				</p>
 				<p class="product-policy-item">
-					<span aria-hidden="true">&#128230;</span>
+					<span class="product-policy-icon" aria-hidden="true">
+						<svg viewBox="0 0 24 24">
+							<path
+								d="M12 3.7 4.75 7.5v9L12 20.3l7.25-3.8v-9L12 3.7Z"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="1.7"
+								stroke-linejoin="round"
+							/>
+							<path
+								d="m4.75 7.5 7.25 4 7.25-4M12 11.5v8.8"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="1.7"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+							/>
+						</svg>
+					</span>
 					No Refund - Exchange only outside Sale
 				</p>
 			</div>
