@@ -3442,6 +3442,14 @@ h3 {
 		justify-items: stretch;
 	}
 
+	.footer-newsletter {
+		margin-left: -5px;
+	}
+
+	.footer-newsletter .stack {
+		margin-left: 3px;
+	}
+
 	.footer-subscribe {
 		grid-template-columns: minmax(0, 1fr) auto;
 	}
