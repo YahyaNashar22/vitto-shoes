@@ -1776,7 +1776,6 @@ h3 {
 .table-panel {
 	padding: 1.4rem;
 	border: 1px solid var(--line);
-	border-radius: var(--radius);
 	background: rgba(255, 255, 255, 0.9);
 }
 
@@ -1784,7 +1783,6 @@ h3 {
 	position: relative;
 	overflow: hidden;
 	padding: clamp(1.8rem, 4vw, 3rem);
-	border-radius: 36px;
 	background:
 		linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(241, 241, 241, 0.95)),
 		radial-gradient(circle at top right, rgba(0, 0, 0, 0.08), transparent 30%);
@@ -2679,6 +2677,33 @@ h3 {
 	border-radius: 999px;
 }
 
+.product-option-button--color-image {
+	width: 3.1rem;
+	height: 3.1rem;
+	border: 1px solid rgba(15, 15, 15, 0.1);
+	background: #ffffff;
+	overflow: hidden;
+}
+
+.product-option-button--color-image img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	background: #f3f3f3;
+}
+
+.product-option-button--color-image .product-color-swatch {
+	width: 100%;
+	height: 100%;
+	border-radius: 0;
+}
+
+.product-option-button--color-image.active,
+.product-option-button--color-image:hover {
+	border-color: #111111;
+	box-shadow: 0 0 0 1px #111111;
+}
+
 .product-color-swatch {
 	display: inline-flex;
 	width: 2.5rem;
@@ -3432,6 +3457,7 @@ h3 {
 
 	.footer-socials {
 		justify-content: flex-start;
+		margin-bottom: 24px;
 	}
 
 	.brand-logo--footer {
@@ -3736,7 +3762,7 @@ h3 {
 	}
 
 	.collection-hero__grid {
-		width: calc(100vw - 1rem);
+		width: calc(100vw - (var(--mobile-page-inset) * 2));
 		min-height: auto;
 	}
 
@@ -3822,13 +3848,13 @@ h3 {
 	}
 
 	.product-option-list--swatches .product-option-button {
-		width: 2.2rem;
-		height: 2.2rem;
+		width: 2.65rem;
+		height: 2.65rem;
 	}
 
 	.product-color-swatch {
-		width: 2.2rem;
-		height: 2.2rem;
+		width: 2.65rem;
+		height: 2.65rem;
 	}
 
 	.product-purchase-shell {
@@ -3952,8 +3978,7 @@ h3 {
 		display: inline-flex;
 		align-items: center;
 		justify-content: space-between;
-		gap: 0.6rem;
-		padding: 0.92rem 0.95rem;
+		padding: 0;
 		border: 1px solid rgba(15, 15, 15, 0.12);
 		background: #ffffff;
 		font-size: 0.9rem;
@@ -3961,7 +3986,14 @@ h3 {
 		text-align: left;
 	}
 
-	.mobile-sticky-cart__meta span {
+	.mobile-sticky-cart__meta select {
+		width: 100%;
+		min-width: 0;
+		min-height: 2.7rem;
+		padding: 0 1.9rem 0 0.85rem;
+		border: none;
+		border-radius: 0;
+		background: transparent;
 		color: var(--text);
 		font-size: 0.88rem;
 		white-space: nowrap;
@@ -3969,10 +4001,8 @@ h3 {
 		text-overflow: ellipsis;
 	}
 
-	.mobile-sticky-cart__chevron {
-		flex: 0 0 auto;
-		color: var(--muted) !important;
-		font-size: 0.8rem !important;
+	.mobile-sticky-cart__meta select:focus {
+		outline: none;
 	}
 
 	.mobile-sticky-cart__button {

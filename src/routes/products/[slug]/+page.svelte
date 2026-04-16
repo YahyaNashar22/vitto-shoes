@@ -121,6 +121,45 @@
 	const stickySummaryLabel = $derived(
 		[stickyVariantLabel, stickySizeLabel, formatCurrency(displayPrice)].filter(Boolean).join(' - ')
 	);
+	const stickyVariantOptions = $derived.by(() => {
+		const options = detailOptions
+			.map((item: ProductDetailSummary, index: number) => {
+				const color = item.xdim || fallbackColor || product.color || 'Default';
+				const size = item.ydim || product.yDim || '';
+				const price = item.salesprice || product.price;
+				const key = `${item.itembarcode || index}::${color}::${size}`;
+
+				return {
+					key,
+					color,
+					size,
+					price,
+					label: [size, color, formatCurrency(price)].filter(Boolean).join(' / ')
+				};
+			})
+			.filter((item) => item.color || item.size);
+
+		if (options.length) {
+			return options;
+		}
+
+		return [
+			{
+				key: 'default',
+				color: stickyVariantLabel,
+				size: stickySizeLabel,
+				price: displayPrice,
+				label: stickySummaryLabel
+			}
+		];
+	});
+	const selectedStickyVariantKey = $derived.by(() => {
+		const matched = stickyVariantOptions.find(
+			(item) => item.color === stickyVariantLabel && item.size === stickySizeLabel
+		);
+
+		return matched?.key ?? stickyVariantOptions[0]?.key ?? 'default';
+	});
 	const recentlyViewedFallback = $derived(data.recentProducts.slice(0, 4));
 	const productPath = $derived(resolve('/products/[slug]', { slug: product.slug }));
 	const productUrl = $derived(browser ? window.location.href : productPath);
@@ -286,6 +325,15 @@
 		await goto(resolve('/cart'));
 	}
 
+	function selectStickyVariant(value: string) {
+		const option = stickyVariantOptions.find((item) => item.key === value);
+		if (!option) return;
+
+		selectedColor = option.color;
+		selectedSize = option.size;
+		currentIndex = 0;
+	}
+
 	async function shareProduct() {
 		if (!browser) return;
 
@@ -445,7 +493,7 @@
 					{#each colorOptions as color (color)}
 						<button
 							class:active={selectedColor === color}
-							class="product-option-button product-option-button--swatch"
+							class="product-option-button product-option-button--color-image"
 							type="button"
 							aria-label={`Choose ${color} color`}
 							onclick={() => {
@@ -453,11 +501,15 @@
 								currentIndex = 0;
 							}}
 						>
-							<span
-								class="product-color-swatch"
-								style={`--swatch-color: ${getColorSwatch(color)}`}
-								aria-hidden="true"
-							></span>
+							{#if colorMedia[color]?.[0]}
+								<img src={colorMedia[color][0]} alt={color} loading="lazy" />
+							{:else}
+								<span
+									class="product-color-swatch"
+									style={`--swatch-color: ${getColorSwatch(color)}`}
+									aria-hidden="true"
+								></span>
+							{/if}
 						</button>
 					{/each}
 				</div>
@@ -694,10 +746,18 @@
 
 {#if showStickyBar}
 	<div class="mobile-sticky-cart">
-		<button class="mobile-sticky-cart__meta" type="button" aria-label="Selected variant and price">
-			<span>{stickySummaryLabel}</span>
-			<span class="mobile-sticky-cart__chevron" aria-hidden="true">&#709;</span>
-		</button>
+		<label class="mobile-sticky-cart__meta">
+			<span class="sr-only">Choose variant</span>
+			<select
+				value={selectedStickyVariantKey}
+				aria-label="Choose variant"
+				onchange={(event) => selectStickyVariant(event.currentTarget.value)}
+			>
+				{#each stickyVariantOptions as option (option.key)}
+					<option value={option.key}>{option.label}</option>
+				{/each}
+			</select>
+		</label>
 		<button
 			class="button-primary mobile-sticky-cart__button"
 			onclick={addSelectedToCart}

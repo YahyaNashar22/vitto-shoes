@@ -63,7 +63,13 @@
 					<ul class="footer-list footer-branches">
 						{#each branches as branch (branch)}
 							<li>
-								<span class="footer-pin" aria-hidden="true"></span>
+								<!-- <span class="footer-pin" aria-hidden="true"></span> -->
+								<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
+									><path
+										fill="#111111"
+										d="M12 2C7.589 2 4 5.589 4 9.995C3.971 16.44 11.696 21.784 12 22c0 0 8.029-5.56 8-12c0-4.411-3.589-8-8-8m0 12c-2.21 0-4-1.79-4-4s1.79-4 4-4s4 1.79 4 4s-1.79 4-4 4"
+									/></svg
+								>
 								<span>{branch}</span>
 							</li>
 						{/each}
@@ -78,9 +84,9 @@
 				</summary>
 				<div class="footer-accordion__content">
 					<div class="footer-list">
-						<a href="tel:+96170000000">+961 70 000 000</a>
+						<a href="tel:03888173">03 888 173</a>
 						<a href="mailto:hello@vitto-shoes.com">hello@vitto-shoes.com</a>
-						<a href="https://wa.me/96170000000" target="_blank" rel="noreferrer">WhatsApp orders</a>
+						<a href="https://wa.me/9613888173" target="_blank" rel="noreferrer">WhatsApp orders</a>
 					</div>
 				</div>
 			</details>
@@ -109,24 +115,46 @@
 			</p>
 
 			<div class="footer-socials" aria-label="Social media">
-				<a href="https://facebook.com" target="_blank" rel="noreferrer" aria-label="Facebook">
+				<a
+					href="https://www.facebook.com/share/1LKMxzKEzC/?mibextid=wwXIfr"
+					target="_blank"
+					rel="noreferrer"
+					aria-label="Facebook"
+				>
 					<svg viewBox="0 0 24 24" aria-hidden="true">
 						<path
 							d="M13.32 21v-7.7h2.58l.39-3h-2.97V8.38c0-.87.24-1.46 1.49-1.46h1.59V4.24c-.28-.04-1.23-.12-2.34-.12-2.32 0-3.91 1.42-3.91 4.02v2.16H7.5v3h2.64V21h3.18Z"
 						/>
 					</svg>
 				</a>
-				<a href="https://instagram.com" target="_blank" rel="noreferrer" aria-label="Instagram">
+				<a
+					href="https://www.instagram.com/vitto.shoes?igsh=Y3k3b3Mybm9kaTB2"
+					target="_blank"
+					rel="noreferrer"
+					aria-label="Instagram"
+				>
 					<svg viewBox="0 0 24 24" aria-hidden="true">
 						<path
 							d="M7.75 3h8.5A4.75 4.75 0 0 1 21 7.75v8.5A4.75 4.75 0 0 1 16.25 21h-8.5A4.75 4.75 0 0 1 3 16.25v-8.5A4.75 4.75 0 0 1 7.75 3Zm0 1.5A3.25 3.25 0 0 0 4.5 7.75v8.5a3.25 3.25 0 0 0 3.25 3.25h8.5a3.25 3.25 0 0 0 3.25-3.25v-8.5A3.25 3.25 0 0 0 16.25 4.5h-8.5Zm8.88 1.12a.88.88 0 1 1 0 1.76.88.88 0 0 1 0-1.76ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 1.5A3.5 3.5 0 1 0 12 15.5 3.5 3.5 0 0 0 12 8.5Z"
 						/>
 					</svg>
 				</a>
-				<a href="https://wa.me/" target="_blank" rel="noreferrer" aria-label="WhatsApp">
+				<a href="https://wa.me/9613888173" target="_blank" rel="noreferrer" aria-label="WhatsApp">
 					<svg viewBox="0 0 24 24" aria-hidden="true">
 						<path
 							d="M12 3.75A8.25 8.25 0 0 0 5.04 16.43L4 20.25l3.94-1.03A8.25 8.25 0 1 0 12 3.75Zm0 15a6.72 6.72 0 0 1-3.42-.93l-.24-.14-2.34.61.62-2.28-.15-.24A6.75 6.75 0 1 1 12 18.75Zm3.71-5.1c-.2-.1-1.16-.57-1.34-.64-.18-.07-.31-.1-.44.1-.13.2-.5.63-.62.77-.11.13-.22.15-.41.05-.2-.1-.83-.3-1.58-.96-.59-.52-.98-1.16-1.09-1.35-.11-.2-.01-.3.08-.4.08-.08.2-.22.29-.33.1-.11.13-.19.2-.32.07-.13.03-.24-.02-.33-.05-.1-.44-1.06-.6-1.45-.16-.38-.33-.33-.44-.34h-.38c-.13 0-.33.05-.5.24-.17.2-.67.65-.67 1.59 0 .94.69 1.84.79 1.96.1.13 1.36 2.07 3.3 2.9.46.2.81.32 1.09.41.46.14.88.12 1.21.07.37-.06 1.16-.47 1.32-.92.16-.45.16-.83.11-.92-.04-.09-.17-.14-.37-.24Z"
+						/>
+					</svg>
+				</a>
+				<a
+					href="https://www.tiktok.com/@vitto..shoes"
+					target="_blank"
+					rel="noreferrer"
+					aria-label="TikTok"
+				>
+					<svg viewBox="0 0 24 24" aria-hidden="true">
+						<path
+							d="M14.2 3.5h2.6c.3 2.1 1.5 3.7 3.7 4v2.7c-1.4 0-2.7-.4-3.8-1.2v5.8c0 3.3-2.1 5.7-5.6 5.7-3 0-5.3-2-5.3-4.9 0-3.2 2.5-5.1 5.7-5.1.4 0 .7 0 1 .1v2.8a4 4 0 0 0-1.1-.1c-1.5 0-2.6.8-2.6 2.2 0 1.3 1 2.1 2.3 2.1 1.7 0 2.5-1 2.5-2.8V3.5h.6Z"
 						/>
 					</svg>
 				</a>
