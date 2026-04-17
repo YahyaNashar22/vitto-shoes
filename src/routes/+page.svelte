@@ -3,17 +3,16 @@
 	import ProductCard from '$lib/components/ProductCard.svelte';
 	import EmptyState from '$lib/components/EmptyState.svelte';
 	import { reveal } from '$lib/actions/reveal';
-	import type { CategorySummary } from '$lib/types';
 	import type { PageData } from './$types';
 
 	let { data } = $props<{ data: PageData }>();
 	let latestRail = $state<HTMLDivElement | null>(null);
 	let topSellingRail = $state<HTMLDivElement | null>(null);
-	const womenCategories = $derived(
-		data.categories.filter((item: CategorySummary) => item.parentGroup === 'women')
-	);
+	const primaryCategories = $derived(data.categories.slice(0, 6));
 	const secondaryCategories = $derived(
-		womenCategories.slice(6, 10).length ? womenCategories.slice(6, 10) : womenCategories.slice(0, 4)
+		data.categories.slice(6, 10).length === 4
+			? data.categories.slice(6, 10)
+			: data.categories.slice(0, 4)
 	);
 
 	function scrollRail(rail: HTMLDivElement | null, direction: 'left' | 'right') {
@@ -111,9 +110,9 @@
 		<p>Featured groups mirror the editorial navigation style from the reference site.</p> -->
 	</div>
 
-	{#if data.categories.length}
+	{#if primaryCategories.length}
 		<div class="category-grid">
-			{#each womenCategories.slice(0, 6) as item (item.id)}
+			{#each primaryCategories as item (item.id)}
 				<a
 					class="surface-card category-tile reveal"
 					href={resolve('/collections/[slug]', { slug: item.slug })}
