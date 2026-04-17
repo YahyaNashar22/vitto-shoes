@@ -1327,11 +1327,13 @@ textarea {
 }
 
 .footer-accordion {
+	position: relative;
 	margin: 0;
 	padding-top: 0;
 }
 
-.footer-accordion[open] .footer-accordion__chevron {
+.footer-accordion[open] .footer-accordion__chevron,
+.footer-accordion.is-open .footer-accordion__chevron {
 	transform: rotate(180deg);
 }
 
@@ -1340,9 +1342,18 @@ textarea {
 	align-items: center;
 	justify-content: space-between;
 	gap: 1rem;
+	width: 100%;
 	padding: 0;
+	border: 0;
+	background: transparent;
+	color: inherit;
+	font: inherit;
+	text-align: left;
 	list-style: none;
 	cursor: pointer;
+	position: relative;
+	z-index: 1;
+	pointer-events: auto;
 }
 
 .footer-accordion__summary::-webkit-details-marker {
@@ -3986,6 +3997,7 @@ h3 {
 		display: inline-flex;
 		align-items: center;
 		justify-content: space-between;
+		height: 2.7rem;
 		padding: 0;
 		border: 1px solid rgba(15, 15, 15, 0.12);
 		background: #ffffff;
@@ -3995,8 +4007,11 @@ h3 {
 	}
 
 	.mobile-sticky-cart__meta select {
+		appearance: none;
+		-webkit-appearance: none;
 		width: 100%;
 		min-width: 0;
+		height: 2.7rem;
 		min-height: 2.7rem;
 		padding: 0 1.9rem 0 0.85rem;
 		border: none;
@@ -4004,6 +4019,7 @@ h3 {
 		background: transparent;
 		color: var(--text);
 		font-size: 0.88rem;
+		line-height: 2.7rem;
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
@@ -4017,6 +4033,7 @@ h3 {
 		border-radius: 0px;
 		width: 100%;
 		min-width: 0;
+		height: 2.7rem;
 		min-height: 2.7rem;
 		padding-inline: 0.95rem;
 		background: #121212;
@@ -4177,12 +4194,12 @@ h3 {
 	}
 
 	.footer-accordion__summary {
-		cursor: default;
-		pointer-events: none;
+		cursor: pointer;
+		pointer-events: auto;
 	}
 
 	.footer-accordion__chevron {
-		display: none;
+		display: inline-block;
 	}
 }
 
@@ -4194,13 +4211,20 @@ h3 {
 	}
 
 	.mobile-sticky-cart__meta select {
+		height: 2.55rem;
 		min-height: 2.55rem;
 		padding-left: 0.55rem;
 		padding-right: 1.45rem;
 		font-size: 0.78rem;
+		line-height: 2.55rem;
+	}
+
+	.mobile-sticky-cart__meta {
+		height: 2.55rem;
 	}
 
 	.mobile-sticky-cart__button {
+		height: 2.55rem;
 		min-height: 2.55rem;
 		padding-inline: 0.65rem;
 		font-size: 0.82rem;

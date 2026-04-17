@@ -1,11 +1,34 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
+	import { onMount } from 'svelte';
 
 	const branches = [
 		'Tayouneh area main road near Adam bakery.',
 		'Zalka wooden bakery junction near Diwan Hachem restaurant.',
 		"Kaslik main street facing Lina's cafe."
 	];
+
+	let branchesOpen = $state(true);
+	let contactOpen = $state(true);
+	let browseOpen = $state(true);
+
+	const setFooterSections = (open: boolean) => {
+		branchesOpen = open;
+		contactOpen = open;
+		browseOpen = open;
+	};
+
+	onMount(() => {
+		const mediaQuery = window.matchMedia('(min-width: 701px)');
+		const syncFooterMode = () => {
+			setFooterSections(mediaQuery.matches);
+		};
+
+		syncFooterMode();
+		mediaQuery.addEventListener('change', syncFooterMode);
+
+		return () => mediaQuery.removeEventListener('change', syncFooterMode);
+	});
 </script>
 
 <footer class="site-footer">
@@ -54,56 +77,78 @@
 		</section>
 
 		<div class="footer-columns">
-			<details class="footer-accordion">
-				<summary class="footer-accordion__summary">
+			<section class="footer-accordion" class:is-open={branchesOpen}>
+				<button
+					type="button"
+					class="footer-accordion__summary"
+					aria-expanded={branchesOpen}
+					onclick={() => (branchesOpen = !branchesOpen)}
+				>
 					<span class="footer-column-heading">Branches</span>
 					<span class="footer-accordion__chevron">&#9662;</span>
-				</summary>
-				<div class="footer-accordion__content">
-					<ul class="footer-list footer-branches">
-						{#each branches as branch (branch)}
-							<li>
-								<!-- <span class="footer-pin" aria-hidden="true"></span> -->
-								<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
-									><path
-										fill="#111111"
-										d="M12 2C7.589 2 4 5.589 4 9.995C3.971 16.44 11.696 21.784 12 22c0 0 8.029-5.56 8-12c0-4.411-3.589-8-8-8m0 12c-2.21 0-4-1.79-4-4s1.79-4 4-4s4 1.79 4 4s-1.79 4-4 4"
-									/></svg
-								>
-								<span>{branch}</span>
-							</li>
-						{/each}
-					</ul>
-				</div>
-			</details>
+				</button>
+				{#if branchesOpen}
+					<div class="footer-accordion__content">
+						<ul class="footer-list footer-branches">
+							{#each branches as branch (branch)}
+								<li>
+									<!-- <span class="footer-pin" aria-hidden="true"></span> -->
+									<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
+										><path
+											fill="#111111"
+											d="M12 2C7.589 2 4 5.589 4 9.995C3.971 16.44 11.696 21.784 12 22c0 0 8.029-5.56 8-12c0-4.411-3.589-8-8-8m0 12c-2.21 0-4-1.79-4-4s1.79-4 4-4s4 1.79 4 4s-1.79 4-4 4"
+										/></svg
+									>
+									<span>{branch}</span>
+								</li>
+							{/each}
+						</ul>
+					</div>
+				{/if}
+			</section>
 
-			<details class="footer-accordion">
-				<summary class="footer-accordion__summary">
+			<section class="footer-accordion" class:is-open={contactOpen}>
+				<button
+					type="button"
+					class="footer-accordion__summary"
+					aria-expanded={contactOpen}
+					onclick={() => (contactOpen = !contactOpen)}
+				>
 					<span class="footer-column-heading">Contact Us</span>
 					<span class="footer-accordion__chevron">&#9662;</span>
-				</summary>
-				<div class="footer-accordion__content">
-					<div class="footer-list">
-						<a href="tel:03888173">03 888 173</a>
-						<a href="mailto:hello@vitto-shoes.com">hello@vitto-shoes.com</a>
-						<a href="https://wa.me/9613888173" target="_blank" rel="noreferrer">WhatsApp orders</a>
+				</button>
+				{#if contactOpen}
+					<div class="footer-accordion__content">
+						<div class="footer-list">
+							<a href="tel:03888173">03 888 173</a>
+							<a href="mailto:hello@vitto-shoes.com">hello@vitto-shoes.com</a>
+							<a href="https://wa.me/9613888173" target="_blank" rel="noreferrer">WhatsApp orders</a
+							>
+						</div>
 					</div>
-				</div>
-			</details>
+				{/if}
+			</section>
 
-			<details class="footer-accordion">
-				<summary class="footer-accordion__summary">
+			<section class="footer-accordion" class:is-open={browseOpen}>
+				<button
+					type="button"
+					class="footer-accordion__summary"
+					aria-expanded={browseOpen}
+					onclick={() => (browseOpen = !browseOpen)}
+				>
 					<span class="footer-column-heading">Browse</span>
 					<span class="footer-accordion__chevron">&#9662;</span>
-				</summary>
-				<div class="footer-accordion__content">
-					<div class="footer-list">
-						<a href={resolve('/shop')}>Shop all</a>
-						<a href={resolve('/sale')}>On sale</a>
-						<a href={resolve('/cart')}>Cart</a>
+				</button>
+				{#if browseOpen}
+					<div class="footer-accordion__content">
+						<div class="footer-list">
+							<a href={resolve('/shop')}>Shop all</a>
+							<a href={resolve('/sale')}>On sale</a>
+							<a href={resolve('/cart')}>Cart</a>
+						</div>
 					</div>
-				</div>
-			</details>
+				{/if}
+			</section>
 		</div>
 
 		<div class="footer-bottom">
