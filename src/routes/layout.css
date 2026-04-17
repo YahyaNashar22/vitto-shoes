@@ -3500,13 +3500,13 @@ h3 {
 	}
 
 	.nav-shell {
-		grid-template-columns: 1fr auto 1fr;
+		grid-template-columns: 1fr 2fr 1fr;
 		padding: 0.8rem 0.35rem;
 	}
 
-	.nav-shell--cavin {
+	/* .nav-shell--cavin {
 		width: calc(100vw - (var(--mobile-page-inset) * 2));
-	}
+	} */
 
 	.brand-logo--header {
 		height: 1.9rem;
