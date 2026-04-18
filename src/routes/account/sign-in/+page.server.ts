@@ -39,13 +39,12 @@ export const actions: Actions = {
 
 		throw redirect(303, next);
 	},
-	signUp: async ({ request, url }) => {
+	signUp: async ({ request }) => {
 		const formData = await request.formData();
 		const name = formData.get('name')?.toString() ?? '';
 		const email = formData.get('email')?.toString() ?? '';
 		const password = formData.get('password')?.toString() ?? '';
-		const next =
-			formData.get('next')?.toString() || url.searchParams.get('next') || '/account/profile';
+		const next = '/account/profile';
 
 		try {
 			await auth.api.signUpEmail({
