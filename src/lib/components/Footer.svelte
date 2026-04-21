@@ -3,9 +3,9 @@
 	import { onMount } from 'svelte';
 
 	const branches = [
-		'Tayouneh area main road near Adam bakery.',
-		'Zalka wooden bakery junction near Diwan Hachem restaurant.',
-		"Kaslik main street facing Lina's cafe."
+		'Mansourieh main road,facing Brands & Beyond.',
+		'Furn el Chebbek facing Mega Mall.',
+		'Hadath, Saint Therese facing bab l hara.'
 	];
 
 	let branchesOpen = $state(true);
