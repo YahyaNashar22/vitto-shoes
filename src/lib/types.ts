@@ -2,6 +2,13 @@ import type { ORDER_STATUSES } from './constants';
 
 export type CategoryParentGroup = 'men' | 'women' | 'kids';
 
+export type HomeHeroContent = {
+	eyebrow: string;
+	title: string;
+	description: string;
+	image: string;
+};
+
 export type CategorySummary = {
 	id: string;
 	name: string;

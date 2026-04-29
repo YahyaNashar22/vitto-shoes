@@ -165,7 +165,10 @@ export function getMimeTypeForUpload(relativePath: string) {
 	return MIME_BY_EXTENSION[path.extname(relativePath).toLowerCase()] || 'application/octet-stream';
 }
 
-export async function saveUploadedImage(file: unknown, folder: 'categories' | 'products') {
+export async function saveUploadedImage(
+	file: unknown,
+	folder: 'categories' | 'products' | 'storefront'
+) {
 	if (!isUploadableImage(file)) {
 		return '';
 	}
@@ -194,7 +197,10 @@ export async function saveUploadedImage(file: unknown, folder: 'categories' | 'p
 	return `/uploads/${folder}/${outputFilename}`;
 }
 
-export async function saveUploadedImages(files: unknown[], folder: 'categories' | 'products') {
+export async function saveUploadedImages(
+	files: unknown[],
+	folder: 'categories' | 'products' | 'storefront'
+) {
 	const uploaded: string[] = [];
 
 	for (const file of files) {

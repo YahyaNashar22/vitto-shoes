@@ -35,6 +35,14 @@
 					<small>Categories, products, imports</small>
 				</a>
 				<a
+					class:active={page.url.pathname.startsWith('/admin/storefront')}
+					class="admin-nav-link"
+					href={resolve('/admin/storefront')}
+				>
+					<span>Storefront</span>
+					<small>Homepage hero and content</small>
+				</a>
+				<a
 					class:active={page.url.pathname.startsWith('/admin/orders')}
 					class="admin-nav-link"
 					href={resolve('/admin/orders')}
@@ -70,6 +78,15 @@
 						class:active={page.url.pathname === '/admin/orders'}
 						class="admin-subnav-link"
 						href={resolve('/admin/orders')}>Order queue</a
+					>
+				</div>
+			{:else if page.url.pathname.startsWith('/admin/storefront')}
+				<div class="admin-subnav stack">
+					<p class="eyebrow">Storefront tabs</p>
+					<a
+						class:active={page.url.pathname === '/admin/storefront'}
+						class="admin-subnav-link"
+						href={resolve('/admin/storefront')}>Homepage hero</a
 					>
 				</div>
 			{/if}

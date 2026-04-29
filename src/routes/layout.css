@@ -1758,6 +1758,10 @@ h3 {
 	grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 }
 
+.field-grid__full {
+	grid-column: 1 / -1;
+}
+
 .catalog-layout,
 .product-detail,
 .hero-grid {
@@ -1844,7 +1848,7 @@ h3 {
 			rgba(0, 0, 0, 0.14) 62%,
 			rgba(0, 0, 0, 0.08) 100%
 		),
-		url('/hero-banner-1.webp') center center / cover no-repeat;
+		var(--hero-banner-image, url('/hero-banner-1.webp')) center center / cover no-repeat;
 }
 
 .hero-banner__content {
@@ -2101,6 +2105,12 @@ h3 {
 	object-fit: cover;
 	border-radius: 0;
 	background: linear-gradient(180deg, #f7f7f7 0%, #ececec 100%);
+}
+
+.media-thumb--wide {
+	width: min(100%, 320px);
+	height: auto;
+	aspect-ratio: 16 / 10;
 }
 
 .qty-input {

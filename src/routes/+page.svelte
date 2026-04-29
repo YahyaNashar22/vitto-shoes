@@ -102,14 +102,17 @@
 </script>
 
 <section class="hero-banner">
-	<div class="hero-banner__grid reveal" use:reveal>
+	<div
+		class="hero-banner__grid reveal"
+		style={`--hero-banner-image: url('${data.homeHero.image}');`}
+		use:reveal
+	>
 		<div class="hero-banner__content">
 			<div class="hero-banner__top">
-				<p class="eyebrow" style="text-align: left;">New season selection</p>
-				<h1 class="display-title">Sharp pairs for every step.</h1>
+				<p class="eyebrow" style="text-align: left;">{data.homeHero.eyebrow}</p>
+				<h1 class="display-title">{data.homeHero.title}</h1>
 				<p class="hero-copy">
-					Discover standout pairs for everyday wear, occasion dressing, and on-sale picks, all in
-					one fast storefront designed to help shoppers find the right fit without friction.
+					{data.homeHero.description}
 				</p>
 			</div>
 			<div class="chip-row hero-banner__actions">
