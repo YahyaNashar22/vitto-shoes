@@ -121,7 +121,7 @@
 					<div class="footer-accordion__content">
 						<div class="footer-list">
 							<a href="tel:03888173">03 888 173</a>
-							<a href="mailto:hello@vitto-shoes.com">hello@vitto-shoes.com</a>
+							<a href="mailto:Info@vittoshoes.com">Info@vittoshoes.com</a>
 							<a href="https://wa.me/9613888173" target="_blank" rel="noreferrer">WhatsApp orders</a
 							>
 						</div>

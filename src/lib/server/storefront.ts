@@ -11,15 +11,23 @@ export const DEFAULT_HOME_HERO: HomeHeroContent = {
 	title: 'Sharp pairs for every step.',
 	description:
 		'Discover standout pairs for everyday wear, occasion dressing, and on-sale picks, all in one fast storefront designed to help shoppers find the right fit without friction.',
-	image: '/hero-banner-1.webp'
+	image: '/hero-banner-1.webp',
+	images: ['/hero-banner-1.webp']
 };
 
 function sanitizeHeroContent(value: Partial<HomeHeroContent> | null | undefined): HomeHeroContent {
+	const normalizedImages = Array.isArray(value?.images)
+		? value.images.map((item) => String(item).trim()).filter(Boolean)
+		: [];
+	const fallbackImage = value?.image?.trim() || DEFAULT_HOME_HERO.image;
+	const images = normalizedImages.length ? normalizedImages : [fallbackImage];
+
 	return {
 		eyebrow: value?.eyebrow?.trim() || DEFAULT_HOME_HERO.eyebrow,
 		title: value?.title?.trim() || DEFAULT_HOME_HERO.title,
 		description: value?.description?.trim() || DEFAULT_HOME_HERO.description,
-		image: value?.image?.trim() || DEFAULT_HOME_HERO.image
+		image: images[0] || DEFAULT_HOME_HERO.image,
+		images
 	};
 }
 

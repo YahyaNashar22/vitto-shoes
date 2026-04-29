@@ -1,6 +1,11 @@
 {
-	"eyebrow": "New season selection",
-	"title": "A",
-	"description": "Test",
-	"image": "/uploads/storefront/7d07621c-699c-4744-9e07-62ea30a0f98a.webp"
+  "eyebrow": "New season selection",
+  "title": "Sharp pairs for every step.",
+  "description": "Discover standout pairs for everyday wear, occasion dressing, and on-sale picks, all in one fast storefront designed to help shoppers find the right fit without friction.",
+  "image": "/uploads/storefront/4f7fe40e-5a51-4112-bae3-bd377192668b.webp",
+  "images": [
+    "/uploads/storefront/4f7fe40e-5a51-4112-bae3-bd377192668b.webp",
+    "/uploads/storefront/88e589c4-dc57-48cd-9a75-950a0de7cc5c.webp",
+    "/uploads/storefront/991ba3c8-d66e-4e42-99bf-9db9b587b020.webp"
+  ]
 }

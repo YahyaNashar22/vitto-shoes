@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
+	import { onMount } from 'svelte';
 	import ProductCard from '$lib/components/ProductCard.svelte';
 	import EmptyState from '$lib/components/EmptyState.svelte';
 	import { reveal } from '$lib/actions/reveal';
@@ -8,7 +9,12 @@
 	let { data } = $props<{ data: PageData }>();
 	let latestRail = $state<HTMLDivElement | null>(null);
 	let topSellingRail = $state<HTMLDivElement | null>(null);
+	let heroImageIndex = $state(0);
 	const primaryCategories = $derived(data.categories.slice(0, 6));
+	const heroImages = $derived(
+		data.homeHero.images.length ? data.homeHero.images : [data.homeHero.image]
+	);
+	const currentHeroImage = $derived(heroImages[heroImageIndex] || data.homeHero.image);
 	const secondaryCategories = $derived(
 		data.categories.slice(6, 10).length === 4
 			? data.categories.slice(6, 10)
@@ -99,12 +105,24 @@
 			}
 		};
 	}
+
+	onMount(() => {
+		if (heroImages.length < 2) {
+			return;
+		}
+
+		const interval = window.setInterval(() => {
+			heroImageIndex = (heroImageIndex + 1) % heroImages.length;
+		}, 4500);
+
+		return () => window.clearInterval(interval);
+	});
 </script>
 
 <section class="hero-banner">
 	<div
 		class="hero-banner__grid reveal"
-		style={`--hero-banner-image: url('${data.homeHero.image}');`}
+		style={`--hero-banner-image: url('${currentHeroImage}');`}
 		use:reveal
 	>
 		<div class="hero-banner__content">

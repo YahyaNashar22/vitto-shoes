@@ -7,6 +7,7 @@ export type HomeHeroContent = {
 	title: string;
 	description: string;
 	image: string;
+	images: string[];
 };
 
 export type CategorySummary = {

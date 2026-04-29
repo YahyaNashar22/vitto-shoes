@@ -2113,6 +2113,16 @@ h3 {
 	aspect-ratio: 16 / 10;
 }
 
+.hero-image-editor-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+	gap: 1rem;
+}
+
+.hero-image-editor-card {
+	align-content: start;
+}
+
 .qty-input {
 	width: 84px;
 }

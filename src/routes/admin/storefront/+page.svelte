@@ -15,18 +15,21 @@
 			eyebrow: hero.eyebrow,
 			title: hero.title,
 			description: hero.description,
-			image: hero.image
+			image: hero.image,
+			images: hero.images
 		};
 	}
 
-	let heroForm = $state(createHeroDraft({ eyebrow: '', title: '', description: '', image: '' }));
+	let heroForm = $state(
+		createHeroDraft({ eyebrow: '', title: '', description: '', image: '', images: [] })
+	);
 	let heroFormInitialized = $state(false);
 
 	function validateImages(formData: FormData) {
-		const image = formData.get('imageFile');
-
-		if (image instanceof File && image.size > data.maxUploadBytes) {
-			return `Image is too large. Maximum allowed size is ${data.maxUploadLabel}.`;
+		for (const image of formData.values()) {
+			if (image instanceof File && image.size > data.maxUploadBytes) {
+				return `Image is too large. Maximum allowed size is ${data.maxUploadLabel}.`;
+			}
 		}
 
 		return null;
@@ -110,7 +113,7 @@
 				class="stack"
 				use:uploadEnhance={createProgressOptions('Uploading homepage hero')}
 			>
-				<input type="hidden" name="currentImage" bind:value={heroForm.image} />
+				<input type="hidden" name="currentImages" value={JSON.stringify(heroForm.images)} />
 
 				<div class="field-grid">
 					<label class="form-row">
@@ -126,22 +129,53 @@
 						<textarea name="description" bind:value={heroForm.description} rows="4" required
 						></textarea>
 					</label>
-					<label class="form-row">
-						<span>Hero image upload</span>
-						<input name="imageFile" type="file" accept="image/*" />
-					</label>
 				</div>
 
-				{#if heroForm.image}
-					<div class="media-inline">
-						<img class="media-thumb media-thumb--wide" src={heroForm.image} alt="Homepage hero" />
-						<p class="table-note">Current hero image will be kept unless you upload a new one.</p>
+				{#if heroForm.images.length}
+					<div class="stack" style="gap: 0.75rem;">
+						<div class="toolbar-row">
+							<div>
+								<h3>Current hero images</h3>
+								<p class="table-note">
+									Replace or remove images individually. The first remaining image becomes the first
+									slide in the homepage rotation.
+								</p>
+							</div>
+						</div>
+						<div class="hero-image-editor-grid">
+							{#each heroForm.images as image, index (image)}
+								<div class="panel stack hero-image-editor-card">
+									<img
+										class="media-thumb media-thumb--wide"
+										src={image}
+										alt={`Homepage hero ${index + 1}`}
+									/>
+									<p class="table-note">
+										Image {index + 1}{index === 0 ? ' · starts the rotation' : ''}
+									</p>
+									<label class="form-row">
+										<span>Replace this image</span>
+										<input name={`replaceImage_${index}`} type="file" accept="image/*" />
+									</label>
+									<label class="checkbox-row">
+										<input type="checkbox" name="removeImageIndex" value={index} />
+										<span>Remove this image</span>
+									</label>
+								</div>
+							{/each}
+						</div>
 					</div>
 				{/if}
 
+				<label class="form-row">
+					<span>Add new hero images</span>
+					<input name="newImageFiles" type="file" accept="image/*" multiple />
+				</label>
+
 				<p class="field-note">
 					Maximum image size: {data.maxUploadLabel}. JPG, JPEG, PNG, WebP, GIF, SVG, AVIF, BMP, and
-					TIFF files are accepted and converted to WebP.
+					TIFF files are accepted and converted to WebP. The homepage rotates through all saved hero
+					images automatically.
 				</p>
 
 				<button class="button-primary" type="submit">Save homepage hero</button>
