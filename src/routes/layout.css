@@ -1865,6 +1865,7 @@ h3 {
 .hero-banner__top {
 	display: grid;
 	align-content: start;
+	gap: 12px;
 }
 
 .hero-banner__actions {
