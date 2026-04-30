@@ -33,79 +33,6 @@
 		});
 	}
 
-	function draggableRail(node: HTMLDivElement) {
-		let startX = 0;
-		let startY = 0;
-		let startScrollLeft = 0;
-		let axis: 'x' | 'y' | null = null;
-		let dragged = false;
-
-		const reset = () => {
-			axis = null;
-			node.classList.remove('is-dragging');
-		};
-
-		const onPointerDown = (event: PointerEvent) => {
-			if (event.button !== 0) {
-				return;
-			}
-
-			startX = event.clientX;
-			startY = event.clientY;
-			startScrollLeft = node.scrollLeft;
-			axis = null;
-			dragged = false;
-		};
-
-		const onPointerMove = (event: PointerEvent) => {
-			const deltaX = event.clientX - startX;
-			const deltaY = event.clientY - startY;
-
-			if (!axis && Math.max(Math.abs(deltaX), Math.abs(deltaY)) > 8) {
-				axis = Math.abs(deltaX) > Math.abs(deltaY) ? 'x' : 'y';
-
-				if (axis === 'x') {
-					node.classList.add('is-dragging');
-					node.setPointerCapture?.(event.pointerId);
-				}
-			}
-
-			if (axis !== 'x') {
-				return;
-			}
-
-			event.preventDefault();
-			dragged = true;
-			node.scrollLeft = startScrollLeft - deltaX;
-		};
-
-		const onClick = (event: MouseEvent) => {
-			if (!dragged) {
-				return;
-			}
-
-			event.preventDefault();
-			event.stopPropagation();
-			dragged = false;
-		};
-
-		node.addEventListener('pointerdown', onPointerDown);
-		node.addEventListener('pointermove', onPointerMove, { passive: false });
-		node.addEventListener('pointerup', reset);
-		node.addEventListener('pointercancel', reset);
-		node.addEventListener('click', onClick, true);
-
-		return {
-			destroy() {
-				node.removeEventListener('pointerdown', onPointerDown);
-				node.removeEventListener('pointermove', onPointerMove);
-				node.removeEventListener('pointerup', reset);
-				node.removeEventListener('pointercancel', reset);
-				node.removeEventListener('click', onClick, true);
-			}
-		};
-	}
-
 	onMount(() => {
 		if (heroImages.length < 2) {
 			return;
@@ -167,9 +94,9 @@
 					/>
 				</svg>
 			</button>
-			<div class="product-rail home-rail" bind:this={latestRail} use:draggableRail>
+			<div class="product-rail home-rail" bind:this={latestRail}>
 				{#each data.latestProducts as product (product.id)}
-					<div class="product-rail__item reveal" use:reveal>
+					<div class="product-rail__item">
 						<ProductCard {product} />
 					</div>
 				{/each}
@@ -254,9 +181,9 @@
 					/>
 				</svg>
 			</button>
-			<div class="product-rail home-rail" bind:this={topSellingRail} use:draggableRail>
+			<div class="product-rail home-rail" bind:this={topSellingRail}>
 				{#each data.featuredProducts as product (product.id)}
-					<div class="product-rail__item reveal" use:reveal>
+					<div class="product-rail__item">
 						<ProductCard {product} />
 					</div>
 				{/each}
@@ -492,16 +419,9 @@
 		.home-rail-shell .home-rail {
 			scroll-behavior: smooth;
 			-webkit-overflow-scrolling: touch;
-			overscroll-behavior-x: contain;
-			touch-action: pan-y;
+			overscroll-behavior-x: auto;
+			touch-action: auto;
 			padding-inline: 0.75rem;
-		}
-
-		.home-rail-shell :global(.home-rail.is-dragging) {
-			cursor: grabbing;
-			scroll-behavior: auto;
-			scroll-snap-type: none;
-			user-select: none;
 		}
 
 		.home-rail-arrow {
